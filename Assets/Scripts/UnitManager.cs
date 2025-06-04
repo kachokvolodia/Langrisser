@@ -309,7 +309,9 @@ public class UnitManager : MonoBehaviour
         foreach (var cell in cells)
         {
             Unit u = FindUnitAtCell(cell);
-            if (u != null && u.faction != unit.faction)
+            if (u != null &&
+                FactionManager.Instance.GetRelation(unit.faction, u.faction) ==
+                    FactionManager.RelationType.Enemy)
             {
                 cell.Highlight(Color.red);
                 attackHighlightedCells.Add(cell);
