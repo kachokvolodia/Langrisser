@@ -507,6 +507,26 @@ public class UnitManager : MonoBehaviour
             }
         }
     }
+
+    public void ResetUnitsForNextTurn(params Unit.Faction[] factions)
+    {
+        HashSet<Unit.Faction> allowed;
+        if (factions != null && factions.Length > 0)
+            allowed = new HashSet<Unit.Faction>(factions);
+        else
+            allowed = null; // null означает все фракции
+
+        foreach (var unit in AllUnits)
+        {
+            if (allowed != null && !allowed.Contains(unit.faction))
+                continue;
+
+            unit.hasActed = false;
+            unit.hasMoved = false;
+            unit.hasAttacked = false;
+            unit.SetSelected(false);
+        }
+    }
     private List<Cell> auraHighlightedCells = new List<Cell>();
 
     public void HighlightCommanderAura(Unit commander)

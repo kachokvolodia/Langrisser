@@ -18,8 +18,19 @@ public class EnemyManager : MonoBehaviour
 
     IEnumerator EnemyTurnRoutine(System.Action onEnemiesFinished)
     {
-        // Лечим юниты, которые бездействовали в прошлый ход
-        UnitManager.Instance.ApplyWaitHealing();
+        // Лечим вражеские и нейтральные юниты, которые бездействовали в прошлый ход
+        UnitManager.Instance.ApplyWaitHealing(
+            Unit.Faction.Enemy,
+            Unit.Faction.EnemyAlly,
+            Unit.Faction.Neutral,
+            Unit.Faction.EvilNeutral);
+
+        // Сбрасываем флаги действий у этих юнитов перед их ходом
+        UnitManager.Instance.ResetUnitsForNextTurn(
+            Unit.Faction.Enemy,
+            Unit.Faction.EnemyAlly,
+            Unit.Faction.Neutral,
+            Unit.Faction.EvilNeutral);
 
         // Создаем копию списка, так как во время хода юниты могут погибать
         var enemiesSnapshot = new List<Unit>(UnitManager.Instance.AllUnits);
