@@ -26,6 +26,11 @@ public class Cell : MonoBehaviour
         // Старая подсветка (можно оставить)
         spriteRenderer.color = highlightColor;
 
+        if (UnitManager.Instance.HasSelectedUnit() && UnitManager.Instance.CanMoveToCell(this))
+        {
+            UnitManager.Instance.PreviewPath(this);
+        }
+
         // НОВОЕ: если на клетке есть юнит — показать ауру командира
         if (occupyingUnit != null)
         {
@@ -47,6 +52,7 @@ public class Cell : MonoBehaviour
 
         // НОВОЕ: сбросить подсветку ауры всегда!
         UnitManager.Instance.ClearAuraHighlights();
+        UnitManager.Instance.HideMovePreview();
     }
 
     void OnMouseDown()
@@ -61,7 +67,7 @@ public class Cell : MonoBehaviour
         {
             if (UnitManager.Instance.CanMoveToCell(this))
             {
-                UnitManager.Instance.MoveSelectedUnit(transform.position);
+                UnitManager.Instance.RequestMoveConfirmation(this);
                 return;
             }
             else if (UnitManager.Instance.IsAttackHighlightedCell(this))
@@ -116,6 +122,12 @@ public class Cell : MonoBehaviour
         {
             return unit != null && unit.unitData.movementType == MovementType.Flyer;
         }
+
+        if (terrainType == TerrainType.Mountain)
+        {
+            return unit != null && unit.unitData.movementType == MovementType.Flyer;
+        }
+
         return true;
     }
 
