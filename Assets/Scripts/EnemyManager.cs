@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class EnemyManager : MonoBehaviour
@@ -15,7 +16,7 @@ public class EnemyManager : MonoBehaviour
         StartCoroutine(EnemyTurnRoutine(onEnemiesFinished));
     }
 
-    IEnumerator<WaitForSeconds> EnemyTurnRoutine(System.Action onEnemiesFinished)
+    IEnumerator EnemyTurnRoutine(System.Action onEnemiesFinished)
     {
         UnitManager.Instance.ApplyWaitHealing();
 
@@ -26,7 +27,7 @@ public class EnemyManager : MonoBehaviour
 
             yield return new WaitForSeconds(0.5f);
 
-            // Проверяем наличие EnemyAI!
+            // РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ EnemyAI!
             var ai = enemy.GetComponent<EnemyAI>();
             if (ai != null)
                 ai.DoEnemyTurn();
