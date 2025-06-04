@@ -39,6 +39,9 @@ public class Unit : MonoBehaviour
     public int currentHP;
     public Faction faction;
 
+    [HideInInspector]
+    public HealthBar healthBar;
+
     public bool isSelected = false;
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
@@ -62,6 +65,8 @@ public class Unit : MonoBehaviour
 
         if (UnitManager.Instance != null)
             UnitManager.Instance.RegisterUnit(this);
+
+        UpdateHealthBar();
     }
 
     void OnDestroy()
@@ -97,10 +102,17 @@ public class Unit : MonoBehaviour
         transform.position = targetPosition;
     }
 
+    public void UpdateHealthBar()
+    {
+        if (healthBar != null)
+            healthBar.UpdateBar();
+    }
+
     public void TakeDamage(int amount)
     {
         Debug.Log($"{name} получил урон: {amount}, HP было: {currentHP}");
         currentHP -= amount;
+        UpdateHealthBar();
         if (currentHP <= 0)
         {
             Die();
@@ -112,6 +124,9 @@ public class Unit : MonoBehaviour
         // Сразу удаляем из менеджера юнитов, чтобы безопасно изменить коллекцию
         if (UnitManager.Instance != null)
             UnitManager.Instance.UnregisterUnit(this);
+
+        if (healthBar != null)
+            Destroy(healthBar.gameObject);
 
         // Если этот юнит — командир, его солдаты также погибают
         if (isCommander && squad != null)

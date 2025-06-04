@@ -19,6 +19,10 @@ public class UnitManager : MonoBehaviour
     public GameObject[] evilNeutralCommanderPrefabs;
     public GameObject[] evilNeutralSoldierPrefabs;
 
+    public Sprite healthBarSprite;
+    public Vector3 healthBarOffset = new Vector3(0f, -0.4f, 0f);
+    public Vector3 healthBarScale = new Vector3(0.8f, 0.1f, 1f);
+
 
     public GridManager gridManager;
     private Unit selectedUnit;
@@ -188,6 +192,16 @@ public class UnitManager : MonoBehaviour
         Unit unit = unitGO.GetComponent<Unit>();
         unit.faction = faction;
 
+        if (healthBarSprite != null)
+        {
+            GameObject barGO = new GameObject("HealthBar");
+            barGO.transform.SetParent(unitGO.transform);
+            barGO.transform.localPosition = healthBarOffset;
+            var hb = barGO.AddComponent<HealthBar>();
+            hb.Initialize(unit, healthBarSprite, GetFactionColor(faction), healthBarScale);
+            unit.healthBar = hb;
+        }
+
         // Назначаем на клетку
         var cell = GetCellOfUnit(unit);
         if (cell != null)
@@ -196,6 +210,21 @@ public class UnitManager : MonoBehaviour
         // Регистрация юнита (если вдруг что-то не сработает в Start юнита)
         RegisterUnit(unit);
         return unit;
+    }
+
+    private Color GetFactionColor(Faction faction)
+    {
+        switch (faction)
+        {
+            case Faction.Player:
+                return Color.green;
+            case Faction.Enemy:
+                return Color.red;
+            case Faction.PlayerAlly:
+                return Color.blue;
+            default:
+                return Color.white;
+        }
     }
 
     // ---- НОВОЕ: Регистрация/удаление ----
@@ -450,6 +479,7 @@ public class UnitManager : MonoBehaviour
                 unit.currentHP = Mathf.Min(unit.currentHP + 3, unit.unitData.maxHP);
                 // Можно добавить анимацию/эффект
                 Debug.Log($"[HEAL] {unit.unitData.unitName} (командир) восстановил 3 HP за ожидание!");
+                unit.UpdateHealthBar();
             }
             // Солдат: если рядом с живым командиром — хил
             else if (!unit.isCommander && unit.commander != null && unit.commander.currentHP > 0)
@@ -462,6 +492,7 @@ public class UnitManager : MonoBehaviour
                 {
                     unit.currentHP = Mathf.Min(unit.currentHP + 3, unit.unitData.maxHP);
                     Debug.Log($"[HEAL] {unit.unitData.unitName} (рядом с командиром) восстановил 3 HP!");
+                    unit.UpdateHealthBar();
                 }
             }
         }
