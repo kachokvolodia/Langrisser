@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7247737578727331079}
   - component: {fileID: 5901132350974582478}
   m_Layer: 0
-  m_Name: PlayerComanderMan
+  m_Name: AllyCommanderMan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayerID: 1287562439
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: -5510389960585936862, guid: 4472ec6f23e7bda4b85a97c51993ee75, type: 3}
+  m_Sprite: {fileID: 625755363413570144, guid: 5d93311b30585ae4a9c848b568af3f52, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -109,5 +109,5 @@ MonoBehaviour:
   squad: []
   unitData: {fileID: 11400000, guid: 0234b06ba52ddb74997b35c485d2847a, type: 2}
   currentHP: 10
-  faction: 0
+  faction: 1
   isSelected: 0
