@@ -326,14 +326,14 @@ public class UnitManager : MonoBehaviour
         attackHighlightedCells.Clear();
     }
 
-    // --- ИСПРАВЛЕНО: теперь ищет только среди AllUnits! ---
+    // Поиск юнита, стоящего на заданной клетке
     public Unit FindUnitAtCell(Cell cell)
     {
-        Vector2 cellPos2 = new Vector2(cell.transform.position.x, cell.transform.position.y);
+        Vector2Int cellPos = GridManager.Instance.WorldToGrid(cell.transform.position);
         foreach (var unit in AllUnits)
         {
-            Vector2 unitPos2 = new Vector2(unit.transform.position.x, unit.transform.position.y);
-            if (Vector2.Distance(unitPos2, cellPos2) < 0.1f)
+            Vector2Int unitPos = GridManager.Instance.WorldToGrid(unit.transform.position);
+            if (unitPos == cellPos)
                 return unit;
         }
         return null;
