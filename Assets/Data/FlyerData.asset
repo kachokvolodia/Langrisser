@@ -18,5 +18,6 @@ MonoBehaviour:
   defense: 9
   moveRange: 5
   attackRange: 1
-  unitSprite: {fileID: 0}
   unitClass: 4
+  movementType: 2
+  description: 

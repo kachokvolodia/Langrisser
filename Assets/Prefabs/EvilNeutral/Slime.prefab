@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1650551346882429116}
   - component: {fileID: 2714230756658664581}
   - component: {fileID: 5977739592599296200}
-  - component: {fileID: 4316292302718721513}
+  - component: {fileID: 4237434049114353667}
   m_Layer: 0
   m_Name: Slime
   m_TagString: Untagged
@@ -112,7 +112,7 @@ MonoBehaviour:
   currentHP: 10
   faction: 4
   isSelected: 0
---- !u!114 &4316292302718721513
+--- !u!114 &4237434049114353667
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,6 +121,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 4128895056449229038}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 862f94809916af942b067ce64b1f5cb1, type: 3}
+  m_Script: {fileID: 11500000, guid: dada50e772b5bb841b709408e9db1f63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

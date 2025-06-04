@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4957316242098383928}
   - component: {fileID: 7247737578727331079}
   - component: {fileID: 5901132350974582478}
-  - component: {fileID: 6587566992542734694}
+  - component: {fileID: 4972760065457051097}
   m_Layer: 0
   m_Name: EnemyAllyMageMan
   m_TagString: Untagged
@@ -112,7 +112,7 @@ MonoBehaviour:
   currentHP: 10
   faction: 3
   isSelected: 0
---- !u!114 &6587566992542734694
+--- !u!114 &4972760065457051097
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,6 +121,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8785832555143759317}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 862f94809916af942b067ce64b1f5cb1, type: 3}
+  m_Script: {fileID: 11500000, guid: 65bded6cd6c3fee438fbda93a52c8164, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

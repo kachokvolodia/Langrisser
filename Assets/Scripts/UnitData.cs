@@ -25,11 +25,4 @@ public enum UnitClass
     // и т.д.
 }
 
-public enum MovementType
-{
-    Foot,
-    Cavalry,
-    Flyer
-}
-
 
