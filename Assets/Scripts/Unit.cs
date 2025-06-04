@@ -7,18 +7,18 @@ public class Unit : MonoBehaviour
     public bool hasAttacked = false;
     public bool hasActed = false;
 
-    // ===== Langrisser-командирка =====
-    public bool isCommander = false;      // Этот юнит — командир?
-    public int commanderRadius = 2;       // Радиус ауры командира (если сам командир)
-    public Unit commander;                // Для обычного юнита — ссылка на командира
-    public List<Unit> squad;              // Для командира — список солдат
+    // ===== Langrisser-РєРѕРјР°РЅРґРёСЂРєР° =====
+    public bool isCommander = false;      // Р­С‚РѕС‚ СЋРЅРёС‚ вЂ” РєРѕРјР°РЅРґРёСЂ?
+    public int commanderRadius = 2;       // Р Р°РґРёСѓСЃ Р°СѓСЂС‹ РєРѕРјР°РЅРґРёСЂР° (РµСЃР»Рё СЃР°Рј РєРѕРјР°РЅРґРёСЂ)
+    public Unit commander;                // Р”Р»СЏ РѕР±С‹С‡РЅРѕРіРѕ СЋРЅРёС‚Р° вЂ” СЃСЃС‹Р»РєР° РЅР° РєРѕРјР°РЅРґРёСЂР°
+    public List<Unit> squad;              // Р”Р»СЏ РєРѕРјР°РЅРґРёСЂР° вЂ” СЃРїРёСЃРѕРє СЃРѕР»РґР°С‚
 
-    // Проверка: в ауре командира?
+    // РџСЂРѕРІРµСЂРєР°: РІ Р°СѓСЂРµ РєРѕРјР°РЅРґРёСЂР°?
     public bool IsInAura()
     {
-        if (isCommander) return true; // Командир всегда в своей ауре :)
+        if (isCommander) return true; // РљРѕРјР°РЅРґРёСЂ РІСЃРµРіРґР° РІ СЃРІРѕРµР№ Р°СѓСЂРµ :)
         if (commander == null) return false;
-        // Считаем расстояние по гриду
+        // РЎС‡РёС‚Р°РµРј СЂР°СЃСЃС‚РѕСЏРЅРёРµ РїРѕ РіСЂРёРґСѓ
         Vector2Int myGrid = GridManager.Instance.WorldToGrid(transform.position);
         Vector2Int comGrid = GridManager.Instance.WorldToGrid(commander.transform.position);
         int dist = Mathf.Abs(myGrid.x - comGrid.x) + Mathf.Abs(myGrid.y - comGrid.y);
@@ -28,10 +28,10 @@ public class Unit : MonoBehaviour
     public enum Faction
     {
         Player,
-        PlayerAlly,    // союзник игрока
+        PlayerAlly,    // СЃРѕСЋР·РЅРёРє РёРіСЂРѕРєР°
         Enemy,
-        EnemyAlly,     // союзник врага
-        Neutral,        // нейтралы
+        EnemyAlly,     // СЃРѕСЋР·РЅРёРє РІСЂР°РіР°
+        Neutral,        // РЅРµР№С‚СЂР°Р»С‹
         EvilNeutral
     }
 
@@ -51,10 +51,10 @@ public class Unit : MonoBehaviour
         if (unitData != null)
             currentHP = unitData.maxHP;
         else
-            Debug.LogWarning("UnitData не назначен на " + gameObject.name);
+            Debug.LogWarning("UnitData РЅРµ РЅР°Р·РЅР°С‡РµРЅ РЅР° " + gameObject.name);
     }
 
-    // --- НОВОЕ: саморегистрация ---
+    // --- РќРћР’РћР•: СЃР°РјРѕСЂРµРіРёСЃС‚СЂР°С†РёСЏ ---
     void Start()
     {
         if (isCommander && squad == null)
@@ -99,7 +99,7 @@ public class Unit : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        Debug.Log($"{name} получил урон: {amount}, HP было: {currentHP}");
+        Debug.Log($"{name} РїРѕР»СѓС‡РёР» СѓСЂРѕРЅ: {amount}, HP Р±С‹Р»Рѕ: {currentHP}");
         currentHP -= amount;
         if (currentHP <= 0)
         {
@@ -109,6 +109,15 @@ public class Unit : MonoBehaviour
 
     public void Die()
     {
+        // Clear the cell this unit occupies
+        var cell = UnitManager.Instance.GetCellOfUnit(this);
+        if (cell != null && cell.occupyingUnit == this)
+            cell.occupyingUnit = null;
+
+        // Remove from commander's squad if applicable
+        if (commander != null && commander.squad != null)
+            commander.squad.Remove(this);
+
         Destroy(gameObject);
         if (TurnManager.Instance != null)
             TurnManager.Instance.CheckVictory();
@@ -120,9 +129,9 @@ public class Unit : MonoBehaviour
         float myPower = unitData.attack * ((float)currentHP / unitData.maxHP);
         float theirDef = target.unitData.defense * ((float)target.currentHP / target.unitData.maxHP);
 
-        // ======= Бонусы за ауру =======
-        if (IsInAura()) myPower += 2;             // если в ауре, атака +2
-        if (target.IsInAura()) theirDef += 1;     // если цель в ауре, защита +1
+        // ======= Р‘РѕРЅСѓСЃС‹ Р·Р° Р°СѓСЂСѓ =======
+        if (IsInAura()) myPower += 2;             // РµСЃР»Рё РІ Р°СѓСЂРµ, Р°С‚Р°РєР° +2
+        if (target.IsInAura()) theirDef += 1;     // РµСЃР»Рё С†РµР»СЊ РІ Р°СѓСЂРµ, Р·Р°С‰РёС‚Р° +1
 
         float modifier = UnitManager.Instance.GetClassModifier(this, target);
         int dmg = Mathf.Max(1, Mathf.RoundToInt((myPower - theirDef) * modifier));
@@ -137,7 +146,7 @@ public class Unit : MonoBehaviour
 
     void OnMouseEnter()
     {
-        // Показываем ауру командования по наведению на командира или на его солдата
+        // РџРѕРєР°Р·С‹РІР°РµРј Р°СѓСЂСѓ РєРѕРјР°РЅРґРѕРІР°РЅРёСЏ РїРѕ РЅР°РІРµРґРµРЅРёСЋ РЅР° РєРѕРјР°РЅРґРёСЂР° РёР»Рё РЅР° РµРіРѕ СЃРѕР»РґР°С‚Р°
         if (isCommander)
         {
             UnitManager.Instance.HighlightCommanderAura(this);
