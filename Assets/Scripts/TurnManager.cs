@@ -1,17 +1,23 @@
-﻿using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
     public static TurnManager Instance;
 
-    public enum Turn
+    public List<Unit.Faction> turnOrder = new List<Unit.Faction>
     {
-        Player,
-        Enemy
-    }
+        Unit.Faction.Player,
+        Unit.Faction.PlayerAlly,
+        Unit.Faction.Enemy,
+        Unit.Faction.EnemyAlly,
+        Unit.Faction.Neutral,
+        Unit.Faction.EvilNeutral
+    };
 
-    public Turn currentTurn = Turn.Player;
+    private int currentIndex = 0;
+
+    public Unit.Faction CurrentFaction => turnOrder[currentIndex];
 
     private void Awake()
     {
@@ -20,48 +26,59 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("Игра началась! Ход игрока.");
+        StartTurn(CurrentFaction);
     }
 
+    void StartTurn(Unit.Faction faction)
+    {
+        StatusBarUI.Instance?.SetTurnInfo(faction);
+        StatusBarUI.Instance?.SetEndTurnButtonInteractable(faction == Unit.Faction.Player);
+
+        UnitManager.Instance.ApplyWaitHealing(faction);
+        UnitManager.Instance.ResetUnitsForNextTurn(faction);
+
+        if (faction == Unit.Faction.Player)
+        {
+            Debug.Log("Ход игрока!");
+        }
+        else
+        {
+            EnemyManager.Instance.DoFactionTurn(faction, EndCurrentTurn);
+            Debug.Log($"Ход фракции {faction}");
+        }
+    }
+
+    public void EndCurrentTurn()
+    {
+        if (EnemyManager.Instance == null) return;
+        currentIndex = (currentIndex + 1) % turnOrder.Count;
+        StartTurn(CurrentFaction);
+    }
+
+    // Compatibility with old UI
     public void EndPlayerTurn()
     {
-        currentTurn = Turn.Enemy;
-        Debug.Log("Ход врага!");
-
-        EnemyManager.Instance.DoAllEnemiesTurn(StartPlayerTurn);
+        EndCurrentTurn();
     }
-
-    public void StartPlayerTurn()
-    {
-        // Сначала лечим юниты игрока, если они ждали прошлый ход
-        UnitManager.Instance.ApplyWaitHealing(Unit.Faction.Player, Unit.Faction.PlayerAlly);
-
-        // Затем обнуляем флаги действий только у юнитов игрока
-        UnitManager.Instance.ResetUnitsForNextTurn(Unit.Faction.Player, Unit.Faction.PlayerAlly);
-
-        currentTurn = Turn.Player;
-        Debug.Log("Снова ход игрока!");
-    }
-
 
     public bool IsPlayerTurn()
     {
-        return currentTurn == Turn.Player;
+        return CurrentFaction == Unit.Faction.Player;
     }
+
     public void CheckVictory()
     {
-        bool playerAlive = UnitManager.Instance.AllUnits.Any(u => u.faction == Unit.Faction.Player && u.currentHP > 0);
-        bool enemyAlive = UnitManager.Instance.AllUnits.Any(u => u.faction == Unit.Faction.Enemy && u.currentHP > 0);
+        bool playerAlive = UnitManager.Instance.AllUnits.Exists(u => u.faction == Unit.Faction.Player && u.currentHP > 0);
+        bool enemyAlive = UnitManager.Instance.AllUnits.Exists(u => u.faction == Unit.Faction.Enemy && u.currentHP > 0);
 
         if (!playerAlive)
         {
             Debug.Log("Поражение!");
-            // Тут вызывай окно поражения, рестарт, выход и т.п.
         }
         else if (!enemyAlive)
         {
             Debug.Log("Победа!");
-            // Тут вызывай окно победы, переход на следующий уровень и т.п.
         }
     }
 }
+

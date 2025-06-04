@@ -7,12 +7,22 @@ public class CameraController : MonoBehaviour
     public float minZoom = 3f;
     public float maxZoom = 10f;
 
+    private Transform followTarget;
+
     void Update()
     {
-        // Pan camera with arrow keys or WASD
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-        transform.position += new Vector3(h, v, 0f) * panSpeed * Time.deltaTime;
+        if (followTarget == null)
+        {
+            // Pan camera with arrow keys or WASD
+            float h = Input.GetAxisRaw("Horizontal");
+            float v = Input.GetAxisRaw("Vertical");
+            transform.position += new Vector3(h, v, 0f) * panSpeed * Time.deltaTime;
+        }
+        else
+        {
+            Vector3 pos = followTarget.position;
+            transform.position = new Vector3(pos.x, pos.y, transform.position.z);
+        }
 
         // Zoom with mouse wheel
         float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -35,5 +45,16 @@ public class CameraController : MonoBehaviour
                 transform.position = new Vector3(pos.x, pos.y, transform.position.z);
             }
         }
+    }
+
+    public void Follow(Transform target)
+    {
+        followTarget = target;
+    }
+
+    public void ClearFollow(Transform target)
+    {
+        if (followTarget == target)
+            followTarget = null;
     }
 }

@@ -13,6 +13,7 @@ public class StatusBarUI : MonoBehaviour
 
     public Button endTurnButton;
     public Button menuButton;
+    public TextMeshProUGUI turnInfoText;
 
     private void Awake()
     {
@@ -68,7 +69,8 @@ public class StatusBarUI : MonoBehaviour
 
     public void OnEndTurnButtonPressed()
     {
-        TurnManager.Instance.EndPlayerTurn();
+        if (TurnManager.Instance.IsPlayerTurn())
+            TurnManager.Instance.EndCurrentTurn();
     }
 
     public void OnMenuButtonPressed()
@@ -76,4 +78,17 @@ public class StatusBarUI : MonoBehaviour
         Debug.Log("Меню пока не реализовано!");
         // Тут потом вызовем показ меню-настроек
     }
+
+    public void SetTurnInfo(Unit.Faction faction)
+    {
+        if (turnInfoText != null)
+            turnInfoText.text = $"Ход: {faction}";
+    }
+
+    public void SetEndTurnButtonInteractable(bool value)
+    {
+        if (endTurnButton != null)
+            endTurnButton.interactable = value;
+    }
 }
+

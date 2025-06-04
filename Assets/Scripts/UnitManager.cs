@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using static Unit;
 
@@ -300,6 +301,7 @@ public class UnitManager : MonoBehaviour
         if (selectedUnit != null)
         {
             selectedUnit.hasActed = true;
+            selectedUnit.SetSelected(false);
             UnitActionMenu.Instance.HideMenu();
             DeselectUnit();
         }
@@ -318,23 +320,39 @@ public class UnitManager : MonoBehaviour
     {
         if (selectedUnit != null)
         {
-            // Освободить старую клетку
-            var oldCell = GetCellOfUnit(selectedUnit);
-            if (oldCell != null)
-                oldCell.occupyingUnit = null;
-
-            selectedUnit.MoveTo(targetPosition);
-            selectedUnit.hasMoved = true;
-
-            var newCell = GetCellOfUnit(selectedUnit);
-            if (newCell != null)
-                newCell.occupyingUnit = selectedUnit;
-
-            ClearHighlightedCells();
-            UnitActionMenu.Instance.ShowMenu(selectedUnit.transform.position, selectedUnit);
-            HideMovePreview();
-            moveMode = false;
+            StartCoroutine(MoveUnitRoutine(selectedUnit, targetPosition));
         }
+    }
+
+    IEnumerator MoveUnitRoutine(Unit unit, Vector3 targetPosition)
+    {
+        var startCell = GetCellOfUnit(unit);
+        Cell targetCell = GridManager.Instance.GetCellFromWorld(targetPosition);
+        var path = PathfindingManager.Instance.FindPath(startCell, targetCell, unit);
+        if (path == null || path.Count == 0)
+            yield break;
+
+        // Освободить старую клетку
+        if (startCell != null)
+            startCell.occupyingUnit = null;
+
+        for (int i = 1; i < path.Count && i <= unit.unitData.moveRange; i++)
+        {
+            var cell = path[i];
+            yield return StartCoroutine(unit.MoveRoutinePublic(cell.transform.position));
+        }
+
+        var finalCell = GetCellOfUnit(unit);
+        if (finalCell != null)
+            finalCell.occupyingUnit = unit;
+
+        unit.hasMoved = true;
+        unit.SetSelected(true);
+
+        ClearHighlightedCells();
+        UnitActionMenu.Instance.ShowMenu(unit.transform.position, unit);
+        HideMovePreview();
+        moveMode = false;
     }
 
     public bool HasSelectedUnit()
@@ -430,6 +448,7 @@ public class UnitManager : MonoBehaviour
         // 4. Отмечаем как действовавшего (у атакующего)
         attacker.hasAttacked = true;
         attacker.hasActed = true;
+        attacker.SetSelected(false);
     }
 
     public float GetClassModifier(Unit attacker, Unit defender)
@@ -524,6 +543,7 @@ public class UnitManager : MonoBehaviour
             unit.hasActed = false;
             unit.hasMoved = false;
             unit.hasAttacked = false;
+            unit.isSelected = false;
             unit.SetSelected(false);
         }
     }

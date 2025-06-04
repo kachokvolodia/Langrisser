@@ -11,50 +11,34 @@ public class EnemyManager : MonoBehaviour
         Instance = this;
     }
 
-    public void DoAllEnemiesTurn(System.Action onEnemiesFinished)
+    public void DoFactionTurn(Unit.Faction faction, System.Action onFinished)
     {
-        StartCoroutine(EnemyTurnRoutine(onEnemiesFinished));
+        StartCoroutine(FactionTurnRoutine(faction, onFinished));
     }
 
-    IEnumerator EnemyTurnRoutine(System.Action onEnemiesFinished)
+    IEnumerator FactionTurnRoutine(Unit.Faction faction, System.Action onFinished)
     {
-        // Лечим вражеские и нейтральные юниты, которые бездействовали в прошлый ход
-        UnitManager.Instance.ApplyWaitHealing(
-            Unit.Faction.Enemy,
-            Unit.Faction.EnemyAlly,
-            Unit.Faction.Neutral,
-            Unit.Faction.EvilNeutral);
+        UnitManager.Instance.ApplyWaitHealing(faction);
+        UnitManager.Instance.ResetUnitsForNextTurn(faction);
 
-        // Сбрасываем флаги действий у этих юнитов перед их ходом
-        UnitManager.Instance.ResetUnitsForNextTurn(
-            Unit.Faction.Enemy,
-            Unit.Faction.EnemyAlly,
-            Unit.Faction.Neutral,
-            Unit.Faction.EvilNeutral);
-
-        // Создаем копию списка, так как во время хода юниты могут погибать
-        var enemiesSnapshot = new List<Unit>(UnitManager.Instance.AllUnits);
-        foreach (var enemy in enemiesSnapshot)
+        var snapshot = new List<Unit>(UnitManager.Instance.AllUnits);
+        foreach (var unit in snapshot)
         {
-            // Игрок управляет лишь своей фракцией
-            if (enemy == null || enemy.faction == Unit.Faction.Player)
+            if (unit == null || unit.faction != faction)
                 continue;
 
             yield return new WaitForSeconds(0.5f);
 
-            // Юнит мог быть уничтожен, пока мы ждали
-            if (enemy == null)
+            if (unit == null)
                 continue;
 
-            // Проверяем наличие EnemyAI!
-            var ai = enemy.GetComponent<EnemyAI>();
+            var ai = unit.GetComponent<EnemyAI>();
             if (ai != null)
                 ai.DoEnemyTurn();
         }
 
-
         yield return new WaitForSeconds(0.5f);
-        onEnemiesFinished?.Invoke();
+        onFinished?.Invoke();
     }
     public Unit FindNearestPlayerUnit(Unit enemy)
     {
