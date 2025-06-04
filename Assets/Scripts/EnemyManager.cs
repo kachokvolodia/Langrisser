@@ -25,7 +25,7 @@ public class EnemyManager : MonoBehaviour
         foreach (var enemy in enemiesSnapshot)
         {
             // Игрок управляет лишь своей фракцией
-            if (enemy.faction == Unit.Faction.Player)
+            if (enemy == null || enemy.faction == Unit.Faction.Player)
                 continue;
 
             yield return new WaitForSeconds(0.5f);
