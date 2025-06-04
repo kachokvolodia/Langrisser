@@ -2,12 +2,19 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    public static CameraController Instance;
+
     public float panSpeed = 5f;
     public float zoomSpeed = 5f;
     public float minZoom = 3f;
     public float maxZoom = 10f;
 
     private Transform followTarget;
+
+    void Awake()         // <-- и вот это добавь!
+    {
+        Instance = this;
+    }
 
     void Update()
     {
