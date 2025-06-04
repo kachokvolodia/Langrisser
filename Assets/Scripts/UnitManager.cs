@@ -467,28 +467,38 @@ public class UnitManager : MonoBehaviour
             selectedUnit = null;
         }
     }
-    public void ApplyWaitHealing()
+    public void ApplyWaitHealing(params Unit.Faction[] factions)
     {
+        HashSet<Unit.Faction> allowed;
+        if (factions != null && factions.Length > 0)
+            allowed = new HashSet<Unit.Faction>(factions);
+        else
+            allowed = null; // null значит все фракции
+
         foreach (var unit in AllUnits)
         {
+            if (allowed != null && !allowed.Contains(unit.faction))
+                continue;
+
             if (unit.currentHP <= 0) continue;
 
-            // Командир: если не двигался — хил
-            if (unit.isCommander && !unit.hasMoved)
+            // Лечение только если юнит вовсе не действовал
+            if (unit.hasMoved || unit.hasAttacked || unit.hasActed)
+                continue;
+
+            if (unit.isCommander)
             {
                 unit.currentHP = Mathf.Min(unit.currentHP + 3, unit.unitData.maxHP);
-                // Можно добавить анимацию/эффект
                 Debug.Log($"[HEAL] {unit.unitData.unitName} (командир) восстановил 3 HP за ожидание!");
                 unit.UpdateHealthBar();
             }
-            // Солдат: если рядом с живым командиром — хил
-            else if (!unit.isCommander && unit.commander != null && unit.commander.currentHP > 0)
+            else if (unit.commander != null && unit.commander.currentHP > 0)
             {
                 Vector2Int uPos = GridManager.Instance.WorldToGrid(unit.transform.position);
                 Vector2Int cPos = GridManager.Instance.WorldToGrid(unit.commander.transform.position);
                 int dx = Mathf.Abs(uPos.x - cPos.x);
                 int dy = Mathf.Abs(uPos.y - cPos.y);
-                if (dx + dy == 1) // строго по кресту
+                if (dx + dy == 1)
                 {
                     unit.currentHP = Mathf.Min(unit.currentHP + 3, unit.unitData.maxHP);
                     Debug.Log($"[HEAL] {unit.unitData.unitName} (рядом с командиром) восстановил 3 HP!");

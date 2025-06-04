@@ -33,6 +33,10 @@ public class TurnManager : MonoBehaviour
 
     public void StartPlayerTurn()
     {
+        // Сначала лечим все юниты, которые бездействовали в прошлый ход
+        UnitManager.Instance.ApplyWaitHealing();
+
+        // Затем обнуляем флаги действий перед новым ходом
         foreach (var unit in UnitManager.Instance.AllUnits)
         {
             unit.hasActed = false;
@@ -40,7 +44,7 @@ public class TurnManager : MonoBehaviour
             unit.hasAttacked = false;
             unit.SetSelected(false);
         }
-        UnitManager.Instance.ApplyWaitHealing();
+
         currentTurn = Turn.Player;
         Debug.Log("Снова ход игрока!");
     }
