@@ -32,7 +32,7 @@ public class EnemyAI : MonoBehaviour
         Unit me = GetComponent<Unit>();
         if (me == null || me.hasActed) return;
 
-        // 1. Если я командир
+        // 1. Р•СЃР»Рё СЏ РєРѕРјР°РЅРґРёСЂ
         if (me.isCommander)
         {
             DoCommanderLogic(me);
@@ -43,50 +43,50 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // === Логика для командира ===
+    // === Р›РѕРіРёРєР° РґР»СЏ РєРѕРјР°РЅРґРёСЂР° ===
     private void DoCommanderLogic(Unit me)
     {
         float hpPercent = (float)me.currentHP / me.unitData.maxHP;
 
-        // 1. Если сильно ранен и рядом нет врага — стоим, чтобы хилиться
+        // 1. Р•СЃР»Рё СЃРёР»СЊРЅРѕ СЂР°РЅРµРЅ Рё СЂСЏРґРѕРј РЅРµС‚ РІСЂР°РіР° вЂ” СЃС‚РѕРёРј, С‡С‚РѕР±С‹ С…РёР»РёС‚СЊСЃСЏ
         Unit closeEnemy = FindBestEnemyTarget(me);
         bool enemyNear = (closeEnemy != null && InAttackRange(me, closeEnemy));
         if (hpPercent < 0.5f && !enemyNear)
         {
-            Debug.Log($"{me.unitData.unitName} (командир) тяжело ранен и хилится, не двигается.");
-            return; // Стоит на месте!
+            Debug.Log($"{me.unitData.unitName} (РєРѕРјР°РЅРґРёСЂ) С‚СЏР¶РµР»Рѕ СЂР°РЅРµРЅ Рё С…РёР»РёС‚СЃСЏ, РЅРµ РґРІРёРіР°РµС‚СЃСЏ.");
+            return; // РЎС‚РѕРёС‚ РЅР° РјРµСЃС‚Рµ!
         }
 
-        // 2. Если враг в диапазоне — атакуем
+        // 2. Р•СЃР»Рё РІСЂР°Рі РІ РґРёР°РїР°Р·РѕРЅРµ вЂ” Р°С‚Р°РєСѓРµРј
         if (closeEnemy != null && InAttackRange(me, closeEnemy))
         {
             UnitManager.Instance.ResolveCombat(me, closeEnemy);
-            Debug.Log($"{me.unitData.unitName} (командир) атакует {closeEnemy.unitData.unitName}");
+            Debug.Log($"{me.unitData.unitName} (РєРѕРјР°РЅРґРёСЂ) Р°С‚Р°РєСѓРµС‚ {closeEnemy.unitData.unitName}");
             return;
         }
 
-        // 3. Если враг есть, но не достаем — идём к нему
+        // 3. Р•СЃР»Рё РІСЂР°Рі РµСЃС‚СЊ, РЅРѕ РЅРµ РґРѕСЃС‚Р°РµРј вЂ” РёРґС‘Рј Рє РЅРµРјСѓ
         if (closeEnemy != null)
         {
             MoveTowardsTarget(me, closeEnemy);
             return;
         }
 
-        // 4. Если врагов вообще нет — просто стоим
-        Debug.Log($"{me.unitData.unitName} (командир) не нашёл врагов");
+        // 4. Р•СЃР»Рё РІСЂР°РіРѕРІ РІРѕРѕР±С‰Рµ РЅРµС‚ вЂ” РїСЂРѕСЃС‚Рѕ СЃС‚РѕРёРј
+        Debug.Log($"{me.unitData.unitName} (РєРѕРјР°РЅРґРёСЂ) РЅРµ РЅР°С€С‘Р» РІСЂР°РіРѕРІ");
     }
 
-    // === Логика для солдата ===
+    // === Р›РѕРіРёРєР° РґР»СЏ СЃРѕР»РґР°С‚Р° ===
     private void DoSoldierLogic(Unit me)
     {
-        // 1. Если сильно ранен или командир ранен — идём к командиру для хила
+        // 1. Р•СЃР»Рё СЃРёР»СЊРЅРѕ СЂР°РЅРµРЅ РёР»Рё РєРѕРјР°РЅРґРёСЂ СЂР°РЅРµРЅ вЂ” РёРґС‘Рј Рє РєРѕРјР°РЅРґРёСЂСѓ РґР»СЏ С…РёР»Р°
         bool selfWounded = (float)me.currentHP / me.unitData.maxHP < 0.7f;
         bool commanderWounded = (me.commander != null && (float)me.commander.currentHP / me.commander.unitData.maxHP < 0.5f);
         bool tryHeal = selfWounded || commanderWounded;
 
         if (me.commander != null && tryHeal)
         {
-            // Проверим: уже стоим крестом рядом? Если да — стоим, ждём хил.
+            // РџСЂРѕРІРµСЂРёРј: СѓР¶Рµ СЃС‚РѕРёРј РєСЂРµСЃС‚РѕРј СЂСЏРґРѕРј? Р•СЃР»Рё РґР° вЂ” СЃС‚РѕРёРј, Р¶РґС‘Рј С…РёР».
             Vector2Int myPos = GridManager.Instance.WorldToGrid(me.transform.position);
             Vector2Int cmdPos = GridManager.Instance.WorldToGrid(me.commander.transform.position);
             int dx = Mathf.Abs(myPos.x - cmdPos.x);
@@ -94,11 +94,11 @@ public class EnemyAI : MonoBehaviour
 
             if (dx + dy == 1)
             {
-                Debug.Log($"{me.unitData.unitName} ждёт хил рядом с командиром.");
-                return; // Остаёмся ждать хила!
+                Debug.Log($"{me.unitData.unitName} Р¶РґС‘С‚ С…РёР» СЂСЏРґРѕРј СЃ РєРѕРјР°РЅРґРёСЂРѕРј.");
+                return; // РћСЃС‚Р°С‘РјСЃСЏ Р¶РґР°С‚СЊ С…РёР»Р°!
             }
-            // --- ВНИМАНИЕ: цикл всегда после return, не внутри блока if ---
-            // Иначе идём к ближайшей свободной крестовой клетке рядом с командиром
+            // --- Р’РќРРњРђРќРР•: С†РёРєР» РІСЃРµРіРґР° РїРѕСЃР»Рµ return, РЅРµ РІРЅСѓС‚СЂРё Р±Р»РѕРєР° if ---
+            // РРЅР°С‡Рµ РёРґС‘Рј Рє Р±Р»РёР¶Р°Р№С€РµР№ СЃРІРѕР±РѕРґРЅРѕР№ РєСЂРµСЃС‚РѕРІРѕР№ РєР»РµС‚РєРµ СЂСЏРґРѕРј СЃ РєРѕРјР°РЅРґРёСЂРѕРј
             Cell targetCell = FindFreeAdjacentToCommander(me);
             if (targetCell != null)
             {
@@ -116,7 +116,7 @@ public class EnemyAI : MonoBehaviour
 
                             me.MoveTo(cell.transform.position);
                             cell.occupyingUnit = me;
-                            Debug.Log($"{me.unitData.unitName} идёт к командиру для хила!");
+                            Debug.Log($"{me.unitData.unitName} РёРґС‘С‚ Рє РєРѕРјР°РЅРґРёСЂСѓ РґР»СЏ С…РёР»Р°!");
                             return;
                         }
                         else break;
@@ -126,62 +126,70 @@ public class EnemyAI : MonoBehaviour
         }
 
 
-            // 2. Как обычно: ищем врага в радиусе
+            // 2. РљР°Рє РѕР±С‹С‡РЅРѕ: РёС‰РµРј РІСЂР°РіР° РІ СЂР°РґРёСѓСЃРµ
             Unit target = FindBestEnemyTarget(me);
 
-        // 3. Если враг в радиусе атаки — атакуем
+        // 3. Р•СЃР»Рё РІСЂР°Рі РІ СЂР°РґРёСѓСЃРµ Р°С‚Р°РєРё вЂ” Р°С‚Р°РєСѓРµРј
         if (target != null && InAttackRange(me, target))
         {
             UnitManager.Instance.ResolveCombat(me, target);
-            Debug.Log($"{me.unitData.unitName} атакует {target.unitData.unitName}");
+            Debug.Log($"{me.unitData.unitName} Р°С‚Р°РєСѓРµС‚ {target.unitData.unitName}");
             return;
         }
 
-        // 4. Если враг есть, но не в радиусе — двигаемся к нему, только если не надо догонять командира
+        // 4. Р•СЃР»Рё РІСЂР°Рі РµСЃС‚СЊ, РЅРѕ РЅРµ РІ СЂР°РґРёСѓСЃРµ вЂ” РґРІРёРіР°РµРјСЃСЏ Рє РЅРµРјСѓ, С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅРµ РЅР°РґРѕ РґРѕРіРѕРЅСЏС‚СЊ РєРѕРјР°РЅРґРёСЂР°
         if (target != null && me.commander != null && me.IsInAura())
         {
             MoveTowardsTarget(me, target);
-            Debug.Log($"{me.unitData.unitName} движется к врагу в ауре командира");
+            Debug.Log($"{me.unitData.unitName} РґРІРёР¶РµС‚СЃСЏ Рє РІСЂР°РіСѓ РІ Р°СѓСЂРµ РєРѕРјР°РЅРґРёСЂР°");
             return;
         }
 
-        // 5. Если далеко от командира — догоняем его (держимся вместе)
+        // 5. Р•СЃР»Рё РґР°Р»РµРєРѕ РѕС‚ РєРѕРјР°РЅРґРёСЂР° вЂ” РґРѕРіРѕРЅСЏРµРј РµРіРѕ (РґРµСЂР¶РёРјСЃСЏ РІРјРµСЃС‚Рµ)
         if (me.commander != null && !me.IsInAura())
         {
             MoveTowardsTarget(me, me.commander);
-            Debug.Log($"{me.unitData.unitName} догоняет своего командира");
+            Debug.Log($"{me.unitData.unitName} РґРѕРіРѕРЅСЏРµС‚ СЃРІРѕРµРіРѕ РєРѕРјР°РЅРґРёСЂР°");
             return;
         }
 
-        // 6. Если ничего не надо — стоим на месте
-        Debug.Log($"{me.unitData.unitName} стоит на месте (нет врага/не в ауре)");
+        // 6. Р•СЃР»Рё РЅРёС‡РµРіРѕ РЅРµ РЅР°РґРѕ вЂ” СЃС‚РѕРёРј РЅР° РјРµСЃС‚Рµ
+        Debug.Log($"{me.unitData.unitName} СЃС‚РѕРёС‚ РЅР° РјРµСЃС‚Рµ (РЅРµС‚ РІСЂР°РіР°/РЅРµ РІ Р°СѓСЂРµ)");
     }
 
 
-    // === Вспомогательные методы ===
+    // === Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ РјРµС‚РѕРґС‹ ===
 
     private Unit FindBestEnemyTarget(Unit me)
     {
-        // Найдём все враждебные юниты
         var allUnits = UnitManager.Instance.AllUnits;
         Unit best = null;
-        float minDist = float.MaxValue;
+        float bestScore = float.NegativeInfinity;
+
         foreach (var u in allUnits)
         {
-            // Пропускаем трупов, союзников и самого себя
             if (u == null || u == me || u.currentHP <= 0) continue;
 
             var rel = FactionManager.Instance.GetRelation(me.faction, u.faction);
             if (rel != FactionManager.RelationType.Enemy) continue;
 
             float dist = Vector2.Distance(me.transform.position, u.transform.position);
-            // **Здесь можно улучшить: при прочих равных приоритет — врагу слабее по классу!**
-            if (dist < minDist)
+            int predictedDmg = me.CalculateDamage(u);
+            bool killable = predictedDmg >= u.currentHP;
+
+            float score = 0f;
+            score -= dist;               // Р±Р»РёР¶Рµ вЂ” РїСЂРёРѕСЂРёС‚РµС‚РЅРµРµ
+            score -= u.currentHP * 0.1f; // СЂР°РЅРµРЅС‹Рµ С†РµР»Рё Р»РµРіС‡Рµ РґРѕР±РёС‚СЊ
+            if (killable) score += 20f;  // Р±РѕР»СЊС€РѕР№ Р±РѕРЅСѓСЃ Р·Р° РІРѕР·РјРѕР¶РЅРѕРµ СѓР±РёР№СЃС‚РІРѕ
+            if (u.isCommander) score += 10f; // РєРѕРјР°РЅРґРёСЂС‹ вЂ” РїСЂРёРѕСЂРёС‚РµС‚РЅС‹Рµ С†РµР»Рё
+
+            if (score > bestScore)
             {
-                minDist = dist;
+                bestScore = score;
                 best = u;
             }
         }
+
         return best;
     }
 
@@ -195,13 +203,13 @@ public class EnemyAI : MonoBehaviour
         int range = attacker.GetAttackRange();
 
         if (range == 1)
-            return dist == 1 && (dx == 1 ^ dy == 1); // строго по кресту, не по диагонали!
+            return dist == 1 && (dx == 1 ^ dy == 1); // СЃС‚СЂРѕРіРѕ РїРѕ РєСЂРµСЃС‚Сѓ, РЅРµ РїРѕ РґРёР°РіРѕРЅР°Р»Рё!
         else
             return dist <= range;
     }
 
 
-    // Для ближников — ищем свободную клетку рядом с целью по кресту
+    // Р”Р»СЏ Р±Р»РёР¶РЅРёРєРѕРІ вЂ” РёС‰РµРј СЃРІРѕР±РѕРґРЅСѓСЋ РєР»РµС‚РєСѓ СЂСЏРґРѕРј СЃ С†РµР»СЊСЋ РїРѕ РєСЂРµСЃС‚Сѓ
     private Cell FindAdjacentFreeCell(Unit me, Unit target)
     {
         var grid = GridManager.Instance;
@@ -223,7 +231,7 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        // Найди ближайшую к себе
+        // РќР°Р№РґРё Р±Р»РёР¶Р°Р№С€СѓСЋ Рє СЃРµР±Рµ
         Cell best = null;
         float minDist = float.MaxValue;
         foreach (var c in candidates)
@@ -240,17 +248,17 @@ public class EnemyAI : MonoBehaviour
 
     private void MoveTowardsTarget(Unit me, Unit target)
     {
-        // Определяем тип атаки
+        // РћРїСЂРµРґРµР»СЏРµРј С‚РёРї Р°С‚Р°РєРё
         int attackRange = me.GetAttackRange();
 
         if (attackRange == 1)
         {
-            // Для ближников — цель движения не сам враг, а соседняя клетка по кресту
+            // Р”Р»СЏ Р±Р»РёР¶РЅРёРєРѕРІ вЂ” С†РµР»СЊ РґРІРёР¶РµРЅРёСЏ РЅРµ СЃР°Рј РІСЂР°Рі, Р° СЃРѕСЃРµРґРЅСЏСЏ РєР»РµС‚РєР° РїРѕ РєСЂРµСЃС‚Сѓ
             Cell goal = FindAdjacentFreeCell(me, target);
 
             if (goal == null)
             {
-                Debug.Log($"{me.unitData.unitName}: нет свободных клеток у цели!");
+                Debug.Log($"{me.unitData.unitName}: РЅРµС‚ СЃРІРѕР±РѕРґРЅС‹С… РєР»РµС‚РѕРє Сѓ С†РµР»Рё!");
                 return;
             }
 
@@ -275,9 +283,9 @@ public class EnemyAI : MonoBehaviour
                 }
             }
         }
-        else // Для дальников и магов
+        else // Р”Р»СЏ РґР°Р»СЊРЅРёРєРѕРІ Рё РјР°РіРѕРІ
         {
-            // Можно расширить — например, стараться держать дистанцию или избегать соседних с врагом клеток
+            // РњРѕР¶РЅРѕ СЂР°СЃС€РёСЂРёС‚СЊ вЂ” РЅР°РїСЂРёРјРµСЂ, СЃС‚Р°СЂР°С‚СЊСЃСЏ РґРµСЂР¶Р°С‚СЊ РґРёСЃС‚Р°РЅС†РёСЋ РёР»Рё РёР·Р±РµРіР°С‚СЊ СЃРѕСЃРµРґРЅРёС… СЃ РІСЂР°РіРѕРј РєР»РµС‚РѕРє
             Cell startCell = UnitManager.Instance.GetCellOfUnit(me);
             Cell targetCell = UnitManager.Instance.GetCellOfUnit(target);
             var path = PathfindingManager.Instance.FindPath(startCell, targetCell, me);
