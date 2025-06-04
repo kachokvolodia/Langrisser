@@ -42,6 +42,10 @@ public class EnemyManager : MonoBehaviour
 
             yield return new WaitForSeconds(0.5f);
 
+            // Юнит мог быть уничтожен, пока мы ждали
+            if (enemy == null)
+                continue;
+
             // Проверяем наличие EnemyAI!
             var ai = enemy.GetComponent<EnemyAI>();
             if (ai != null)
