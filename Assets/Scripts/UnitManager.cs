@@ -217,15 +217,12 @@ public class UnitManager : MonoBehaviour
     {
         Debug.Log("[DEBUG] Подсвечиваем клетки движения для " + unit.name + " c радиусом " + unit.unitData.moveRange);
         ClearHighlightedCells();
-        Vector2Int gridPos = GridManager.Instance.WorldToGrid(unit.transform.position);
-        var cellsInRange = GridManager.Instance.GetCellsInRange(gridPos, unit.unitData.moveRange);
+        var startCell = GetCellOfUnit(unit);
+        var cellsInRange = PathfindingManager.Instance.GetReachableCells(startCell, unit.unitData.moveRange, unit);
         foreach (var cell in cellsInRange)
         {
-            if (cell.occupyingUnit == null)
-            {
-                cell.Highlight(Color.cyan);
-                highlightedCells.Add(cell);
-            }
+            cell.Highlight(Color.cyan);
+            highlightedCells.Add(cell);
         }
     }
 

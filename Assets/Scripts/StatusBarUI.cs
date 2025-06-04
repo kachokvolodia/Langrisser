@@ -21,12 +21,12 @@ public class StatusBarUI : MonoBehaviour
 
     public void ShowCellInfo(Cell cell)
     {
-        // --- Клетка ---
+        // --- РљР»РµС‚РєР° ---
         cellIcon.sprite = cell.GetComponent<SpriteRenderer>().sprite;
         cellIcon.enabled = true;
-        cellInfoText.text = $"Местность: {cell.terrainType}\n" +
-                            $"Сложн. хода: {cell.moveCost}";
-        // --- Юнит ---
+        cellInfoText.text = $"РњРµСЃС‚РЅРѕСЃС‚СЊ: {cell.terrainType}\n" +
+                            $"РЎР»РѕР¶РЅ. С…РѕРґР°: {cell.moveCost}";
+        // --- Р®РЅРёС‚ ---
         if (cell.occupyingUnit != null)
         {
             var unit = cell.occupyingUnit;
@@ -34,8 +34,8 @@ public class StatusBarUI : MonoBehaviour
             unitIcon.enabled = true;
             unitInfoText.text = $"{unit.unitData.unitName}\n" +
                                 $"{unit.unitData.unitClass}\n" +
-                                $"Фракция: {unit.faction}\n" +
-                                $"Сторона: {FactionToSide(unit.faction)}";
+                                $"Р¤СЂР°РєС†РёСЏ: {unit.faction}\n" +
+                                $"РЎС‚РѕСЂРѕРЅР°: {FactionToSide(unit.faction)}";
         }
         else
         {
@@ -56,12 +56,12 @@ public class StatusBarUI : MonoBehaviour
     {
         switch (faction)
         {
-            case Unit.Faction.Player: return "Союзник";
-            case Unit.Faction.Enemy: return "Враг";
-            case Unit.Faction.PlayerAlly: return "Союзник";
-            case Unit.Faction.EnemyAlly: return "Враг";
-            case Unit.Faction.Neutral: return "Нейтрал";
-            case Unit.Faction.EvilNeutral: return "Злой нейтрал";
+            case Unit.Faction.Player: return "РЎРѕСЋР·РЅРёРє";
+            case Unit.Faction.Enemy: return "Р’СЂР°Рі";
+            case Unit.Faction.PlayerAlly: return "РЎРѕСЋР·РЅРёРє";
+            case Unit.Faction.EnemyAlly: return "Р’СЂР°Рі";
+            case Unit.Faction.Neutral: return "РќРµР№С‚СЂР°Р»";
+            case Unit.Faction.EvilNeutral: return "Р—Р»РѕР№ РЅРµР№С‚СЂР°Р»";
             default: return "???";
         }
     }
@@ -73,7 +73,7 @@ public class StatusBarUI : MonoBehaviour
 
     public void OnMenuButtonPressed()
     {
-        Debug.Log("Меню пока не реализовано!");
-        // Тут потом вызовем показ меню-настроек
+        Debug.Log("РњРµРЅСЋ РїРѕРєР° РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅРѕ!");
+        // РўСѓС‚ РїРѕС‚РѕРј РІС‹Р·РѕРІРµРј РїРѕРєР°Р· РјРµРЅСЋ-РЅР°СЃС‚СЂРѕРµРє
     }
 }

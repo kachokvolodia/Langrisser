@@ -46,7 +46,19 @@ public class GridManager : MonoBehaviour
                 cell.AddComponent<BoxCollider2D>().size = new Vector2(cellSize, cellSize);
 
                 Cell cellScript = cell.AddComponent<Cell>();
-                cells[x, y] = cellScript; // ← добавь вот эту строку для заполнения массива!
+
+                // Пример рандомного типа местности
+                int r = Random.Range(0, 5);
+                switch (r)
+                {
+                    case 0: cellScript.terrainType = TerrainType.Grass; cellScript.moveCost = 1; break;
+                    case 1: cellScript.terrainType = TerrainType.Forest; cellScript.moveCost = 2; break;
+                    case 2: cellScript.terrainType = TerrainType.Hill; cellScript.moveCost = 2; break;
+                    case 3: cellScript.terrainType = TerrainType.Mountain; cellScript.moveCost = 3; break;
+                    case 4: cellScript.terrainType = TerrainType.Ocean; cellScript.moveCost = 1; break;
+                }
+
+                cells[x, y] = cellScript; // заполняем массив
             }
         }
     }

@@ -129,6 +129,9 @@ public class Unit : MonoBehaviour
         float myPower = unitData.attack * ((float)currentHP / unitData.maxHP);
         float theirDef = target.unitData.defense * ((float)target.currentHP / target.unitData.maxHP);
 
+        myPower += GetAttackBonus();
+        theirDef += target.GetDefenseBonus();
+
         // ======= Бонусы за ауру =======
         if (IsInAura()) myPower += 2;             // если в ауре, атака +2
         if (target.IsInAura()) theirDef += 1;     // если цель в ауре, защита +1
@@ -142,7 +145,40 @@ public class Unit : MonoBehaviour
 
 
     public int GetMoveRange() => unitData != null ? unitData.moveRange : 1;
-    public int GetAttackRange() => unitData != null ? unitData.attackRange : 1;
+
+    public int GetAttackRange()
+    {
+        int range = unitData != null ? unitData.attackRange : 1;
+        Cell cell = UnitManager.Instance != null ? UnitManager.Instance.GetCellOfUnit(this) : null;
+        if (unitData != null && unitData.unitClass == UnitClass.Archer && cell != null &&
+            (cell.terrainType == TerrainType.Hill || cell.terrainType == TerrainType.Mountain))
+        {
+            range += 1; // бонус за высоту
+        }
+        return range;
+    }
+
+    public int GetDefenseBonus()
+    {
+        Cell cell = UnitManager.Instance != null ? UnitManager.Instance.GetCellOfUnit(this) : null;
+        if (cell == null) return 0;
+        if (unitData.unitClass == UnitClass.Spearman && cell.terrainType == TerrainType.Wall)
+            return 2;
+        if (cell.terrainType == TerrainType.Forest && unitData.movementType != MovementType.Flyer)
+            return 1;
+        return 0;
+    }
+
+    public int GetAttackBonus()
+    {
+        Cell cell = UnitManager.Instance != null ? UnitManager.Instance.GetCellOfUnit(this) : null;
+        if (cell == null) return 0;
+        if (unitData.unitClass == UnitClass.Cavalry && (cell.terrainType == TerrainType.Road || cell.terrainType == TerrainType.Grass))
+            return 1;
+        if (unitData.unitClass == UnitClass.Cavalry && cell.terrainType == TerrainType.Forest)
+            return -1;
+        return 0;
+    }
 
     void OnMouseEnter()
     {
