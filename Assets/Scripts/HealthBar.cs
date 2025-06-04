@@ -12,7 +12,8 @@ public class HealthBar : MonoBehaviour
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = sprite;
         spriteRenderer.color = color;
-        spriteRenderer.sortingOrder = 2;
+        spriteRenderer.sortingLayerID = unit.GetComponent<SpriteRenderer>().sortingLayerID;
+        spriteRenderer.sortingOrder = unit.GetComponent<SpriteRenderer>().sortingOrder + 1;
         fullScale = scale;
         transform.localScale = fullScale;
         UpdateBar();
