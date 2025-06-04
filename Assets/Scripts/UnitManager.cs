@@ -24,6 +24,13 @@ public class UnitManager : MonoBehaviour
     private Unit selectedUnit;
     private List<Cell> highlightedCells = new List<Cell>();
 
+    // Preview line and ghost for move path
+    private LineRenderer pathRenderer;
+    private GameObject ghostObject;
+    private Cell previewCell;
+    private Cell pendingMoveCell;
+    private bool moveMode = false;
+
     // ---- НОВОЕ: AllUnits список ----
     public List<Unit> AllUnits = new List<Unit>();
 
@@ -35,6 +42,18 @@ public class UnitManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        pathRenderer = new GameObject("PathPreview").AddComponent<LineRenderer>();
+        pathRenderer.positionCount = 0;
+        pathRenderer.startWidth = 0.05f;
+        pathRenderer.endWidth = 0.05f;
+        pathRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        pathRenderer.startColor = Color.yellow;
+        pathRenderer.endColor = Color.yellow;
+
+        ghostObject = new GameObject("MoveGhost");
+        var sr = ghostObject.AddComponent<SpriteRenderer>();
+        sr.color = new Color(1f, 1f, 1f, 0.5f);
+        ghostObject.SetActive(false);
     }
 
     void Start()
@@ -232,6 +251,7 @@ public class UnitManager : MonoBehaviour
         if (selectedUnit != null)
         {
             HighlightMovableCells(selectedUnit);
+            moveMode = true;
         }
         else
         {
@@ -261,6 +281,8 @@ public class UnitManager : MonoBehaviour
         foreach (var cell in highlightedCells)
             cell.Unhighlight();
         highlightedCells.Clear();
+        moveMode = false;
+        HideMovePreview();
     }
 
     public void MoveSelectedUnit(Vector3 targetPosition)
@@ -281,6 +303,8 @@ public class UnitManager : MonoBehaviour
 
             ClearHighlightedCells();
             UnitActionMenu.Instance.ShowMenu(selectedUnit.transform.position, selectedUnit);
+            HideMovePreview();
+            moveMode = false;
         }
     }
 
@@ -470,6 +494,54 @@ public class UnitManager : MonoBehaviour
         foreach (var cell in auraHighlightedCells)
             cell.UnhighlightAura();
         auraHighlightedCells.Clear();
+    }
+
+    // ======== Move preview helpers ========
+    public void PreviewPath(Cell cell)
+    {
+        if (!moveMode || selectedUnit == null || !highlightedCells.Contains(cell))
+            return;
+
+        var start = GetCellOfUnit(selectedUnit);
+        var path = PathfindingManager.Instance.FindPath(start, cell, selectedUnit);
+        if (path == null || path.Count == 0)
+            return;
+
+        pathRenderer.positionCount = path.Count;
+        for (int i = 0; i < path.Count; i++)
+            pathRenderer.SetPosition(i, path[i].transform.position + Vector3.forward * -0.1f);
+
+        ghostObject.GetComponent<SpriteRenderer>().sprite = selectedUnit.GetComponent<SpriteRenderer>().sprite;
+        ghostObject.transform.position = cell.transform.position;
+        ghostObject.SetActive(true);
+        previewCell = cell;
+    }
+
+    public void HideMovePreview()
+    {
+        pathRenderer.positionCount = 0;
+        ghostObject.SetActive(false);
+        previewCell = null;
+    }
+
+    public void RequestMoveConfirmation(Cell cell)
+    {
+        pendingMoveCell = cell;
+        MoveConfirmPanel.Instance?.Show(cell);
+    }
+
+    public void ConfirmMove(Cell cell)
+    {
+        MoveSelectedUnit(cell.transform.position);
+        pendingMoveCell = null;
+        moveMode = false;
+        HideMovePreview();
+    }
+
+    public void CancelMove()
+    {
+        pendingMoveCell = null;
+        HideMovePreview();
     }
 
 }
