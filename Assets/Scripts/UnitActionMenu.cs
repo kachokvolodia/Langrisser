@@ -55,7 +55,7 @@ public class UnitActionMenu : MonoBehaviour
         endTurnButton.gameObject.SetActive(canEndTurn);
         UnitInfoPanel.Instance.ShowInfo(unit);
 
-        menuPanel.transform.position = Camera.main.WorldToScreenPoint(position);
+
 
         // <<< ФРИЗИМПУТ >>>
         SetButtonsInteractable(false);
