@@ -22,7 +22,7 @@ public class HealthBar : MonoBehaviour
     public void UpdateBar()
     {
         if (targetUnit == null || spriteRenderer == null) return;
-        float percent = Mathf.Clamp01((float)targetUnit.currentHP / targetUnit.unitData.maxHP);
+        float percent = Mathf.Clamp01((float)targetUnit.currentHP / targetUnit.MaxHP);
         transform.localScale = new Vector3(fullScale.x * percent, fullScale.y, fullScale.z);
     }
 }

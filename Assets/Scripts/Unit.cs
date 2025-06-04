@@ -38,7 +38,29 @@ public class Unit : MonoBehaviour
 
     public UnitData unitData;
     public int currentHP;
+    public int currentMP;
+    public int level = 1;
+    public int experience = 0;
     public Faction faction;
+
+    // Дополнительные бонусы от повышения уровня
+    public int bonusAttack = 0;
+    public int bonusDefense = 0;
+    public int bonusMagicAttack = 0;
+    public int bonusMagicDefense = 0;
+    public int bonusMaxHP = 0;
+    public int bonusMaxMP = 0;
+
+    public int MaxHP => unitData.maxHP + bonusMaxHP;
+    public int MaxMP => unitData.maxMP + bonusMaxMP;
+    public int Attack => unitData.attack + bonusAttack;
+    public int Defense => unitData.defense + bonusDefense;
+    public int MagicAttack => unitData.magicAttack + bonusMagicAttack;
+    public int MagicDefense => unitData.magicDefense + bonusMagicDefense;
+    public int MoveRange => unitData.moveRange;
+    public int AttackRangeBase => unitData.attackRange;
+    public int attackRangeBonus = 0;
+    public int AttackRangeTotal => AttackRangeBase + attackRangeBonus;
 
     [HideInInspector]
     public HealthBar healthBar;
@@ -55,7 +77,10 @@ public class Unit : MonoBehaviour
         originalColor = spriteRenderer.color;
 
         if (unitData != null)
-            currentHP = unitData.maxHP;
+        {
+            currentHP = MaxHP;
+            currentMP = MaxMP;
+        }
         else
             Debug.LogWarning("UnitData не назначен на " + gameObject.name);
     }
@@ -133,6 +158,32 @@ public class Unit : MonoBehaviour
             healthBar.UpdateBar();
     }
 
+    public void AddExperience(int amount)
+    {
+        if (level >= ExperienceManager.MaxLevel) return;
+        experience += amount;
+        while (level < ExperienceManager.MaxLevel &&
+               experience >= ExperienceManager.ExpToNextLevel(level))
+        {
+            experience -= ExperienceManager.ExpToNextLevel(level);
+            LevelUp();
+        }
+    }
+
+    void LevelUp()
+    {
+        level++;
+        bonusAttack += 1;
+        bonusDefense += 1;
+        bonusMagicAttack += 1;
+        bonusMagicDefense += 1;
+        bonusMaxHP += 2;
+        bonusMaxMP += 2;
+        currentHP = Mathf.Min(currentHP + 2, MaxHP);
+        currentMP = Mathf.Min(currentMP + 2, MaxMP);
+        Debug.Log($"{name} повысил уровень до {level}!");
+    }
+
     public void TakeDamage(int amount)
     {
         Debug.Log($"{name} получил урон: {amount}, HP было: {currentHP}");
@@ -181,8 +232,8 @@ public class Unit : MonoBehaviour
 
     public int CalculateDamage(Unit target)
     {
-        float myPower = unitData.attack * ((float)currentHP / unitData.maxHP);
-        float theirDef = target.unitData.defense * ((float)target.currentHP / target.unitData.maxHP);
+        float myPower = Attack * ((float)currentHP / MaxHP);
+        float theirDef = target.Defense * ((float)target.currentHP / target.MaxHP);
 
         myPower += GetAttackBonus();
         theirDef += target.GetDefenseBonus();
@@ -199,11 +250,11 @@ public class Unit : MonoBehaviour
 
 
 
-    public int GetMoveRange() => unitData != null ? unitData.moveRange : 1;
+    public int GetMoveRange() => unitData != null ? MoveRange : 1;
 
     public int GetAttackRange()
     {
-        int range = unitData != null ? unitData.attackRange : 1;
+        int range = unitData != null ? AttackRangeTotal : 1;
         Cell cell = UnitManager.Instance != null ? UnitManager.Instance.GetCellOfUnit(this) : null;
         if (unitData != null && unitData.unitClass == UnitClass.Archer && cell != null &&
             (cell.terrainType == TerrainType.Hill || cell.terrainType == TerrainType.Mountain))

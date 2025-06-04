@@ -441,7 +441,14 @@ public class UnitManager : MonoBehaviour
             dmgToAttacker = defender.CalculateDamage(attacker);
         }
 
-        // 3. Одновременно применяем урон (оба могут погибнуть)
+        int defenderHPAfter = defender.currentHP - dmgToDefender;
+        int attackerHPAfter = attacker.currentHP - dmgToAttacker;
+
+        if (defenderHPAfter <= 0)
+            ExperienceManager.AwardExperience(attacker, defender);
+        if (attackerHPAfter <= 0)
+            ExperienceManager.AwardExperience(defender, attacker);
+
         defender.TakeDamage(dmgToDefender);
         if (dmgToAttacker > 0) attacker.TakeDamage(dmgToAttacker);
 
@@ -507,7 +514,7 @@ public class UnitManager : MonoBehaviour
 
             if (unit.isCommander)
             {
-                unit.currentHP = Mathf.Min(unit.currentHP + 3, unit.unitData.maxHP);
+                unit.currentHP = Mathf.Min(unit.currentHP + 3, unit.MaxHP);
                 Debug.Log($"[HEAL] {unit.unitData.unitName} (командир) восстановил 3 HP за ожидание!");
                 unit.UpdateHealthBar();
             }
@@ -519,7 +526,7 @@ public class UnitManager : MonoBehaviour
                 int dy = Mathf.Abs(uPos.y - cPos.y);
                 if (dx + dy == 1)
                 {
-                    unit.currentHP = Mathf.Min(unit.currentHP + 3, unit.unitData.maxHP);
+                    unit.currentHP = Mathf.Min(unit.currentHP + 3, unit.MaxHP);
                     Debug.Log($"[HEAL] {unit.unitData.unitName} (рядом с командиром) восстановил 3 HP!");
                     unit.UpdateHealthBar();
                 }

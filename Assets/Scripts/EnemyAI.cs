@@ -46,7 +46,7 @@ public class EnemyAI : MonoBehaviour
     // === Логика для командира ===
     private void DoCommanderLogic(Unit me)
     {
-        float hpPercent = (float)me.currentHP / me.unitData.maxHP;
+        float hpPercent = (float)me.currentHP / me.MaxHP;
 
         // 1. Если сильно ранен и рядом нет врага — стоим, чтобы хилиться
         Unit closeEnemy = FindBestEnemyTarget(me);
@@ -80,8 +80,8 @@ public class EnemyAI : MonoBehaviour
     private void DoSoldierLogic(Unit me)
     {
         // 1. Если сильно ранен или командир ранен — идём к командиру для хила
-        bool selfWounded = (float)me.currentHP / me.unitData.maxHP < 0.7f;
-        bool commanderWounded = (me.commander != null && (float)me.commander.currentHP / me.commander.unitData.maxHP < 0.5f);
+        bool selfWounded = (float)me.currentHP / me.MaxHP < 0.7f;
+        bool commanderWounded = (me.commander != null && (float)me.commander.currentHP / me.commander.MaxHP < 0.5f);
         bool tryHeal = selfWounded || commanderWounded;
 
         if (me.commander != null && tryHeal)
