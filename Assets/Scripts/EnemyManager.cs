@@ -20,7 +20,9 @@ public class EnemyManager : MonoBehaviour
     {
         UnitManager.Instance.ApplyWaitHealing();
 
-        foreach (var enemy in UnitManager.Instance.AllUnits)
+        // Создаем копию списка, так как во время хода юниты могут погибать
+        var enemiesSnapshot = new List<Unit>(UnitManager.Instance.AllUnits);
+        foreach (var enemy in enemiesSnapshot)
         {
             // Игрок управляет лишь своей фракцией
             if (enemy.faction == Unit.Faction.Player)

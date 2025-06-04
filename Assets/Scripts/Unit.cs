@@ -109,6 +109,21 @@ public class Unit : MonoBehaviour
 
     public void Die()
     {
+        // Сразу удаляем из менеджера юнитов, чтобы безопасно изменить коллекцию
+        if (UnitManager.Instance != null)
+            UnitManager.Instance.UnregisterUnit(this);
+
+        // Если этот юнит — командир, его солдаты также погибают
+        if (isCommander && squad != null)
+        {
+            var soldiers = new List<Unit>(squad);
+            foreach (var s in soldiers)
+            {
+                if (s != null)
+                    s.Die();
+            }
+        }
+
         // Clear the cell this unit occupies
         var cell = UnitManager.Instance.GetCellOfUnit(this);
         if (cell != null && cell.occupyingUnit == this)
