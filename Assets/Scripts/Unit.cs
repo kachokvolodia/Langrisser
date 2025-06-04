@@ -1,0 +1,156 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Unit : MonoBehaviour
+{
+    public bool hasMoved = false;
+    public bool hasAttacked = false;
+    public bool hasActed = false;
+
+    // ===== Langrisser-командирка =====
+    public bool isCommander = false;      // Этот юнит — командир?
+    public int commanderRadius = 2;       // Радиус ауры командира (если сам командир)
+    public Unit commander;                // Для обычного юнита — ссылка на командира
+    public List<Unit> squad;              // Для командира — список солдат
+
+    // Проверка: в ауре командира?
+    public bool IsInAura()
+    {
+        if (isCommander) return true; // Командир всегда в своей ауре :)
+        if (commander == null) return false;
+        // Считаем расстояние по гриду
+        Vector2Int myGrid = GridManager.Instance.WorldToGrid(transform.position);
+        Vector2Int comGrid = GridManager.Instance.WorldToGrid(commander.transform.position);
+        int dist = Mathf.Abs(myGrid.x - comGrid.x) + Mathf.Abs(myGrid.y - comGrid.y);
+        return dist <= commander.commanderRadius;
+    }
+
+    public enum Faction
+    {
+        Player,
+        PlayerAlly,    // союзник игрока
+        Enemy,
+        EnemyAlly,     // союзник врага
+        Neutral,        // нейтралы
+        EvilNeutral
+    }
+
+    public UnitData unitData;
+    public int currentHP;
+    public Faction faction;
+
+    public bool isSelected = false;
+    private SpriteRenderer spriteRenderer;
+    private Color originalColor;
+
+    void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        originalColor = spriteRenderer.color;
+
+        if (unitData != null)
+            currentHP = unitData.maxHP;
+        else
+            Debug.LogWarning("UnitData не назначен на " + gameObject.name);
+    }
+
+    // --- НОВОЕ: саморегистрация ---
+    void Start()
+    {
+        if (isCommander && squad == null)
+            squad = new List<Unit>();
+
+        if (UnitManager.Instance != null)
+            UnitManager.Instance.RegisterUnit(this);
+    }
+
+    void OnDestroy()
+    {
+        if (UnitManager.Instance != null)
+            UnitManager.Instance.UnregisterUnit(this);
+    }
+
+    public void OnMovePressed()
+    {
+        if (UnitManager.Instance != null && UnitManager.Instance.HasSelectedUnit())
+            UnitManager.Instance.HighlightMovableCells(this);
+
+        UnitActionMenu.Instance.HideMenu();
+    }
+
+    public void SetSelected(bool selected)
+    {
+        if (TurnManager.Instance != null && TurnManager.Instance.IsPlayerTurn())
+        {
+            isSelected = selected;
+            spriteRenderer.color = selected ? Color.cyan : originalColor;
+
+            if (hasActed)
+                spriteRenderer.color = Color.gray;
+            else
+                spriteRenderer.color = selected ? Color.cyan : originalColor;
+        }
+    }
+
+    public void MoveTo(Vector3 targetPosition)
+    {
+        transform.position = targetPosition;
+    }
+
+    public void TakeDamage(int amount)
+    {
+        Debug.Log($"{name} получил урон: {amount}, HP было: {currentHP}");
+        currentHP -= amount;
+        if (currentHP <= 0)
+        {
+            Die();
+        }
+    }
+
+    public void Die()
+    {
+        Destroy(gameObject);
+        if (TurnManager.Instance != null)
+            TurnManager.Instance.CheckVictory();
+    }
+
+
+    public int CalculateDamage(Unit target)
+    {
+        float myPower = unitData.attack * ((float)currentHP / unitData.maxHP);
+        float theirDef = target.unitData.defense * ((float)target.currentHP / target.unitData.maxHP);
+
+        // ======= Бонусы за ауру =======
+        if (IsInAura()) myPower += 2;             // если в ауре, атака +2
+        if (target.IsInAura()) theirDef += 1;     // если цель в ауре, защита +1
+
+        float modifier = UnitManager.Instance.GetClassModifier(this, target);
+        int dmg = Mathf.Max(1, Mathf.RoundToInt((myPower - theirDef) * modifier));
+        return dmg;
+    }
+
+
+
+
+    public int GetMoveRange() => unitData != null ? unitData.moveRange : 1;
+    public int GetAttackRange() => unitData != null ? unitData.attackRange : 1;
+
+    void OnMouseEnter()
+    {
+        // Показываем ауру командования по наведению на командира или на его солдата
+        if (isCommander)
+        {
+            UnitManager.Instance.HighlightCommanderAura(this);
+        }
+        else if (commander != null)
+        {
+            UnitManager.Instance.HighlightCommanderAura(commander);
+        }
+    }
+
+    void OnMouseExit()
+    {
+        UnitManager.Instance.ClearAuraHighlights();
+    }
+
+}
