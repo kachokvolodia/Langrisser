@@ -10,7 +10,6 @@ public class UnitActionMenu : MonoBehaviour
     public Button moveButton;
     public Button attackButton;
     public Button endTurnButton;
-    public Button infoButton;
     public Button closeButton;
 
     private Unit currentUnitForMenu;
@@ -36,18 +35,10 @@ public class UnitActionMenu : MonoBehaviour
         UnitManager.Instance.OnEndTurnPressed();
         HideMenu();
     }
-    public void OnInfoButtonPressed()
-    {
-        if (currentUnitForMenu != null)
-            UnitInfoPanel.Instance.ShowInfo(currentUnitForMenu);
-        else
-            Debug.LogWarning("ÕÂÚ ˛ÌËÚ‡ ‰Îˇ ËÌÙÓ!");
-        HideMenu();
-    }
 
     public void ShowMenu(Vector3 position, Unit unit)
     {
-        Debug.Log($"[DEBUG] ShowMenu ‚˚Á‚‡Ì ‰Îˇ: {(unit != null ? unit.name : "NULL")}");
+        Debug.Log($"[DEBUG] ShowMenu –≤—ã–∑–≤–∞–Ω –¥–ª—è: {(unit != null ? unit.name : "NULL")}");
         currentUnitForMenu = unit;
         menuPanel.SetActive(true);
 
@@ -62,11 +53,11 @@ public class UnitActionMenu : MonoBehaviour
         moveButton.gameObject.SetActive(canMove);
         attackButton.gameObject.SetActive(canAttack);
         endTurnButton.gameObject.SetActive(canEndTurn);
-        infoButton.gameObject.SetActive(true);
+        UnitInfoPanel.Instance.ShowInfo(unit);
 
         menuPanel.transform.position = Camera.main.WorldToScreenPoint(position);
 
-        // <<< ‘–»«»Ãœ”“ >>>
+        // <<< –§–†–ò–ó–ò–ú–ü–£–¢ >>>
         SetButtonsInteractable(false);
         StartCoroutine(EnableButtonsAfterDelay(0.2f));
     }
@@ -76,7 +67,6 @@ public class UnitActionMenu : MonoBehaviour
         moveButton.interactable = state;
         attackButton.interactable = state;
         endTurnButton.interactable = state;
-        infoButton.interactable = state;
         if (closeButton != null)
             closeButton.interactable = state;
     }
