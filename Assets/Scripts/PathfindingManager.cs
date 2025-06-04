@@ -77,11 +77,11 @@ public class PathfindingManager : MonoBehaviour
     List<Cell> GetNeighbors(Cell cell, Unit unit)
     {
         List<Cell> neighbors = new List<Cell>();
+        // Используем только крестообразные смещения, чтобы
+        // движение было по "манхэттенской" сетке
         Vector2Int[] deltas = {
             new Vector2Int(0,1), new Vector2Int(1,0),
-            new Vector2Int(0,-1), new Vector2Int(-1,0),
-            new Vector2Int(1,1), new Vector2Int(-1,1),
-            new Vector2Int(1,-1), new Vector2Int(-1,-1)
+            new Vector2Int(0,-1), new Vector2Int(-1,0)
         };
         Vector2Int pos = GridManager.Instance.WorldToGrid(cell.transform.position);
         foreach (var delta in deltas)
