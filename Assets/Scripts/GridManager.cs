@@ -91,4 +91,12 @@ public class GridManager : MonoBehaviour
         int y = Mathf.RoundToInt(worldPos.y + height / 2f - 0.5f);
         return new Vector2Int(x, y);
     }
+
+    public Cell GetCellFromWorld(Vector3 worldPos)
+    {
+        Vector2Int grid = WorldToGrid(worldPos);
+        if (grid.x < 0 || grid.x >= width || grid.y < 0 || grid.y >= height)
+            return null;
+        return cells[grid.x, grid.y];
+    }
 }

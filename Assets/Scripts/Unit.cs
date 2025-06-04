@@ -45,6 +45,8 @@ public class Unit : MonoBehaviour
     public bool isSelected = false;
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
+    private Coroutine moveCoroutine;
+    public float moveSpeed = 2f;
 
     void Awake()
     {
@@ -85,21 +87,43 @@ public class Unit : MonoBehaviour
 
     public void SetSelected(bool selected)
     {
-        if (TurnManager.Instance != null && TurnManager.Instance.IsPlayerTurn())
-        {
-            isSelected = selected;
-            spriteRenderer.color = selected ? Color.cyan : originalColor;
+        isSelected = selected;
+        UpdateVisualState();
+    }
 
-            if (hasActed)
-                spriteRenderer.color = Color.gray;
-            else
-                spriteRenderer.color = selected ? Color.cyan : originalColor;
-        }
+    private void UpdateVisualState()
+    {
+        if (isSelected)
+            spriteRenderer.color = Color.cyan;
+        else if (hasActed)
+            spriteRenderer.color = Color.gray;
+        else
+            spriteRenderer.color = originalColor;
     }
 
     public void MoveTo(Vector3 targetPosition)
     {
-        transform.position = targetPosition;
+        if (moveCoroutine != null)
+            StopCoroutine(moveCoroutine);
+        moveCoroutine = StartCoroutine(MoveRoutineInternal(targetPosition));
+    }
+
+    IEnumerator MoveRoutineInternal(Vector3 target)
+    {
+        CameraController.Instance?.Follow(transform);
+        while (Vector3.Distance(transform.position, target) > 0.01f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        transform.position = target;
+        CameraController.Instance?.ClearFollow(transform);
+        moveCoroutine = null;
+    }
+
+    public IEnumerator MoveRoutinePublic(Vector3 target)
+    {
+        yield return MoveRoutineInternal(target);
     }
 
     public void UpdateHealthBar()
