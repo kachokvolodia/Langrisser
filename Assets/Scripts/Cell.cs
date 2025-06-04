@@ -5,12 +5,12 @@ using UnityEngine.EventSystems;
 public class Cell : MonoBehaviour
 {
     public int moveCost = 1;
-    public string terrainType = "Grass";
+    public TerrainType terrainType = TerrainType.Grass;
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
     public Color highlightColor = Color.yellow;
 
-    // Для проверки подсветки зоны движения
+    // Р”Р»СЏ РїСЂРѕРІРµСЂРєРё РїРѕРґСЃРІРµС‚РєРё Р·РѕРЅС‹ РґРІРёР¶РµРЅРёСЏ
     private bool isMoveHighlight = false;
 
     public Unit occupyingUnit = null;
@@ -23,10 +23,10 @@ public class Cell : MonoBehaviour
     void OnMouseEnter()
     {
         StatusBarUI.Instance.ShowCellInfo(this);
-        // Старая подсветка (можно оставить)
+        // РЎС‚Р°СЂР°СЏ РїРѕРґСЃРІРµС‚РєР° (РјРѕР¶РЅРѕ РѕСЃС‚Р°РІРёС‚СЊ)
         spriteRenderer.color = highlightColor;
 
-        // НОВОЕ: если на клетке есть юнит — показать ауру командира
+        // РќРћР’РћР•: РµСЃР»Рё РЅР° РєР»РµС‚РєРµ РµСЃС‚СЊ СЋРЅРёС‚ вЂ” РїРѕРєР°Р·Р°С‚СЊ Р°СѓСЂСѓ РєРѕРјР°РЅРґРёСЂР°
         if (occupyingUnit != null)
         {
             if (occupyingUnit.isCommander)
@@ -42,21 +42,21 @@ public class Cell : MonoBehaviour
 
     void OnMouseExit()
     {
-        // Старая логика возврата цвета
+        // РЎС‚Р°СЂР°СЏ Р»РѕРіРёРєР° РІРѕР·РІСЂР°С‚Р° С†РІРµС‚Р°
         spriteRenderer.color = isMoveHighlight ? Color.cyan : originalColor;
 
-        // НОВОЕ: сбросить подсветку ауры всегда!
+        // РќРћР’РћР•: СЃР±СЂРѕСЃРёС‚СЊ РїРѕРґСЃРІРµС‚РєСѓ Р°СѓСЂС‹ РІСЃРµРіРґР°!
         UnitManager.Instance.ClearAuraHighlights();
     }
 
     void OnMouseDown()
     {
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return; // Клик был по UI — не реагируем!
+            return; // РљР»РёРє Р±С‹Р» РїРѕ UI вЂ” РЅРµ СЂРµР°РіРёСЂСѓРµРј!
 
         StatusBarUI.Instance.HideCellInfo();
 
-        // Ход/атака по выбранному юниту
+        // РҐРѕРґ/Р°С‚Р°РєР° РїРѕ РІС‹Р±СЂР°РЅРЅРѕРјСѓ СЋРЅРёС‚Сѓ
         if (UnitManager.Instance.HasSelectedUnit())
         {
             if (UnitManager.Instance.CanMoveToCell(this))
@@ -71,7 +71,7 @@ public class Cell : MonoBehaviour
             }
         }
 
-        // Показываем меню для любого юнита
+        // РџРѕРєР°Р·С‹РІР°РµРј РјРµРЅСЋ РґР»СЏ Р»СЋР±РѕРіРѕ СЋРЅРёС‚Р°
         if (occupyingUnit != null)
         {
             if (occupyingUnit.faction == Unit.Faction.Player && !occupyingUnit.hasActed)
@@ -81,11 +81,11 @@ public class Cell : MonoBehaviour
         }
     }
 
-    // --- Методы для подсветки ---
+    // --- РњРµС‚РѕРґС‹ РґР»СЏ РїРѕРґСЃРІРµС‚РєРё ---
     public void Highlight(Color color)
     {
         spriteRenderer.color = color;
-        // Если подсвечиваем как ходовую — отмечаем это флагом
+        // Р•СЃР»Рё РїРѕРґСЃРІРµС‡РёРІР°РµРј РєР°Рє С…РѕРґРѕРІСѓСЋ вЂ” РѕС‚РјРµС‡Р°РµРј СЌС‚Рѕ С„Р»Р°РіРѕРј
         isMoveHighlight = (color == Color.cyan);
     }
 
@@ -102,11 +102,37 @@ public class Cell : MonoBehaviour
 
     public void UnhighlightAura()
     {
-        // Если клетка уже подсвечена как зона движения, оставляем cyan,
-        // иначе возвращаем исходный цвет
+        // Р•СЃР»Рё РєР»РµС‚РєР° СѓР¶Рµ РїРѕРґСЃРІРµС‡РµРЅР° РєР°Рє Р·РѕРЅР° РґРІРёР¶РµРЅРёСЏ, РѕСЃС‚Р°РІР»СЏРµРј cyan,
+        // РёРЅР°С‡Рµ РІРѕР·РІСЂР°С‰Р°РµРј РёСЃС…РѕРґРЅС‹Р№ С†РІРµС‚
         if (isMoveHighlight)
             GetComponent<SpriteRenderer>().color = Color.cyan;
         else
             GetComponent<SpriteRenderer>().color = originalColor;
+    }
+
+    public bool IsPassable(Unit unit)
+    {
+        if (terrainType == TerrainType.Ocean || terrainType == TerrainType.Wall)
+        {
+            return unit != null && unit.unitData.movementType == MovementType.Flyer;
+        }
+        return true;
+    }
+
+    public int GetMoveCost(Unit unit)
+    {
+        if (unit != null && unit.unitData.movementType == MovementType.Flyer)
+            return 1;
+        switch (terrainType)
+        {
+            case TerrainType.Forest:
+                return unit != null && unit.unitData.movementType == MovementType.Cavalry ? 3 : 2;
+            case TerrainType.Mountain:
+                return unit != null && unit.unitData.movementType == MovementType.Cavalry ? 4 : 3;
+            case TerrainType.Road:
+                return 1;
+            default:
+                return moveCost;
+        }
     }
 }

@@ -10,6 +10,7 @@ public class UnitData : ScriptableObject
     public int moveRange;
     public int attackRange;
     public UnitClass unitClass;
+    public MovementType movementType = MovementType.Foot;
     [TextArea]
     public string description;
 }
@@ -21,6 +22,14 @@ public enum UnitClass
     Archer,
     Flyer,
     Mage,
-    // è ò.ä.
+    // Ð¸ Ñ‚.Ð´.
 }
+
+public enum MovementType
+{
+    Foot,
+    Cavalry,
+    Flyer
+}
+
 

@@ -11,7 +11,7 @@ public class PathfindingManager : MonoBehaviour
         Instance = this;
     }
 
-    // A* для клеточного поля
+    // A* РґР»СЏ РєР»РµС‚РѕС‡РЅРѕРіРѕ РїРѕР»СЏ
     public List<Cell> FindPath(Cell start, Cell goal, Unit unit)
     {
         var openSet = new SimplePriorityQueue<Cell>();
@@ -20,7 +20,7 @@ public class PathfindingManager : MonoBehaviour
         var gScore = new Dictionary<Cell, int>();
         var fScore = new Dictionary<Cell, int>();
 
-        // Кладём стартовую клетку
+        // РљР»Р°РґС‘Рј СЃС‚Р°СЂС‚РѕРІСѓСЋ РєР»РµС‚РєСѓ
         openSet.Enqueue(start, 0);
         gScore[start] = 0;
         fScore[start] = HeuristicCostEstimate(start, goal);
@@ -34,9 +34,11 @@ public class PathfindingManager : MonoBehaviour
 
             foreach (Cell neighbor in GetNeighbors(current, unit))
             {
-                int tentativeGScore = gScore[current] + neighbor.moveCost;
+                if (!neighbor.IsPassable(unit) && neighbor != goal)
+                    continue;
+                int tentativeGScore = gScore[current] + neighbor.GetMoveCost(unit);
                 if (neighbor.occupyingUnit != null && neighbor != goal)
-                    continue; // Занятая клетка — нельзя!
+                    continue; // Р—Р°РЅСЏС‚Р°СЏ РєР»РµС‚РєР° вЂ” РЅРµР»СЊР·СЏ!
 
                 if (!gScore.ContainsKey(neighbor) || tentativeGScore < gScore[neighbor])
                 {
@@ -51,12 +53,12 @@ public class PathfindingManager : MonoBehaviour
                 }
             }
         }
-        return null; // Нет пути
+        return null; // РќРµС‚ РїСѓС‚Рё
     }
 
     int HeuristicCostEstimate(Cell a, Cell b)
     {
-        // Манхэттенское расстояние (или диагональное, если хочешь)
+        // РњР°РЅС…СЌС‚С‚РµРЅСЃРєРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ (РёР»Рё РґРёР°РіРѕРЅР°Р»СЊРЅРѕРµ, РµСЃР»Рё С…РѕС‡РµС€СЊ)
         return Mathf.Abs(GridManager.Instance.WorldToGrid(a.transform.position).x - GridManager.Instance.WorldToGrid(b.transform.position).x)
              + Mathf.Abs(GridManager.Instance.WorldToGrid(a.transform.position).y - GridManager.Instance.WorldToGrid(b.transform.position).y);
     }
@@ -89,10 +91,38 @@ public class PathfindingManager : MonoBehaviour
                 continue;
 
             var nCell = GridManager.Instance.cells[np.x, np.y];
-            // Тут можно фильтровать по типу юнита: если не плавает, не пропускать воду и т.д.
+            // РўСѓС‚ РјРѕР¶РЅРѕ С„РёР»СЊС‚СЂРѕРІР°С‚СЊ РїРѕ С‚РёРїСѓ СЋРЅРёС‚Р°: РµСЃР»Рё РЅРµ РїР»Р°РІР°РµС‚, РЅРµ РїСЂРѕРїСѓСЃРєР°С‚СЊ РІРѕРґСѓ Рё С‚.Рґ.
             if (unit != null /* && !unit.CanPass(nCell) */) { }
             neighbors.Add(nCell);
         }
         return neighbors;
+    }
+
+    public List<Cell> GetReachableCells(Cell start, int movePoints, Unit unit)
+    {
+        var result = new List<Cell>();
+        var queue = new Queue<(Cell cell, int cost)>();
+        var visited = new Dictionary<Cell, int>();
+        queue.Enqueue((start, 0));
+        visited[start] = 0;
+
+        while (queue.Count > 0)
+        {
+            var (cell, cost) = queue.Dequeue();
+            foreach (var n in GetNeighbors(cell, unit))
+            {
+                if (!n.IsPassable(unit)) continue;
+                int newCost = cost + n.GetMoveCost(unit);
+                if (newCost > movePoints) continue;
+                if (!visited.ContainsKey(n) || newCost < visited[n])
+                {
+                    visited[n] = newCost;
+                    queue.Enqueue((n, newCost));
+                    if (n != start && n.occupyingUnit == null)
+                        result.Add(n);
+                }
+            }
+        }
+        return result;
     }
 }
