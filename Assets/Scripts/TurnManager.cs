@@ -78,6 +78,7 @@ public class TurnManager : MonoBehaviour
         else if (!enemyAlive)
         {
             Debug.Log("Победа!");
+            GridManager.Instance.UnlockExit();
         }
     }
 }
