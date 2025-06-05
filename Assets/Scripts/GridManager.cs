@@ -5,19 +5,50 @@ public class GridManager : MonoBehaviour
 {
     public static GridManager Instance { get; private set; }
 
-    private void Awake()
-    {
-        Instance = this;
-        GenerateGrid();
-    }
-
     public int width = 10;
     public int height = 10;
     public float cellSize = 1f;
     public Sprite[] tileSprites;
     public Biome biome;
     public Material cellMaterial;
+
+    // Seed for deterministic generation
+    public int seed = 0;
+    public bool randomSeed = true;
+
     public Cell[,] cells;
+
+    private System.Random rng;
+
+    private void Awake()
+    {
+        Instance = this;
+        if (randomSeed)
+            seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        GenerateGrid();
+    }
+
+    public void Initialize(int w, int h, int newSeed, Biome newBiome = null)
+    {
+        width = w;
+        height = h;
+        seed = newSeed;
+        if (newBiome != null)
+            biome = newBiome;
+
+        ClearGrid();
+        GenerateGrid();
+    }
+
+    void ClearGrid()
+    {
+        if (cells == null) return;
+        foreach (var c in cells)
+        {
+            if (c != null)
+                Destroy(c.gameObject);
+        }
+    }
     void Start()
     {
     }
@@ -28,7 +59,9 @@ public class GridManager : MonoBehaviour
             Sprite s = biome.GetSprite(type);
             if (s != null) return s;
         }
-        return tileSprites != null && tileSprites.Length > 0 ? tileSprites[Random.Range(0, tileSprites.Length)] : null;
+        if (tileSprites != null && tileSprites.Length > 0)
+            return tileSprites[rng.Next(tileSprites.Length)];
+        return null;
     }
 
     int GetMoveCostForType(TerrainType tType)
@@ -66,21 +99,21 @@ public class GridManager : MonoBehaviour
     List<Vector2Int> GenerateCluster(TerrainType type, int size, int margin = 1)
     {
         List<Vector2Int> created = new List<Vector2Int>();
-        int startX = Random.Range(margin, width - margin);
-        int startY = Random.Range(margin, height - margin);
+        int startX = rng.Next(margin, width - margin);
+        int startY = rng.Next(margin, height - margin);
         Vector2Int pos = new Vector2Int(startX, startY);
         created.Add(pos);
         SetCellTerrain(pos.x, pos.y, type);
 
         for (int i = 1; i < size; i++)
         {
-            Vector2Int cur = created[Random.Range(0, created.Count)];
+            Vector2Int cur = created[rng.Next(created.Count)];
             List<Vector2Int> neighbors = new List<Vector2Int>();
             if (cur.x > margin) neighbors.Add(new Vector2Int(cur.x - 1, cur.y));
             if (cur.x < width - margin - 1) neighbors.Add(new Vector2Int(cur.x + 1, cur.y));
             if (cur.y > margin) neighbors.Add(new Vector2Int(cur.x, cur.y - 1));
             if (cur.y < height - margin - 1) neighbors.Add(new Vector2Int(cur.x, cur.y + 1));
-            Vector2Int next = neighbors[Random.Range(0, neighbors.Count)];
+            Vector2Int next = neighbors[rng.Next(neighbors.Count)];
             if (!created.Contains(next))
             {
                 created.Add(next);
@@ -124,6 +157,8 @@ public class GridManager : MonoBehaviour
 
     void GenerateGrid()
     {
+        rng = new System.Random(seed);
+
         float xOffset = -((width - 1) * cellSize) / 2f;
         float yOffset = -((height - 1) * cellSize) / 2f;
 
@@ -156,7 +191,7 @@ public class GridManager : MonoBehaviour
         List<Vector2Int> ocean = GenerateCluster(TerrainType.Ocean, 5, 2);
 
         // River to lake
-        Vector2Int riverStart = new Vector2Int(Random.Range(1, width - 1), height - 2);
+        Vector2Int riverStart = new Vector2Int(rng.Next(1, width - 1), height - 2);
         GenerateRiver(riverStart, ocean[0]);
 
         // Desert and forest clusters
