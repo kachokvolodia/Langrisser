@@ -346,6 +346,12 @@ public class UnitManager : MonoBehaviour
         if (finalCell != null)
             finalCell.occupyingUnit = unit;
 
+        if (finalCell != null && GridManager.Instance.IsExitCell(finalCell) && GridManager.Instance.ExitUnlocked)
+        {
+            DungeonProgressionManager.Instance.NextLevel();
+            yield break;
+        }
+
         unit.hasMoved = true;
         unit.SetSelected(true);
 

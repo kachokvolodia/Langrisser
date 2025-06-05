@@ -20,12 +20,15 @@ public class GridManager : MonoBehaviour
 
     private System.Random rng;
 
+    public Vector2Int entryPoint;
+    public Vector2Int exitPoint;
+    private bool exitUnlocked = false;
+
     private void Awake()
     {
         Instance = this;
         if (randomSeed)
             seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-        GenerateGrid();
     }
 
     public void Initialize(int w, int h, int newSeed, Biome newBiome = null)
@@ -186,90 +189,8 @@ public class GridManager : MonoBehaviour
                 SetCellTerrain(x, y, TerrainType.Grass);
             }
         }
-
-        // Ocean lake
-        List<Vector2Int> ocean = GenerateCluster(TerrainType.Ocean, 5, 2);
-
-        // River to lake
-        Vector2Int riverStart = new Vector2Int(rng.Next(1, width - 1), height - 2);
-        GenerateRiver(riverStart, ocean[0]);
-
-        // Desert and forest clusters
-        GenerateCluster(TerrainType.Desert, 6, 2);
-        GenerateCluster(TerrainType.Forest, 8, 2);
-
-        // Internal mountain mass
-        List<Vector2Int> mountains = GenerateCluster(TerrainType.Mountain, 4, 2);
-
-        // Hills around mountains
-        foreach (var m in mountains)
-        {
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                for (int dy = -1; dy <= 1; dy++)
-                {
-                    int nx = m.x + dx; int ny = m.y + dy;
-                    if (nx < 1 || ny < 1 || nx >= width - 1 || ny >= height - 1) continue;
-                    if (cells[nx, ny].terrainType == TerrainType.Grass)
-                        SetCellTerrain(nx, ny, TerrainType.Hill);
-                }
-            }
-        }
-
-        // Outer mountains as borders
-        for (int x = 0; x < width; x++)
-        {
-            SetCellTerrain(x, 0, TerrainType.Mountain);
-            SetCellTerrain(x, height - 1, TerrainType.Mountain);
-        }
-        for (int y = 0; y < height; y++)
-        {
-            SetCellTerrain(0, y, TerrainType.Mountain);
-            SetCellTerrain(width - 1, y, TerrainType.Mountain);
-        }
-
-        // Castle and road to border
-        GenerateCastle(width / 2 - 3, height / 2 - 3, 6, 6);
-        int gateX = width / 2;
-        Vector2Int gate = new Vector2Int(gateX, height / 2 - 3);
-        GenerateRoad(gate, new Vector2Int(gateX, 1));
     }
 
-    void GenerateCastle(int startX, int startY, int castleWidth, int castleHeight)
-    {
-        for (int x = 0; x < castleWidth; x++)
-        {
-            for (int y = 0; y < castleHeight; y++)
-            {
-                int gx = startX + x;
-                int gy = startY + y;
-                if (gx < 0 || gx >= width || gy < 0 || gy >= height)
-                    continue;
-
-                Cell cell = cells[gx, gy];
-                if (x == 0 || x == castleWidth - 1 || y == 0 || y == castleHeight - 1)
-                {
-                    cell.terrainType = TerrainType.Wall;
-                    cell.moveCost = 99;
-                }
-                else
-                {
-                    cell.terrainType = TerrainType.Road;
-                    cell.moveCost = 1;
-                }
-                cell.GetComponent<SpriteRenderer>().sprite = GetSpriteForType(cell.terrainType);
-            }
-        }
-
-        int gateX = startX + castleWidth / 2;
-        int gateY = startY;
-        if (gateX >= 0 && gateX < width && gateY >= 0 && gateY < height)
-        {
-            cells[gateX, gateY].terrainType = TerrainType.Road;
-            cells[gateX, gateY].moveCost = 1;
-            cells[gateX, gateY].GetComponent<SpriteRenderer>().sprite = GetSpriteForType(TerrainType.Road);
-        }
-    }
 
     public Vector3 GetCellCenterPosition(int x, int y)
     {
@@ -307,4 +228,41 @@ public class GridManager : MonoBehaviour
             return null;
         return cells[grid.x, grid.y];
     }
+
+    public void PlaceEntryExit(Vector2Int entry, Vector2Int exit)
+    {
+        entryPoint = entry;
+        exitPoint = exit;
+        exitUnlocked = false;
+        SetCellTerrain(entryPoint.x, entryPoint.y, TerrainType.Town);
+        SetCellTerrain(exitPoint.x, exitPoint.y, TerrainType.Road);
+
+        int dist = Mathf.Abs(entryPoint.x - exitPoint.x) + Mathf.Abs(entryPoint.y - exitPoint.y);
+        if (dist < 6)
+            AddBlockingRidge();
+    }
+
+    void AddBlockingRidge()
+    {
+        int ridgeX = width / 2;
+        int gapY = Random.Range(1, height - 2);
+        for (int y = 1; y < height - 1; y++)
+        {
+            if (y == gapY) continue;
+            SetCellTerrain(ridgeX, y, TerrainType.Mountain);
+        }
+    }
+
+    public void UnlockExit()
+    {
+        exitUnlocked = true;
+    }
+
+    public bool IsExitCell(Cell cell)
+    {
+        Vector2Int pos = WorldToGrid(cell.transform.position);
+        return pos == exitPoint;
+    }
+
+    public bool ExitUnlocked => exitUnlocked;
 }
