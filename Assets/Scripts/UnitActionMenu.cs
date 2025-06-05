@@ -79,7 +79,11 @@ public class UnitActionMenu : MonoBehaviour
 
     public void HideMenu()
     {
-        menuPanel.SetActive(false);   
+        menuPanel.SetActive(false);
+        if (UnitInfoPanel.Instance != null)
+        {
+            UnitInfoPanel.Instance.HidePanel();
+        }
     }
 }
 
