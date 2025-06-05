@@ -118,7 +118,7 @@ public class Cell : MonoBehaviour
 
     public bool IsPassable(Unit unit)
     {
-        if (terrainType == TerrainType.Ocean || terrainType == TerrainType.Wall)
+        if (terrainType == TerrainType.Ocean || terrainType == TerrainType.Wall || terrainType == TerrainType.River)
         {
             return unit != null && unit.unitData.movementType == MovementType.Flyer;
         }
@@ -142,6 +142,16 @@ public class Cell : MonoBehaviour
             case TerrainType.Mountain:
                 return unit != null && unit.unitData.movementType == MovementType.Cavalry ? 4 : 3;
             case TerrainType.Road:
+                return 1;
+            case TerrainType.Desert:
+                return unit != null && unit.unitData.movementType == MovementType.Cavalry ? 3 : 2;
+            case TerrainType.Snow:
+                return unit != null && unit.unitData.movementType == MovementType.Cavalry ? 3 : 2;
+            case TerrainType.Swamp:
+                return unit != null && unit.unitData.movementType == MovementType.Cavalry ? 4 : 3;
+            case TerrainType.Bridge:
+                return 1;
+            case TerrainType.Town:
                 return 1;
             default:
                 return moveCost;

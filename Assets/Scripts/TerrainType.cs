@@ -6,5 +6,11 @@ public enum TerrainType
     Hill,
     Mountain,
     Ocean,
-    Wall
+    Wall,
+    Desert,
+    Snow,
+    Swamp,
+    River,
+    Bridge,
+    Town
 }

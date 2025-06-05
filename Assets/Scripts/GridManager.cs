@@ -15,11 +15,22 @@ public class GridManager : MonoBehaviour
     public int height = 10;
     public float cellSize = 1f;
     public Sprite[] tileSprites;
+    public Biome biome;
     public Material cellMaterial;
     public Cell[,] cells;
     void Start()
     {
     }
+    Sprite GetSpriteForType(TerrainType type)
+    {
+        if (biome != null)
+        {
+            Sprite s = biome.GetSprite(type);
+            if (s != null) return s;
+        }
+        return tileSprites != null && tileSprites.Length > 0 ? tileSprites[Random.Range(0, tileSprites.Length)] : null;
+    }
+
     void GenerateGrid()
     {
         float xOffset = -((width - 1) * cellSize) / 2f;
@@ -36,7 +47,22 @@ public class GridManager : MonoBehaviour
                 cell.transform.parent = transform;
 
                 var spriteRenderer = cell.AddComponent<SpriteRenderer>();
-                spriteRenderer.sprite = tileSprites[Random.Range(0, tileSprites.Length)];
+                TerrainType tType;
+                // Example random terrain type
+                int r = Random.Range(0, 8);
+                switch (r)
+                {
+                    case 0: tType = TerrainType.Grass; break;
+                    case 1: tType = TerrainType.Forest; break;
+                    case 2: tType = TerrainType.Hill; break;
+                    case 3: tType = TerrainType.Mountain; break;
+                    case 4: tType = TerrainType.Ocean; break;
+                    case 5: tType = TerrainType.Desert; break;
+                    case 6: tType = TerrainType.Snow; break;
+                    default: tType = TerrainType.Swamp; break;
+                }
+
+                spriteRenderer.sprite = GetSpriteForType(tType);
                 spriteRenderer.color = Color.white;
                 if (cellMaterial != null)
                     spriteRenderer.material = cellMaterial;
@@ -46,16 +72,25 @@ public class GridManager : MonoBehaviour
                 cell.AddComponent<BoxCollider2D>().size = new Vector2(cellSize, cellSize);
 
                 Cell cellScript = cell.AddComponent<Cell>();
-
-                // Пример рандомного типа местности
-                int r = Random.Range(0, 5);
-                switch (r)
+                cellScript.terrainType = tType;
+                switch (tType)
                 {
-                    case 0: cellScript.terrainType = TerrainType.Grass; cellScript.moveCost = 1; break;
-                    case 1: cellScript.terrainType = TerrainType.Forest; cellScript.moveCost = 2; break;
-                    case 2: cellScript.terrainType = TerrainType.Hill; cellScript.moveCost = 2; break;
-                    case 3: cellScript.terrainType = TerrainType.Mountain; cellScript.moveCost = 3; break;
-                    case 4: cellScript.terrainType = TerrainType.Ocean; cellScript.moveCost = 1; break;
+                    case TerrainType.Forest:
+                        cellScript.moveCost = 2; break;
+                    case TerrainType.Hill:
+                        cellScript.moveCost = 2; break;
+                    case TerrainType.Mountain:
+                        cellScript.moveCost = 3; break;
+                    case TerrainType.Ocean:
+                        cellScript.moveCost = 1; break;
+                    case TerrainType.Desert:
+                        cellScript.moveCost = 2; break;
+                    case TerrainType.Snow:
+                        cellScript.moveCost = 2; break;
+                    case TerrainType.Swamp:
+                        cellScript.moveCost = 3; break;
+                    default:
+                        cellScript.moveCost = 1; break;
                 }
 
                 cells[x, y] = cellScript; // заполняем массив
@@ -88,6 +123,7 @@ public class GridManager : MonoBehaviour
                     cell.terrainType = TerrainType.Road;
                     cell.moveCost = 1;
                 }
+                cell.GetComponent<SpriteRenderer>().sprite = GetSpriteForType(cell.terrainType);
             }
         }
 
@@ -97,6 +133,7 @@ public class GridManager : MonoBehaviour
         {
             cells[gateX, gateY].terrainType = TerrainType.Road;
             cells[gateX, gateY].moveCost = 1;
+            cells[gateX, gateY].GetComponent<SpriteRenderer>().sprite = GetSpriteForType(TerrainType.Road);
         }
     }
 
