@@ -45,7 +45,7 @@ public class UnitActionMenu : MonoBehaviour
         menuPanel.SetActive(true);
         Canvas.ForceUpdateCanvases();
 
-        bool isPlayer = (unit.faction == Unit.Faction.Player);
+        bool isPlayer = (unit.faction == FactionManager.PlayerFaction);
         bool canMove = isPlayer && !unit.hasMoved && !unit.hasActed;
         bool canAttack = isPlayer && !unit.hasAttacked && !unit.hasActed;
         bool canEndTurn = isPlayer && !unit.hasActed;

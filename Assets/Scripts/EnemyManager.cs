@@ -46,7 +46,7 @@ public class EnemyManager : MonoBehaviour
         float minDist = Mathf.Infinity;
         foreach (var unit in UnitManager.Instance.AllUnits)
         {
-            if (unit.faction != Unit.Faction.Player)
+            if (unit.faction != FactionManager.PlayerFaction)
                 continue;
             float dist = Vector2.Distance(enemy.transform.position, unit.transform.position);
             if (dist < minDist)

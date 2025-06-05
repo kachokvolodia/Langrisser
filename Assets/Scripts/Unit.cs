@@ -28,10 +28,9 @@ public class Unit : MonoBehaviour
 
     public enum Faction
     {
-        Player,
-        PlayerAlly,    // союзник игрока
-        Enemy,
-        EnemyAlly,     // союзник врага
+        AuroraEmpire,
+        MoonArchonDominion,
+        GoldenHand,
         Neutral,        // нейтралы
         EvilNeutral
     }

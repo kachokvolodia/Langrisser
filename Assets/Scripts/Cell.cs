@@ -80,7 +80,7 @@ public class Cell : MonoBehaviour
         // Показываем меню для любого юнита
         if (occupyingUnit != null)
         {
-            if (occupyingUnit.faction == Unit.Faction.Player && !occupyingUnit.hasActed)
+            if (occupyingUnit.faction == FactionManager.PlayerFaction && !occupyingUnit.hasActed)
                 UnitManager.Instance.SelectUnit(occupyingUnit);
 
             UnitActionMenu.Instance.ShowMenu(occupyingUnit.transform.position, occupyingUnit);

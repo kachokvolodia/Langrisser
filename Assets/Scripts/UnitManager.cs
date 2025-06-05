@@ -69,20 +69,15 @@ public class UnitManager : MonoBehaviour
 
         // КООРДИНАТЫ для командиров
         Vector2Int playerPos = new Vector2Int(w / 2, h / 2);
-        Vector2Int enemyPos = new Vector2Int(w - 2, h - 2);
-        Vector2Int allyPos = new Vector2Int(w / 2, h - 2);
-        Vector2Int enemyAllyPos = new Vector2Int(w - 2, h / 2);
+        Vector2Int faction2Pos = new Vector2Int(w - 2, h - 2);
+        Vector2Int faction3Pos = new Vector2Int(w - 2, h / 2);
         Vector2Int neutralPos = new Vector2Int(1, 1);
         Vector2Int evilNeutralPos = new Vector2Int(w - 2, 1);
 
-        // СПАВН: команда игрока
-        SpawnSquad(playerCommanderPrefabs, playerSoldierPrefabs, playerPos, 2, Unit.Faction.Player);
-        // враг
-        SpawnSquad(enemyCommanderPrefabs, enemySoldierPrefabs, enemyPos, 2, Unit.Faction.Enemy);
-        // союзник игрока
-        SpawnSquad(allyCommanderPrefabs, allySoldierPrefabs, allyPos, 2, Unit.Faction.PlayerAlly);
-        // союзник врага
-        SpawnSquad(enemyAllyCommanderPrefabs, enemyAllySoldierPrefabs, enemyAllyPos, 2, Unit.Faction.EnemyAlly);
+        // СПАВН: фракции
+        SpawnSquad(playerCommanderPrefabs, playerSoldierPrefabs, playerPos, 2, Unit.Faction.AuroraEmpire);
+        SpawnSquad(enemyCommanderPrefabs, enemySoldierPrefabs, faction2Pos, 2, Unit.Faction.MoonArchonDominion);
+        SpawnSquad(allyCommanderPrefabs, allySoldierPrefabs, faction3Pos, 2, Unit.Faction.GoldenHand);
         // нейтралы
         SpawnSquad(neutralCommanderPrefabs, neutralSoldierPrefabs, neutralPos, 2, Unit.Faction.Neutral);
         // Злые Нейтралы
@@ -217,11 +212,11 @@ public class UnitManager : MonoBehaviour
     {
         switch (faction)
         {
-            case Faction.Player:
+            case Faction.AuroraEmpire:
                 return Color.green;
-            case Faction.Enemy:
+            case Faction.MoonArchonDominion:
                 return Color.red;
-            case Faction.PlayerAlly:
+            case Faction.GoldenHand:
                 return Color.blue;
             default:
                 return Color.white;

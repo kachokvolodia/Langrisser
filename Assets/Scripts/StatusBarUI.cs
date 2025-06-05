@@ -55,15 +55,13 @@ public class StatusBarUI : MonoBehaviour
 
     string FactionToSide(Unit.Faction faction)
     {
-        switch (faction)
+        var rel = FactionManager.Instance.GetRelation(FactionManager.PlayerFaction, faction);
+        switch (rel)
         {
-            case Unit.Faction.Player: return "Союзник";
-            case Unit.Faction.Enemy: return "Враг";
-            case Unit.Faction.PlayerAlly: return "Союзник";
-            case Unit.Faction.EnemyAlly: return "Враг";
-            case Unit.Faction.Neutral: return "Нейтрал";
-            case Unit.Faction.EvilNeutral: return "Злой нейтрал";
-            default: return "???";
+            case FactionManager.RelationType.Ally: return "Союзник";
+            case FactionManager.RelationType.Enemy: return "Враг";
+            case FactionManager.RelationType.Neutral: return "Нейтрал";
+            default: return "?";
         }
     }
 

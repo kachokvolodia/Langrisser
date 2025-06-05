@@ -7,10 +7,9 @@ public class TurnManager : MonoBehaviour
 
     public List<Unit.Faction> turnOrder = new List<Unit.Faction>
     {
-        Unit.Faction.Player,
-        Unit.Faction.PlayerAlly,
-        Unit.Faction.Enemy,
-        Unit.Faction.EnemyAlly,
+        Unit.Faction.AuroraEmpire,
+        Unit.Faction.MoonArchonDominion,
+        Unit.Faction.GoldenHand,
         Unit.Faction.Neutral,
         Unit.Faction.EvilNeutral
     };
@@ -32,12 +31,12 @@ public class TurnManager : MonoBehaviour
     void StartTurn(Unit.Faction faction)
     {
         StatusBarUI.Instance?.SetTurnInfo(faction);
-        StatusBarUI.Instance?.SetEndTurnButtonInteractable(faction == Unit.Faction.Player);
+        StatusBarUI.Instance?.SetEndTurnButtonInteractable(faction == FactionManager.PlayerFaction);
 
         UnitManager.Instance.ApplyWaitHealing(faction);
         UnitManager.Instance.ResetUnitsForNextTurn(faction);
 
-        if (faction == Unit.Faction.Player)
+        if (faction == FactionManager.PlayerFaction)
         {
             Debug.Log("Ход игрока!");
         }
@@ -63,13 +62,18 @@ public class TurnManager : MonoBehaviour
 
     public bool IsPlayerTurn()
     {
-        return CurrentFaction == Unit.Faction.Player;
+        return CurrentFaction == FactionManager.PlayerFaction;
     }
 
     public void CheckVictory()
     {
-        bool playerAlive = UnitManager.Instance.AllUnits.Exists(u => u.faction == Unit.Faction.Player && u.currentHP > 0);
-        bool enemyAlive = UnitManager.Instance.AllUnits.Exists(u => u.faction == Unit.Faction.Enemy && u.currentHP > 0);
+        bool playerAlive = UnitManager.Instance.AllUnits.Exists(u => u.faction == FactionManager.PlayerFaction && u.currentHP > 0);
+        bool enemyAlive = UnitManager.Instance.AllUnits.Exists(u =>
+            u.currentHP > 0 &&
+            (u.faction == Unit.Faction.AuroraEmpire ||
+             u.faction == Unit.Faction.MoonArchonDominion ||
+             u.faction == Unit.Faction.GoldenHand) &&
+            u.faction != FactionManager.PlayerFaction);
 
         if (!playerAlive)
         {
