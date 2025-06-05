@@ -13,6 +13,7 @@ public class UnitInfoPanel : MonoBehaviour
     public TextMeshProUGUI levelText;
     public Image expBar;
     public TextMeshProUGUI hpText;
+    public TextMeshProUGUI mpText;
     public TextMeshProUGUI statsText;
     public TextMeshProUGUI descriptionText;
 
@@ -47,7 +48,9 @@ public class UnitInfoPanel : MonoBehaviour
             expBar.rectTransform.localScale = new Vector3(Mathf.Clamp01(pct), 1f, 1f);
         }
         hpText.text = $"HP: {unit.currentHP} / {unit.MaxHP}";
-        string stats = $"ATK: {unit.Attack}\nDEF: {unit.Defense}\nM.ATK: {unit.MagicAttack}\nM.DEF: {unit.MagicDefense}\nMP: {unit.currentMP}/{unit.MaxMP}\nMOV: {unit.MoveRange}\nATK RNG: {unit.GetAttackRange()}";
+        if (mpText != null)
+            mpText.text = $"MP: {unit.currentMP} / {unit.MaxMP}";
+        string stats = $"ATK: {unit.Attack}\nDEF: {unit.Defense}\nM.ATK: {unit.MagicAttack}\nM.DEF: {unit.MagicDefense}\nMOV: {unit.MoveRange}\nATK RNG: {unit.GetAttackRange()}";
         if (unit.isCommander)
         {
             string commanderStr = "";

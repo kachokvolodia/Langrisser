@@ -61,6 +61,43 @@ public class GridManager : MonoBehaviour
                 cells[x, y] = cellScript; // заполняем массив
             }
         }
+
+        // После базовой генерации можно добавить структуры
+        GenerateCastle(width / 2 - 3, height / 2 - 3, 6, 6);
+    }
+
+    void GenerateCastle(int startX, int startY, int castleWidth, int castleHeight)
+    {
+        for (int x = 0; x < castleWidth; x++)
+        {
+            for (int y = 0; y < castleHeight; y++)
+            {
+                int gx = startX + x;
+                int gy = startY + y;
+                if (gx < 0 || gx >= width || gy < 0 || gy >= height)
+                    continue;
+
+                Cell cell = cells[gx, gy];
+                if (x == 0 || x == castleWidth - 1 || y == 0 || y == castleHeight - 1)
+                {
+                    cell.terrainType = TerrainType.Wall;
+                    cell.moveCost = 99;
+                }
+                else
+                {
+                    cell.terrainType = TerrainType.Road;
+                    cell.moveCost = 1;
+                }
+            }
+        }
+
+        int gateX = startX + castleWidth / 2;
+        int gateY = startY;
+        if (gateX >= 0 && gateX < width && gateY >= 0 && gateY < height)
+        {
+            cells[gateX, gateY].terrainType = TerrainType.Road;
+            cells[gateX, gateY].moveCost = 1;
+        }
     }
 
     public Vector3 GetCellCenterPosition(int x, int y)
