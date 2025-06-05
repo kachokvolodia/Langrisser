@@ -22,6 +22,16 @@ public class UnitData : ScriptableObject
     public int commanderRangeBonus;
     [TextArea]
     public string description;
+
+    [System.Serializable]
+    public class FactionVariant
+    {
+        public Unit.Faction faction;
+        public string unitName;
+        public Sprite sprite;
+    }
+
+    public FactionVariant[] factionVariants;
 }
 public enum UnitClass
 {

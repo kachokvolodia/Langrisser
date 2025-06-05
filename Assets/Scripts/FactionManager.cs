@@ -6,6 +6,9 @@ public class FactionManager : MonoBehaviour
     public static FactionManager Instance;
     public static Unit.Faction PlayerFaction = Unit.Faction.AuroraEmpire;
 
+    public FactionData[] factionDatas;
+    private Dictionary<Unit.Faction, FactionData> factionDataDict = new Dictionary<Unit.Faction, FactionData>();
+
     public enum RelationType { Ally, Enemy, Neutral }
 
     // Таблица отношений: кто как относится к кому
@@ -15,7 +18,27 @@ public class FactionManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        BuildFactionDictionary();
         InitializeRelations();
+    }
+
+    void BuildFactionDictionary()
+    {
+        factionDataDict.Clear();
+        if (factionDatas != null)
+        {
+            foreach (var data in factionDatas)
+            {
+                if (data != null)
+                    factionDataDict[data.faction] = data;
+            }
+        }
+    }
+
+    public FactionData GetFactionData(Unit.Faction faction)
+    {
+        factionDataDict.TryGetValue(faction, out var data);
+        return data;
     }
 
     private void InitializeRelations()
