@@ -31,12 +31,103 @@ public class GridManager : MonoBehaviour
         return tileSprites != null && tileSprites.Length > 0 ? tileSprites[Random.Range(0, tileSprites.Length)] : null;
     }
 
+    int GetMoveCostForType(TerrainType tType)
+    {
+        switch (tType)
+        {
+            case TerrainType.Forest:
+            case TerrainType.Hill:
+            case TerrainType.Desert:
+            case TerrainType.Snow:
+                return 2;
+            case TerrainType.Mountain:
+            case TerrainType.Swamp:
+                return 3;
+            case TerrainType.Ocean:
+            case TerrainType.Road:
+            case TerrainType.Bridge:
+            case TerrainType.Town:
+                return 1;
+            case TerrainType.Wall:
+                return 99;
+            default:
+                return 1;
+        }
+    }
+
+    void SetCellTerrain(int x, int y, TerrainType tType)
+    {
+        Cell cell = cells[x, y];
+        cell.terrainType = tType;
+        cell.moveCost = GetMoveCostForType(tType);
+        cell.GetComponent<SpriteRenderer>().sprite = GetSpriteForType(tType);
+    }
+
+    List<Vector2Int> GenerateCluster(TerrainType type, int size, int margin = 1)
+    {
+        List<Vector2Int> created = new List<Vector2Int>();
+        int startX = Random.Range(margin, width - margin);
+        int startY = Random.Range(margin, height - margin);
+        Vector2Int pos = new Vector2Int(startX, startY);
+        created.Add(pos);
+        SetCellTerrain(pos.x, pos.y, type);
+
+        for (int i = 1; i < size; i++)
+        {
+            Vector2Int cur = created[Random.Range(0, created.Count)];
+            List<Vector2Int> neighbors = new List<Vector2Int>();
+            if (cur.x > margin) neighbors.Add(new Vector2Int(cur.x - 1, cur.y));
+            if (cur.x < width - margin - 1) neighbors.Add(new Vector2Int(cur.x + 1, cur.y));
+            if (cur.y > margin) neighbors.Add(new Vector2Int(cur.x, cur.y - 1));
+            if (cur.y < height - margin - 1) neighbors.Add(new Vector2Int(cur.x, cur.y + 1));
+            Vector2Int next = neighbors[Random.Range(0, neighbors.Count)];
+            if (!created.Contains(next))
+            {
+                created.Add(next);
+                SetCellTerrain(next.x, next.y, type);
+            }
+        }
+        return created;
+    }
+
+    void GenerateRiver(Vector2Int start, Vector2Int end)
+    {
+        Vector2Int cur = start;
+        SetCellTerrain(cur.x, cur.y, TerrainType.River);
+        while (cur != end)
+        {
+            if (cur.x < end.x) cur.x++; else if (cur.x > end.x) cur.x--;
+            else if (cur.y < end.y) cur.y++; else if (cur.y > end.y) cur.y--;
+
+            if (cells[cur.x, cur.y].terrainType == TerrainType.Road)
+                SetCellTerrain(cur.x, cur.y, TerrainType.Bridge);
+            else
+                SetCellTerrain(cur.x, cur.y, TerrainType.River);
+        }
+    }
+
+    void GenerateRoad(Vector2Int start, Vector2Int end)
+    {
+        Vector2Int cur = start;
+        SetCellTerrain(cur.x, cur.y, TerrainType.Road);
+        while (cur != end)
+        {
+            if (cur.x < end.x) cur.x++; else if (cur.x > end.x) cur.x--;
+            else if (cur.y < end.y) cur.y++; else if (cur.y > end.y) cur.y--;
+
+            if (cells[cur.x, cur.y].terrainType == TerrainType.River)
+                SetCellTerrain(cur.x, cur.y, TerrainType.Bridge);
+            else
+                SetCellTerrain(cur.x, cur.y, TerrainType.Road);
+        }
+    }
+
     void GenerateGrid()
     {
         float xOffset = -((width - 1) * cellSize) / 2f;
         float yOffset = -((height - 1) * cellSize) / 2f;
 
-        cells = new Cell[width, height]; // ← вот здесь, ПЕРЕД циклом!
+        cells = new Cell[width, height];
 
         for (int x = 0; x < width; x++)
         {
@@ -47,22 +138,6 @@ public class GridManager : MonoBehaviour
                 cell.transform.parent = transform;
 
                 var spriteRenderer = cell.AddComponent<SpriteRenderer>();
-                TerrainType tType;
-                // Example random terrain type
-                int r = Random.Range(0, 8);
-                switch (r)
-                {
-                    case 0: tType = TerrainType.Grass; break;
-                    case 1: tType = TerrainType.Forest; break;
-                    case 2: tType = TerrainType.Hill; break;
-                    case 3: tType = TerrainType.Mountain; break;
-                    case 4: tType = TerrainType.Ocean; break;
-                    case 5: tType = TerrainType.Desert; break;
-                    case 6: tType = TerrainType.Snow; break;
-                    default: tType = TerrainType.Swamp; break;
-                }
-
-                spriteRenderer.sprite = GetSpriteForType(tType);
                 spriteRenderer.color = Color.white;
                 if (cellMaterial != null)
                     spriteRenderer.material = cellMaterial;
@@ -72,33 +147,57 @@ public class GridManager : MonoBehaviour
                 cell.AddComponent<BoxCollider2D>().size = new Vector2(cellSize, cellSize);
 
                 Cell cellScript = cell.AddComponent<Cell>();
-                cellScript.terrainType = tType;
-                switch (tType)
-                {
-                    case TerrainType.Forest:
-                        cellScript.moveCost = 2; break;
-                    case TerrainType.Hill:
-                        cellScript.moveCost = 2; break;
-                    case TerrainType.Mountain:
-                        cellScript.moveCost = 3; break;
-                    case TerrainType.Ocean:
-                        cellScript.moveCost = 1; break;
-                    case TerrainType.Desert:
-                        cellScript.moveCost = 2; break;
-                    case TerrainType.Snow:
-                        cellScript.moveCost = 2; break;
-                    case TerrainType.Swamp:
-                        cellScript.moveCost = 3; break;
-                    default:
-                        cellScript.moveCost = 1; break;
-                }
-
-                cells[x, y] = cellScript; // заполняем массив
+                cells[x, y] = cellScript;
+                SetCellTerrain(x, y, TerrainType.Grass);
             }
         }
 
-        // После базовой генерации можно добавить структуры
+        // Ocean lake
+        List<Vector2Int> ocean = GenerateCluster(TerrainType.Ocean, 5, 2);
+
+        // River to lake
+        Vector2Int riverStart = new Vector2Int(Random.Range(1, width - 1), height - 2);
+        GenerateRiver(riverStart, ocean[0]);
+
+        // Desert and forest clusters
+        GenerateCluster(TerrainType.Desert, 6, 2);
+        GenerateCluster(TerrainType.Forest, 8, 2);
+
+        // Internal mountain mass
+        List<Vector2Int> mountains = GenerateCluster(TerrainType.Mountain, 4, 2);
+
+        // Hills around mountains
+        foreach (var m in mountains)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    int nx = m.x + dx; int ny = m.y + dy;
+                    if (nx < 1 || ny < 1 || nx >= width - 1 || ny >= height - 1) continue;
+                    if (cells[nx, ny].terrainType == TerrainType.Grass)
+                        SetCellTerrain(nx, ny, TerrainType.Hill);
+                }
+            }
+        }
+
+        // Outer mountains as borders
+        for (int x = 0; x < width; x++)
+        {
+            SetCellTerrain(x, 0, TerrainType.Mountain);
+            SetCellTerrain(x, height - 1, TerrainType.Mountain);
+        }
+        for (int y = 0; y < height; y++)
+        {
+            SetCellTerrain(0, y, TerrainType.Mountain);
+            SetCellTerrain(width - 1, y, TerrainType.Mountain);
+        }
+
+        // Castle and road to border
         GenerateCastle(width / 2 - 3, height / 2 - 3, 6, 6);
+        int gateX = width / 2;
+        Vector2Int gate = new Vector2Int(gateX, height / 2 - 3);
+        GenerateRoad(gate, new Vector2Int(gateX, 1));
     }
 
     void GenerateCastle(int startX, int startY, int castleWidth, int castleHeight)
