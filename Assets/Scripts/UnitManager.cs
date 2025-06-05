@@ -64,24 +64,12 @@ public class UnitManager : MonoBehaviour
     void Start()
     {
         AllUnits.Clear();
-        int w = gridManager.width;
-        int h = gridManager.height;
 
-        // КООРДИНАТЫ для командиров
-        Vector2Int playerPos = new Vector2Int(w / 2, h / 2);
-        Vector2Int faction2Pos = new Vector2Int(w - 2, h - 2);
-        Vector2Int faction3Pos = new Vector2Int(w - 2, h / 2);
-        Vector2Int neutralPos = new Vector2Int(1, 1);
-        Vector2Int evilNeutralPos = new Vector2Int(w - 2, 1);
+        Vector2Int playerPos = GridManager.Instance.entryPoint;
+        Vector2Int evilPos = GridManager.Instance.exitPoint;
 
-        // СПАВН: фракции
-        SpawnSquad(playerCommanderPrefabs, playerSoldierPrefabs, playerPos, 2, Unit.Faction.AuroraEmpire);
-        SpawnSquad(enemyCommanderPrefabs, enemySoldierPrefabs, faction2Pos, 2, Unit.Faction.MoonArchonDominion);
-        SpawnSquad(allyCommanderPrefabs, allySoldierPrefabs, faction3Pos, 2, Unit.Faction.GoldenHand);
-        // нейтралы
-        SpawnSquad(neutralCommanderPrefabs, neutralSoldierPrefabs, neutralPos, 2, Unit.Faction.Neutral);
-        // Злые Нейтралы
-        SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilNeutralPos, 2, Unit.Faction.EvilNeutral);
+        SpawnSquad(playerCommanderPrefabs, playerSoldierPrefabs, playerPos, 1, Unit.Faction.AuroraEmpire);
+        SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilPos, 1, Unit.Faction.EvilNeutral);
     }
 
     // Спавнит командира и n солдат вокруг него по ближайшим свободным клеткам
@@ -210,6 +198,10 @@ public class UnitManager : MonoBehaviour
 
     private Color GetFactionColor(Faction faction)
     {
+        var data = FactionManager.Instance?.GetFactionData(faction);
+        if (data != null)
+            return data.color;
+
         switch (faction)
         {
             case Faction.AuroraEmpire:
