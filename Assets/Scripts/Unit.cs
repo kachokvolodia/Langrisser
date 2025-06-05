@@ -272,6 +272,8 @@ public class Unit : MonoBehaviour
             return 2;
         if (cell.terrainType == TerrainType.Forest && unitData.movementType != MovementType.Flyer)
             return 1;
+        if (cell.terrainType == TerrainType.Town)
+            return 1;
         return 0;
     }
 
@@ -283,6 +285,12 @@ public class Unit : MonoBehaviour
             return 1;
         if (unitData.unitClass == UnitClass.Cavalry && cell.terrainType == TerrainType.Forest)
             return -1;
+        if (unitData.unitClass == UnitClass.Cavalry && cell.terrainType == TerrainType.Bridge)
+            return 1;
+        if (unitData.unitClass == UnitClass.Cavalry && (cell.terrainType == TerrainType.Desert || cell.terrainType == TerrainType.Snow))
+            return -1;
+        if (cell.terrainType == TerrainType.Town)
+            return 1;
         return 0;
     }
 
