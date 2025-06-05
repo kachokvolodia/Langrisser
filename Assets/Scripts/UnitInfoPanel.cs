@@ -11,7 +11,7 @@ public class UnitInfoPanel : MonoBehaviour
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI classText;
     public TextMeshProUGUI levelText;
-    public Image expBar;
+    public Image expBarFill;
     public TextMeshProUGUI hpText;
     public TextMeshProUGUI mpText;
     public TextMeshProUGUI statsText;
@@ -42,10 +42,10 @@ public class UnitInfoPanel : MonoBehaviour
         nameText.text = unit.unitData.unitName;
         classText.text = "Класс: " + unit.unitData.unitClass;
         levelText.text = "LVL: " + unit.level;
-        if (expBar != null)
+        if (expBarFill != null)
         {
             float pct = (float)unit.experience / ExperienceManager.ExpToNextLevel(unit.level);
-            expBar.rectTransform.localScale = new Vector3(Mathf.Clamp01(pct), 1f, 1f);
+            expBarFill.fillAmount = Mathf.Clamp01(pct);
         }
         hpText.text = $"HP: {unit.currentHP} / {unit.MaxHP}";
         if (mpText != null)
