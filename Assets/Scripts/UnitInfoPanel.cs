@@ -62,6 +62,23 @@ public class UnitInfoPanel : MonoBehaviour
             if (!string.IsNullOrEmpty(commanderStr))
                 stats += $"\nКомандование: {commanderStr}";
         }
+        else if (unit.commander != null)
+        {
+            var cd = unit.commander.unitData;
+            string auraStr = "";
+            if (cd.commanderAttackBonus != 0) auraStr += $"ATK +{cd.commanderAttackBonus} ";
+            if (cd.commanderDefenseBonus != 0) auraStr += $"DEF +{cd.commanderDefenseBonus} ";
+            if (cd.commanderMagicAttackBonus != 0) auraStr += $"M.ATK +{cd.commanderMagicAttackBonus} ";
+            if (cd.commanderMagicDefenseBonus != 0) auraStr += $"M.DEF +{cd.commanderMagicDefenseBonus} ";
+            if (cd.commanderRangeBonus != 0) auraStr += $"RNG +{cd.commanderRangeBonus}";
+            if (!string.IsNullOrEmpty(auraStr))
+            {
+                if (unit.IsInAura())
+                    stats += $"\nВ ауре командира: {auraStr}";
+                else
+                    stats += $"\nКомандир: {unit.commander.unitData.unitName}";
+            }
+        }
         statsText.text = stats;
         descriptionText.text = unit.unitData.description;
     }
