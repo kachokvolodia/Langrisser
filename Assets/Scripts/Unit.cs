@@ -99,6 +99,13 @@ public class Unit : MonoBehaviour
         return src != null ? src.unitData.commanderRangeBonus : 0;
     }
 
+    public int GetAuraMoraleBonus()
+    {
+        if (!IsInAura()) return 0;
+        Unit src = isCommander ? this : commander;
+        return src != null ? src.unitData.commanderMoraleBonus : 0;
+    }
+
     [HideInInspector]
     public HealthBar healthBar;
 
@@ -247,15 +254,19 @@ public class Unit : MonoBehaviour
         if (healthBar != null)
             Destroy(healthBar.gameObject);
 
-        // Если этот юнит — командир, его солдаты также погибают
+        // Если этот юнит — командир, его солдаты теряют связь и мораль
         if (isCommander && squad != null)
         {
             var soldiers = new List<Unit>(squad);
             foreach (var s in soldiers)
             {
                 if (s != null)
-                    s.Die();
+                {
+                    s.ModifyMorale(-30);
+                    s.commander = null;
+                }
             }
+            squad.Clear();
         }
 
         // Clear the cell this unit occupies

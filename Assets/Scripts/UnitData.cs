@@ -20,6 +20,7 @@ public class UnitData : ScriptableObject
     public int commanderMagicAttackBonus;
     public int commanderMagicDefenseBonus;
     public int commanderRangeBonus;
+    public int commanderMoraleBonus = 1;
     [TextArea]
     public string description;
 
