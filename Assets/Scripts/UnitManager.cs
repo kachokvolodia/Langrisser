@@ -7,13 +7,14 @@ public class UnitManager : MonoBehaviour
 {
     public static UnitManager Instance;
 
-    // Prefab lists for each faction
-    public GameObject[] auroraEmpireCommanderPrefabs;
-    public GameObject[] auroraEmpireSoldierPrefabs;
-    public GameObject[] goldenHandCommanderPrefabs;
-    public GameObject[] goldenHandSoldierPrefabs;
-    public GameObject[] moonArchonDominionCommanderPrefabs;
-    public GameObject[] moonArchonDominionSoldierPrefabs;
+    public GameObject[] playerCommanderPrefabs;
+    public GameObject[] playerSoldierPrefabs;
+    public GameObject[] enemyCommanderPrefabs;
+    public GameObject[] enemySoldierPrefabs;
+    public GameObject[] allyCommanderPrefabs;
+    public GameObject[] allySoldierPrefabs;
+    public GameObject[] enemyAllyCommanderPrefabs;
+    public GameObject[] enemyAllySoldierPrefabs;
     public GameObject[] neutralCommanderPrefabs;
     public GameObject[] neutralSoldierPrefabs;
     public GameObject[] evilNeutralCommanderPrefabs;
@@ -67,7 +68,7 @@ public class UnitManager : MonoBehaviour
         Vector2Int playerPos = GridManager.Instance.entryPoint;
         Vector2Int evilPos = GridManager.Instance.exitPoint;
 
-        SpawnSquad(auroraEmpireCommanderPrefabs, auroraEmpireSoldierPrefabs, playerPos, 2, Unit.Faction.AuroraEmpire);
+        SpawnSquad(playerCommanderPrefabs, playerSoldierPrefabs, playerPos, 2, Unit.Faction.AuroraEmpire);
         SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilPos, 2, Unit.Faction.EvilNeutral);
     }
 
