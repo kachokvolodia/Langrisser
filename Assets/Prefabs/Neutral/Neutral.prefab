@@ -110,8 +110,20 @@ MonoBehaviour:
   squad: []
   unitData: {fileID: 11400000, guid: 04b2c26a2c8350641a0cc9b8ccc0827d, type: 2}
   currentHP: 10
-  faction: 4
+  currentMP: 0
+  level: 1
+  experience: 0
+  faction: 3
+  bonusAttack: 0
+  bonusDefense: 0
+  bonusMagicAttack: 0
+  bonusMagicDefense: 0
+  bonusMaxHP: 0
+  bonusMaxMP: 0
+  attackRangeBonus: 0
+  healthBar: {fileID: 0}
   isSelected: 0
+  moveSpeed: 2
 --- !u!114 &3634279897977747256
 MonoBehaviour:
   m_ObjectHideFlags: 0

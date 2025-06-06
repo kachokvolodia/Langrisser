@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfca95af3a9d50446831249ac55af838, type: 3}
+  m_Name: AuroraEmpire
+  m_EditorClassIdentifier: 
+  faction: 0
+  color: {r: 0.26254895, g: 0.3760945, b: 0.9433962, a: 1}
+  icon: {fileID: 0}
+  flag: {fileID: 0}
+  description: 

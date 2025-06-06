@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4128895056449229038
+--- !u!1 &8785832555143759317
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,24 +8,24 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1650551346882429116}
-  - component: {fileID: 2714230756658664581}
-  - component: {fileID: 5977739592599296200}
-  - component: {fileID: 3576511541518882285}
+  - component: {fileID: 4957316242098383928}
+  - component: {fileID: 7247737578727331079}
+  - component: {fileID: 5901132350974582478}
+  - component: {fileID: 8819408239356081846}
   m_Layer: 0
-  m_Name: NeutralCommander
+  m_Name: MoonArchonHorseMan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1650551346882429116
+--- !u!4 &4957316242098383928
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4128895056449229038}
+  m_GameObject: {fileID: 8785832555143759317}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.39895, y: -0.16564, z: 0}
@@ -34,13 +34,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &2714230756658664581
+--- !u!212 &7247737578727331079
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4128895056449229038}
+  m_GameObject: {fileID: 8785832555143759317}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -78,24 +78,24 @@ SpriteRenderer:
   m_SortingLayerID: 1287562439
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 3622792381989719942, guid: 24a9fd782ccc0464081796527999122b, type: 3}
+  m_Sprite: {fileID: -8556315488751618723, guid: 48756e3868e6172439a423a12b202655, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.54, y: 0.6}
+  m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &5977739592599296200
+--- !u!114 &5901132350974582478
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4128895056449229038}
+  m_GameObject: {fileID: 8785832555143759317}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a3606943af9d3245b5eccb6a9152b43, type: 3}
@@ -104,16 +104,16 @@ MonoBehaviour:
   hasMoved: 0
   hasAttacked: 0
   hasActed: 0
-  isCommander: 1
+  isCommander: 0
   commanderRadius: 2
   commander: {fileID: 0}
   squad: []
-  unitData: {fileID: 11400000, guid: 04b2c26a2c8350641a0cc9b8ccc0827d, type: 2}
+  unitData: {fileID: 11400000, guid: 76469d9d5699ffe419d3634576786073, type: 2}
   currentHP: 10
   currentMP: 0
   level: 1
   experience: 0
-  faction: 3
+  faction: 1
   bonusAttack: 0
   bonusDefense: 0
   bonusMagicAttack: 0
@@ -124,15 +124,15 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   isSelected: 0
   moveSpeed: 2
---- !u!114 &3576511541518882285
+--- !u!114 &8819408239356081846
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4128895056449229038}
+  m_GameObject: {fileID: 8785832555143759317}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ae4823bab7320741bc7b766db1c69f0, type: 3}
+  m_Script: {fileID: 11500000, guid: 65bded6cd6c3fee438fbda93a52c8164, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
