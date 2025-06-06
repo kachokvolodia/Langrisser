@@ -113,9 +113,10 @@ MonoBehaviour:
   currentMP: 0
   level: 1
   experience: 0
+  morale: 50
   faction: 0
-  bonusAttack: 0
-  bonusDefense: 0
+  bonusAttack: 2
+  bonusDefense: 2
   bonusMagicAttack: 0
   bonusMagicDefense: 0
   bonusMaxHP: 0
