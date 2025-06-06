@@ -114,16 +114,34 @@ public class GridManager : MonoBehaviour
     {
         if (biome != null && biome.terrainSprites != null && biome.terrainSprites.Length > 0)
         {
-            float mainChance = 0.5f + (float)rng.NextDouble() * 0.1f; // 50-60%
-            if (rng.NextDouble() < mainChance)
-                return biome.terrainSprites[0].terrainType;
-
-            if (biome.terrainSprites.Length > 1)
+            List<TerrainType> allowed = new List<TerrainType>();
+            foreach (var set in biome.terrainSprites)
             {
-                int idx = rng.Next(1, biome.terrainSprites.Length);
-                return biome.terrainSprites[idx].terrainType;
+                switch (set.terrainType)
+                {
+                    case TerrainType.Ocean:
+                    case TerrainType.Wall:
+                    case TerrainType.Gate:
+                    case TerrainType.Ladder:
+                    case TerrainType.Town:
+                    case TerrainType.Cliff:
+                        break;
+                    default:
+                        allowed.Add(set.terrainType);
+                        break;
+                }
             }
-            return biome.terrainSprites[0].terrainType;
+
+            if (allowed.Count > 0)
+            {
+                float mainChance = 0.5f + (float)rng.NextDouble() * 0.1f; // 50-60%
+                TerrainType main = allowed[0];
+                if (rng.NextDouble() < mainChance)
+                    return main;
+
+                int idx = rng.Next(allowed.Count);
+                return allowed[idx];
+            }
         }
 
         return TerrainType.Grass;
@@ -227,8 +245,10 @@ public class GridManager : MonoBehaviour
 
     void GenerateFeatures()
     {
+        int level = DungeonProgressionManager.Instance != null ? DungeonProgressionManager.Instance.CurrentLevel : 1;
+
         // Lakes with surrounding cliffs
-        int lakeCount = rng.Next(1, 3);
+        int lakeCount = rng.Next(1, 3) + level / 7;
         for (int i = 0; i < lakeCount; i++)
         {
             var lake = GenerateCluster(TerrainType.Ocean, rng.Next(4, 8), 2);
@@ -248,12 +268,12 @@ public class GridManager : MonoBehaviour
         }
 
         // Forest clusters
-        int forestClusters = rng.Next(3, 6);
+        int forestClusters = rng.Next(3, 6) + level / 6;
         for (int i = 0; i < forestClusters; i++)
             GenerateCluster(TerrainType.Forest, rng.Next(6, 12), 1);
 
         // Mountain clusters with hills around
-        int mountainClusters = rng.Next(1, 3);
+        int mountainClusters = rng.Next(1, 3) + level / 8;
         for (int i = 0; i < mountainClusters; i++)
         {
             var mts = GenerateCluster(TerrainType.Mountain, rng.Next(3, 6), 2);
@@ -274,6 +294,11 @@ public class GridManager : MonoBehaviour
                 }
             }
         }
+
+        // Snow fields
+        int snowClusters = rng.Next(1, 3) + level / 10;
+        for (int i = 0; i < snowClusters; i++)
+            GenerateCluster(TerrainType.Snow, rng.Next(2, 5), 1);
 
         // Rivers
         int riverCount = rng.Next(1, 3);
@@ -320,6 +345,52 @@ public class GridManager : MonoBehaviour
                 else if (side == 2) pos = new Vector2Int(cx - 2, cy);
                 else pos = new Vector2Int(cx + 2, cy);
                 SetCellTerrain(pos.x, pos.y, TerrainType.Gate);
+            }
+        }
+
+        // Additional villages
+        if (level > 2 && width > 8 && height > 8)
+        {
+            int villages = rng.Next(1, 1 + level / 5);
+            for (int v = 0; v < villages; v++)
+                GenerateVillage();
+        }
+
+        // Occasional ruins
+        if (level > 4 && width > 10 && height > 10 && rng.NextDouble() < 0.4)
+        {
+            GenerateRuins();
+        }
+    }
+
+    void GenerateVillage()
+    {
+        int cx = rng.Next(2, width - 2);
+        int cy = rng.Next(2, height - 2);
+        for (int x = cx - 1; x <= cx + 1; x++)
+            for (int y = cy - 1; y <= cy + 1; y++)
+                SetCellTerrain(x, y, TerrainType.Town);
+
+        GenerateRoad(new Vector2Int(cx - 2, cy), new Vector2Int(cx + 2, cy));
+        GenerateRoad(new Vector2Int(cx, cy - 2), new Vector2Int(cx, cy + 2));
+    }
+
+    void GenerateRuins()
+    {
+        int cx = rng.Next(2, width - 2);
+        int cy = rng.Next(2, height - 2);
+
+        for (int x = cx - 1; x <= cx + 1; x++)
+            for (int y = cy - 1; y <= cy + 1; y++)
+                SetCellTerrain(x, y, TerrainType.Grass);
+
+        for (int x = cx - 2; x <= cx + 2; x++)
+        {
+            for (int y = cy - 2; y <= cy + 2; y++)
+            {
+                bool border = x == cx - 2 || x == cx + 2 || y == cy - 2 || y == cy + 2;
+                if (border && rng.NextDouble() > 0.3)
+                    SetCellTerrain(x, y, TerrainType.Wall);
             }
         }
     }
