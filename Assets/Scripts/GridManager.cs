@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Priority_Queue;
 
 public class GridManager : MonoBehaviour
 {
@@ -257,17 +258,23 @@ public class GridManager : MonoBehaviour
         return cells[grid.x, grid.y];
     }
 
-    public void PlaceEntryExit(Vector2Int entry, Vector2Int exit)
+    public void PlaceEntryExit(Vector2Int entry, Vector2Int exit, bool firstLevel)
     {
         entryPoint = entry;
         exitPoint = exit;
         exitUnlocked = false;
-        SetCellTerrain(entryPoint.x, entryPoint.y, TerrainType.Town);
+
         SetCellTerrain(exitPoint.x, exitPoint.y, TerrainType.Road);
+        SetCellTerrain(entryPoint.x, entryPoint.y, firstLevel ? TerrainType.Gate : TerrainType.Road);
+
+        if (firstLevel)
+            BuildEntryWalls();
 
         int dist = Mathf.Abs(entryPoint.x - exitPoint.x) + Mathf.Abs(entryPoint.y - exitPoint.y);
         if (dist < 6)
             AddBlockingRidge();
+
+        GenerateRoadPath();
     }
 
     void AddBlockingRidge()
@@ -284,6 +291,117 @@ public class GridManager : MonoBehaviour
     public void UnlockExit()
     {
         exitUnlocked = true;
+    }
+
+    void BuildEntryWalls()
+    {
+        if (entryPoint.x == 0 || entryPoint.x == width - 1)
+        {
+            int x = entryPoint.x;
+            for (int y = 0; y < height; y++)
+            {
+                if (y == entryPoint.y) continue;
+                SetCellTerrain(x, y, TerrainType.Wall);
+            }
+        }
+        else if (entryPoint.y == 0 || entryPoint.y == height - 1)
+        {
+            int y = entryPoint.y;
+            for (int x = 0; x < width; x++)
+            {
+                if (x == entryPoint.x) continue;
+                SetCellTerrain(x, y, TerrainType.Wall);
+            }
+        }
+    }
+
+    bool IsRoadTraversable(Vector2Int pos)
+    {
+        TerrainType t = cells[pos.x, pos.y].terrainType;
+        if (t == TerrainType.Wall || t == TerrainType.Mountain || t == TerrainType.Cliff || t == TerrainType.Ocean)
+            return false;
+        return true;
+    }
+
+    List<Vector2Int> GetRoadNeighbors(Vector2Int pos)
+    {
+        List<Vector2Int> list = new List<Vector2Int>();
+        Vector2Int[] deltas = { new Vector2Int(0,1), new Vector2Int(1,0), new Vector2Int(0,-1), new Vector2Int(-1,0) };
+        foreach (var d in deltas)
+        {
+            Vector2Int n = pos + d;
+            if (n.x < 0 || n.x >= width || n.y < 0 || n.y >= height)
+                continue;
+            if (IsRoadTraversable(n))
+                list.Add(n);
+        }
+        return list;
+    }
+
+    int Heuristic(Vector2Int a, Vector2Int b)
+    {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+    }
+
+    List<Vector2Int> Reconstruct(Vector2Int current, Dictionary<Vector2Int, Vector2Int> cameFrom)
+    {
+        List<Vector2Int> path = new List<Vector2Int> { current };
+        while (cameFrom.ContainsKey(current))
+        {
+            current = cameFrom[current];
+            path.Insert(0, current);
+        }
+        return path;
+    }
+
+    List<Vector2Int> FindRoadPath(Vector2Int start, Vector2Int goal)
+    {
+        var open = new SimplePriorityQueue<Vector2Int, int>();
+        var cameFrom = new Dictionary<Vector2Int, Vector2Int>();
+        var gScore = new Dictionary<Vector2Int, int>();
+        var fScore = new Dictionary<Vector2Int, int>();
+
+        open.Enqueue(start, 0);
+        gScore[start] = 0;
+        fScore[start] = Heuristic(start, goal);
+
+        while (open.Count > 0)
+        {
+            Vector2Int current = open.Dequeue();
+            if (current == goal)
+                return Reconstruct(current, cameFrom);
+
+            foreach (var n in GetRoadNeighbors(current))
+            {
+                int tentative = gScore[current] + 1;
+                if (!gScore.ContainsKey(n) || tentative < gScore[n])
+                {
+                    cameFrom[n] = current;
+                    gScore[n] = tentative;
+                    int pri = tentative + Heuristic(n, goal);
+                    fScore[n] = pri;
+                    if (!open.Contains(n))
+                        open.Enqueue(n, pri);
+                    else
+                        open.UpdatePriority(n, pri);
+                }
+            }
+        }
+        return null;
+    }
+
+    void GenerateRoadPath()
+    {
+        var path = FindRoadPath(entryPoint, exitPoint);
+        if (path == null) return;
+        foreach (var p in path)
+        {
+            if (p == entryPoint || p == exitPoint) continue;
+            if (cells[p.x, p.y].terrainType == TerrainType.River)
+                SetCellTerrain(p.x, p.y, TerrainType.Bridge);
+            else
+                SetCellTerrain(p.x, p.y, TerrainType.Road);
+        }
     }
 
     public bool IsExitCell(Cell cell)
