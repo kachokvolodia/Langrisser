@@ -587,5 +587,5 @@ public class GridManager : MonoBehaviour
         return pos == exitPoint;
     }
 
-    public bool ExitUnlocked => exitUnlocked;
+    public bool IsExitUnlocked => exitUnlocked;
 }
