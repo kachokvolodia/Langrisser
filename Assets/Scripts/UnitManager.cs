@@ -70,6 +70,9 @@ public class UnitManager : MonoBehaviour
 
         SpawnSquad(playerCommanderPrefabs, playerSoldierPrefabs, playerPos, 2, Unit.Faction.AuroraEmpire);
         SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilPos, 2, Unit.Faction.EvilNeutral);
+
+        // Проверим, остались ли противники. Если никого нет, открываем выход
+        TurnManager.Instance?.CheckVictory();
     }
 
     // Спавнит командира и n солдат вокруг него по ближайшим свободным клеткам
@@ -333,7 +336,7 @@ public class UnitManager : MonoBehaviour
         if (finalCell != null)
             finalCell.occupyingUnit = unit;
 
-        if (finalCell != null && GridManager.Instance.IsExitCell(finalCell) && GridManager.Instance.ExitUnlocked)
+        if (finalCell != null && GridManager.Instance.IsExitCell(finalCell) && GridManager.Instance.IsExitUnlocked)
         {
             DungeonProgressionManager.Instance.NextLevel();
             yield break;
