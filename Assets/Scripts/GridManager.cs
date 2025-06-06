@@ -13,6 +13,10 @@ public class GridManager : MonoBehaviour
     public Biome biome;
     public Material cellMaterial;
 
+    [Header("Noise Settings")]
+    public bool usePerlinNoise = false;
+    public float noiseScale = 0.1f;
+
     // Seed for deterministic generation
     public int seed = 0;
     public bool randomSeed = true;
@@ -108,6 +112,16 @@ public class GridManager : MonoBehaviour
         cell.terrainType = tType;
         cell.moveCost = GetMoveCostForType(tType);
         cell.GetComponent<SpriteRenderer>().sprite = GetSpriteForType(tType);
+    }
+
+    TerrainType ChooseTerrainType(int x, int y)
+    {
+        float noise = Mathf.PerlinNoise((x + seed) * noiseScale, (y + seed) * noiseScale);
+        if (noise < 0.2f) return TerrainType.Ocean;
+        if (noise < 0.4f) return TerrainType.Forest;
+        if (noise < 0.6f) return TerrainType.Grass;
+        if (noise < 0.8f) return TerrainType.Hill;
+        return TerrainType.Mountain;
     }
 
     TerrainType ChooseTerrainType()
@@ -235,7 +249,11 @@ public class GridManager : MonoBehaviour
                 Cell cellScript = cell.AddComponent<Cell>();
                 cells[x, y] = cellScript;
 
-                TerrainType t = ChooseTerrainType();
+                TerrainType t;
+                if (usePerlinNoise)
+                    t = ChooseTerrainType(x, y);
+                else
+                    t = ChooseTerrainType();
                 SetCellTerrain(x, y, t);
             }
         }
