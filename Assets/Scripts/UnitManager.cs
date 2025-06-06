@@ -230,6 +230,21 @@ public class UnitManager : MonoBehaviour
         AllUnits.Remove(unit);
     }
 
+    // Уведомление о смерти юнита: корректируем мораль и убираем из списка
+    public void NotifyUnitDied(Unit unit)
+    {
+        var snapshot = new List<Unit>(AllUnits);
+        foreach (var u in snapshot)
+        {
+            if (u == null || u == unit) continue;
+            if (u.faction == unit.faction)
+                u.ModifyMorale(-10);
+            else if (FactionManager.Instance.GetRelation(u.faction, unit.faction) == FactionManager.RelationType.Enemy)
+                u.ModifyMorale(5);
+        }
+        UnregisterUnit(unit);
+    }
+
     // --- ДАЛЬШЕ идёт твой текущий код (всё по-старому, кроме FindObjectsOfType) ---
 
     public void SelectUnit(Unit unit)
@@ -441,9 +456,15 @@ public class UnitManager : MonoBehaviour
         int attackerHPAfter = attacker.currentHP - dmgToAttacker;
 
         if (defenderHPAfter <= 0)
+        {
             ExperienceManager.AwardExperience(attacker, defender);
+            attacker.ModifyMorale(10);
+        }
         if (attackerHPAfter <= 0)
+        {
             ExperienceManager.AwardExperience(defender, attacker);
+            defender.ModifyMorale(10);
+        }
 
         defender.TakeDamage(dmgToDefender);
         if (dmgToAttacker > 0) attacker.TakeDamage(dmgToAttacker);
