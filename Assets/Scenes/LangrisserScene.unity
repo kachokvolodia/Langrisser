@@ -2335,36 +2335,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615a3d52d285f02439e5539150c88647, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerCommanderPrefabs:
+  auroraEmpireCommanderPrefabs:
   - {fileID: 8785832555143759317, guid: e61c7f951b6c5144f9dfa470d0ab3d31, type: 3}
-  playerSoldierPrefabs:
+  auroraEmpireSoldierPrefabs:
   - {fileID: 8785832555143759317, guid: 8c22968c747980646b3279554a072e6b, type: 3}
   - {fileID: 8785832555143759317, guid: c5321eae2b7d98f4685236a7ad89f5ad, type: 3}
   - {fileID: 8785832555143759317, guid: 6852b9e428cc8d546a61d86696f148c3, type: 3}
   - {fileID: 8785832555143759317, guid: 3893b39858e196441b900b7fa7045b56, type: 3}
   - {fileID: 8785832555143759317, guid: 318bc481983583c4f80a0454957dd9f9, type: 3}
   - {fileID: 8785832555143759317, guid: 9cd811197b20af548b39fdfde5158c65, type: 3}
-  enemyCommanderPrefabs:
+  goldenHandCommanderPrefabs:
   - {fileID: 8785832555143759317, guid: 70233d03c9c46464cb9ebf30e1b47f2f, type: 3}
-  enemySoldierPrefabs:
+  goldenHandSoldierPrefabs:
   - {fileID: 8785832555143759317, guid: da5c1bf1ee11095468c091024c7d6c0a, type: 3}
   - {fileID: 8785832555143759317, guid: 0fd96f134f8e39f40b1dea6659186ae4, type: 3}
   - {fileID: 8785832555143759317, guid: 212670b482294014dbcf72f5ef08e845, type: 3}
   - {fileID: 8785832555143759317, guid: 463ac9d483470ba478d211480234f394, type: 3}
   - {fileID: 8785832555143759317, guid: cf6f53d0b8fd3304f96da2240d0a30dd, type: 3}
   - {fileID: 8785832555143759317, guid: 69ffdb47e5bda8d488e9049f0b53c7a2, type: 3}
-  allyCommanderPrefabs:
+  auroraEmpireCommanderPrefabs:
   - {fileID: 8785832555143759317, guid: 0fa0eeb5161df444b882cc2a5fc4c47d, type: 3}
-  allySoldierPrefabs:
+  auroraEmpireSoldierPrefabs:
   - {fileID: 8785832555143759317, guid: 5c05d25a1ac3de8469c4bd7c3fa411fe, type: 3}
   - {fileID: 8785832555143759317, guid: 9b9754cd06103784b86d93519ccbcd47, type: 3}
   - {fileID: 8785832555143759317, guid: b3de62bd84f3b8243b59fd0b2b0a02cd, type: 3}
   - {fileID: 8785832555143759317, guid: 799d7a8fb3bab584f9627d46d95bf6d6, type: 3}
   - {fileID: 8785832555143759317, guid: b7c0063d086bf234dad5289558015f1c, type: 3}
   - {fileID: 8785832555143759317, guid: 3c2d17e7b33bc444398a10a9c5af24c0, type: 3}
-  enemyAllyCommanderPrefabs:
+  moonArchonDominionCommanderPrefabs:
   - {fileID: 8785832555143759317, guid: c32274b0eacf4ed478bbdef457583db7, type: 3}
-  enemyAllySoldierPrefabs:
+  moonArchonDominionSoldierPrefabs:
   - {fileID: 8785832555143759317, guid: 7f439f86372a21c458f60896ce198ceb, type: 3}
   - {fileID: 8785832555143759317, guid: 3d0a60a5abc621148bc0c9437e6ccc2d, type: 3}
   - {fileID: 8785832555143759317, guid: 4436f2818bc818b408854239047d8d83, type: 3}
