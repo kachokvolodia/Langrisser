@@ -40,6 +40,8 @@ public class Unit : MonoBehaviour
     public int currentMP;
     public int level = 1;
     public int experience = 0;
+    // --- Новое: показатель морали (0-100) ---
+    public int morale = 50;
     public Faction faction;
 
     // Дополнительные бонусы от повышения уровня
@@ -169,6 +171,12 @@ public class Unit : MonoBehaviour
         }
     }
 
+    // Изменить мораль юнита на указанное значение
+    public void ModifyMorale(int amount)
+    {
+        morale = Mathf.Clamp(morale + amount, 0, 100);
+    }
+
     void LevelUp()
     {
         level++;
@@ -196,9 +204,9 @@ public class Unit : MonoBehaviour
 
     public void Die()
     {
-        // Сразу удаляем из менеджера юнитов, чтобы безопасно изменить коллекцию
+        // Сообщаем менеджеру о смерти юнита (он снимет с учёта и скорректирует мораль)
         if (UnitManager.Instance != null)
-            UnitManager.Instance.UnregisterUnit(this);
+            UnitManager.Instance.NotifyUnitDied(this);
 
         if (healthBar != null)
             Destroy(healthBar.gameObject);
@@ -231,8 +239,11 @@ public class Unit : MonoBehaviour
 
     public int CalculateDamage(Unit target)
     {
-        float myPower = Attack * ((float)currentHP / MaxHP);
-        float theirDef = target.Defense * ((float)target.currentHP / target.MaxHP);
+        float moraleAtk = 1f + (morale - 50f) / 250f;
+        float moraleDef = 1f + (target.morale - 50f) / 250f;
+
+        float myPower = Attack * moraleAtk * ((float)currentHP / MaxHP);
+        float theirDef = target.Defense * moraleDef * ((float)target.currentHP / target.MaxHP);
 
         myPower += GetAttackBonus();
         theirDef += target.GetDefenseBonus();
@@ -249,11 +260,19 @@ public class Unit : MonoBehaviour
 
 
 
-    public int GetMoveRange() => unitData != null ? MoveRange : 1;
+    public int GetMoveRange()
+    {
+        int range = unitData != null ? MoveRange : 1;
+        if (WeatherManager.Instance != null && WeatherManager.Instance.CurrentWeather == WeatherType.Rain)
+            range = Mathf.Max(1, range - 1);
+        return range;
+    }
 
     public int GetAttackRange()
     {
         int range = unitData != null ? AttackRangeTotal : 1;
+        if (WeatherManager.Instance != null && WeatherManager.Instance.CurrentWeather == WeatherType.Fog)
+            range = Mathf.Max(1, range - 1);
         Cell cell = UnitManager.Instance != null ? UnitManager.Instance.GetCellOfUnit(this) : null;
         if (unitData != null && unitData.unitClass == UnitClass.Archer && cell != null &&
             (cell.terrainType == TerrainType.Hill || cell.terrainType == TerrainType.Mountain))

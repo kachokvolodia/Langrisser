@@ -14,6 +14,7 @@ public class StatusBarUI : MonoBehaviour
     public Button endTurnButton;
     public Button menuButton;
     public TextMeshProUGUI turnInfoText;
+    public TextMeshProUGUI weatherInfoText;
 
     private void Awake()
     {
@@ -87,6 +88,12 @@ public class StatusBarUI : MonoBehaviour
     {
         if (endTurnButton != null)
             endTurnButton.interactable = value;
+    }
+
+    public void SetWeatherInfo(WeatherType weather)
+    {
+        if (weatherInfoText != null)
+            weatherInfoText.text = $"Погода: {weather}";
     }
 }
 

@@ -33,6 +33,8 @@ public class TurnManager : MonoBehaviour
         StatusBarUI.Instance?.SetTurnInfo(faction);
         StatusBarUI.Instance?.SetEndTurnButtonInteractable(faction == FactionManager.PlayerFaction);
 
+        WeatherManager.Instance?.RandomizeWeather();
+
         UnitManager.Instance.ApplyWaitHealing(faction);
         UnitManager.Instance.ResetUnitsForNextTurn(faction);
 
