@@ -60,19 +60,19 @@ public class DungeonProgressionManager : MonoBehaviour
         Vector2Int exit;
         if (horizontal)
         {
-            int yEntry = Random.Range(1, info.height - 2);
-            int yExit = Random.Range(1, info.height - 2);
-            entry = new Vector2Int(1, yEntry);
-            exit = new Vector2Int(info.width - 2, yExit);
+            int yEntry = Random.Range(0, info.height);
+            int yExit = Random.Range(0, info.height);
+            entry = new Vector2Int(0, yEntry);
+            exit = new Vector2Int(info.width - 1, yExit);
         }
         else
         {
-            int xEntry = Random.Range(1, info.width - 2);
-            int xExit = Random.Range(1, info.width - 2);
-            entry = new Vector2Int(xEntry, 1);
-            exit = new Vector2Int(xExit, info.height - 2);
+            int xEntry = Random.Range(0, info.width);
+            int xExit = Random.Range(0, info.width);
+            entry = new Vector2Int(xEntry, 0);
+            exit = new Vector2Int(xExit, info.height - 1);
         }
-        GridManager.Instance.PlaceEntryExit(entry, exit);
+        GridManager.Instance.PlaceEntryExit(entry, exit, level == 1);
     }
 
     LevelInfo GenerateLevelInfo(int levelIndex)
