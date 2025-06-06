@@ -546,6 +546,10 @@ public class UnitManager : MonoBehaviour
                     unit.UpdateHealthBar();
                 }
             }
+
+            // Поднять мораль за нахождение в ауре командира
+            if (unit.IsInAura())
+                unit.ModifyMorale(1);
         }
     }
 

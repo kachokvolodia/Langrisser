@@ -63,6 +63,42 @@ public class Unit : MonoBehaviour
     public int attackRangeBonus = 0;
     public int AttackRangeTotal => AttackRangeBase + attackRangeBonus;
 
+    // ----- Commander aura bonuses -----
+    public int GetAuraAttackBonus()
+    {
+        if (!IsInAura()) return 0;
+        Unit src = isCommander ? this : commander;
+        return src != null ? src.unitData.commanderAttackBonus : 0;
+    }
+
+    public int GetAuraDefenseBonus()
+    {
+        if (!IsInAura()) return 0;
+        Unit src = isCommander ? this : commander;
+        return src != null ? src.unitData.commanderDefenseBonus : 0;
+    }
+
+    public int GetAuraMagicAttackBonus()
+    {
+        if (!IsInAura()) return 0;
+        Unit src = isCommander ? this : commander;
+        return src != null ? src.unitData.commanderMagicAttackBonus : 0;
+    }
+
+    public int GetAuraMagicDefenseBonus()
+    {
+        if (!IsInAura()) return 0;
+        Unit src = isCommander ? this : commander;
+        return src != null ? src.unitData.commanderMagicDefenseBonus : 0;
+    }
+
+    public int GetAuraRangeBonus()
+    {
+        if (!IsInAura()) return 0;
+        Unit src = isCommander ? this : commander;
+        return src != null ? src.unitData.commanderRangeBonus : 0;
+    }
+
     [HideInInspector]
     public HealthBar healthBar;
 
@@ -248,7 +284,11 @@ public class Unit : MonoBehaviour
         myPower += GetAttackBonus();
         theirDef += target.GetDefenseBonus();
 
-        // ======= Бонусы за ауру =======
+        // ======= Бонусы за ауру командира =======
+        myPower += GetAuraAttackBonus();
+        theirDef += target.GetAuraDefenseBonus();
+
+        // Старые плоские бонусы ауры
         if (IsInAura()) myPower += 2;             // если в ауре, атака +2
         if (target.IsInAura()) theirDef += 1;     // если цель в ауре, защита +1
 
@@ -279,6 +319,7 @@ public class Unit : MonoBehaviour
         {
             range += 1; // бонус за высоту
         }
+        range += GetAuraRangeBonus();
         return range;
     }
 
