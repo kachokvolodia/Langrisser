@@ -34,7 +34,7 @@ public class PathfindingManager : MonoBehaviour
 
             foreach (Cell neighbor in GetNeighbors(current, unit))
             {
-                if (!neighbor.IsPassable(unit) && neighbor != goal)
+                if (!IsMovementAllowed(current, neighbor, unit) && neighbor != goal)
                     continue;
                 int tentativeGScore = gScore[current] + neighbor.GetMoveCost(unit);
                 if (neighbor.occupyingUnit != null && neighbor != goal)
@@ -74,6 +74,24 @@ public class PathfindingManager : MonoBehaviour
         return totalPath;
     }
 
+    bool IsMovementAllowed(Cell from, Cell to, Unit unit)
+    {
+        if (unit != null && unit.unitData.movementType == MovementType.Flyer)
+            return to.IsPassable(unit);
+
+        if (to.terrainType == TerrainType.Wall)
+        {
+            return from.terrainType == TerrainType.Wall || from.terrainType == TerrainType.Ladder || from.terrainType == TerrainType.Gate;
+        }
+
+        if (from.terrainType == TerrainType.Wall)
+        {
+            return to.terrainType == TerrainType.Wall || to.terrainType == TerrainType.Ladder || to.terrainType == TerrainType.Gate;
+        }
+
+        return to.IsPassable(unit);
+    }
+
     List<Cell> GetNeighbors(Cell cell, Unit unit)
     {
         List<Cell> neighbors = new List<Cell>();
@@ -111,7 +129,7 @@ public class PathfindingManager : MonoBehaviour
             var (cell, cost) = queue.Dequeue();
             foreach (var n in GetNeighbors(cell, unit))
             {
-                if (!n.IsPassable(unit)) continue;
+                if (!IsMovementAllowed(cell, n, unit)) continue;
                 int newCost = cost + n.GetMoveCost(unit);
                 if (newCost > movePoints) continue;
                 if (!visited.ContainsKey(n) || newCost < visited[n])

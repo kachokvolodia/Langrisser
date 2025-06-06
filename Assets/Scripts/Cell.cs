@@ -118,7 +118,7 @@ public class Cell : MonoBehaviour
 
     public bool IsPassable(Unit unit)
     {
-        if (terrainType == TerrainType.Ocean || terrainType == TerrainType.Wall || terrainType == TerrainType.River)
+        if (terrainType == TerrainType.Ocean || terrainType == TerrainType.Wall || terrainType == TerrainType.River || terrainType == TerrainType.Cliff)
         {
             return unit != null && unit.unitData.movementType == MovementType.Flyer;
         }
@@ -153,6 +153,14 @@ public class Cell : MonoBehaviour
                 return 1;
             case TerrainType.Town:
                 return 1;
+            case TerrainType.Ladder:
+                return 2;
+            case TerrainType.Gate:
+                return 1;
+            case TerrainType.River:
+            case TerrainType.Cliff:
+            case TerrainType.Wall:
+                return 99;
             default:
                 return moveCost;
         }

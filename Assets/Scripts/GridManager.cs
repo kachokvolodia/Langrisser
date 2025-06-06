@@ -79,12 +79,19 @@ public class GridManager : MonoBehaviour
             case TerrainType.Mountain:
             case TerrainType.Swamp:
                 return 3;
+            case TerrainType.Ladder:
+                return 2;
             case TerrainType.Ocean:
             case TerrainType.Road:
             case TerrainType.Bridge:
             case TerrainType.Town:
                 return 1;
+            case TerrainType.River:
+                return 99;
+            case TerrainType.Gate:
+                return 1;
             case TerrainType.Wall:
+            case TerrainType.Cliff:
                 return 99;
             default:
                 return 1;
@@ -97,6 +104,25 @@ public class GridManager : MonoBehaviour
         cell.terrainType = tType;
         cell.moveCost = GetMoveCostForType(tType);
         cell.GetComponent<SpriteRenderer>().sprite = GetSpriteForType(tType);
+    }
+
+    TerrainType ChooseTerrainType()
+    {
+        if (biome != null && biome.terrainSprites != null && biome.terrainSprites.Length > 0)
+        {
+            float mainChance = 0.5f + (float)rng.NextDouble() * 0.1f; // 50-60%
+            if (rng.NextDouble() < mainChance)
+                return biome.terrainSprites[0].terrainType;
+
+            if (biome.terrainSprites.Length > 1)
+            {
+                int idx = rng.Next(1, biome.terrainSprites.Length);
+                return biome.terrainSprites[idx].terrainType;
+            }
+            return biome.terrainSprites[0].terrainType;
+        }
+
+        return TerrainType.Grass;
     }
 
     List<Vector2Int> GenerateCluster(TerrainType type, int size, int margin = 1)
@@ -186,7 +212,9 @@ public class GridManager : MonoBehaviour
 
                 Cell cellScript = cell.AddComponent<Cell>();
                 cells[x, y] = cellScript;
-                SetCellTerrain(x, y, TerrainType.Grass);
+
+                TerrainType t = ChooseTerrainType();
+                SetCellTerrain(x, y, t);
             }
         }
     }
