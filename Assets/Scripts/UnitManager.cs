@@ -68,8 +68,8 @@ public class UnitManager : MonoBehaviour
         Vector2Int playerPos = GridManager.Instance.entryPoint;
         Vector2Int evilPos = GridManager.Instance.exitPoint;
 
-        SpawnSquad(playerCommanderPrefabs, playerSoldierPrefabs, playerPos, 1, Unit.Faction.AuroraEmpire);
-        SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilPos, 1, Unit.Faction.EvilNeutral);
+        SpawnSquad(playerCommanderPrefabs, playerSoldierPrefabs, playerPos, 2, Unit.Faction.AuroraEmpire);
+        SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilPos, 2, Unit.Faction.EvilNeutral);
     }
 
     // Спавнит командира и n солдат вокруг него по ближайшим свободным клеткам

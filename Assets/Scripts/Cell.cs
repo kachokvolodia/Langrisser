@@ -165,4 +165,13 @@ public class Cell : MonoBehaviour
                 return moveCost;
         }
     }
+
+    // Set a base color for the cell and remember it as original
+    public void SetBaseColor(Color color)
+    {
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.color = color;
+        originalColor = color;
+    }
 }
