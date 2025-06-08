@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adfa94ee879e26946ac3a9c9e12eb538, type: 3}
-  m_Name: CommanderFootManData
+  m_Name: BowManData
   m_EditorClassIdentifier: 
-  unitName: "\u041A\u043E\u043C\u0430\u043D\u0434\u0438\u0440 \u041F\u0435\u0445\u043E\u0442\u0438\u043D\u0435\u0446"
+  unitName: "\u041B\u0443\u0447\u043D\u0438\u043A"
   maxHP: 10
   maxMP: 0
   attack: 10
@@ -20,14 +20,23 @@ MonoBehaviour:
   defense: 10
   magicDefense: 0
   moveRange: 3
-  attackRange: 1
-  unitClass: 0
+  attackRange: 3
+  unitClass: 3
   movementType: 0
-  commanderAttackBonus: 2
-  commanderDefenseBonus: 2
+  commanderAttackBonus: 0
+  commanderDefenseBonus: 0
   commanderMagicAttackBonus: 0
   commanderMagicDefenseBonus: 0
   commanderRangeBonus: 0
   commanderMoraleBonus: 1
   description: 
-  factionVariants: []
+  factionVariants:
+  - faction: 0
+    unitName: 
+    sprite: {fileID: 0}
+  - faction: 1
+    unitName: 
+    sprite: {fileID: 0}
+  - faction: 2
+    unitName: 
+    sprite: {fileID: 0}
