@@ -13,46 +13,7 @@ MonoBehaviour:
   m_Name: Grassland
   m_EditorClassIdentifier: 
   biomeName: Grassland
-  terrainSprites:
+  terrainTiles:
   - terrainType: 0
-    sprites:
-    - {fileID: 21300000, guid: 5d57a73c26bfd514987511f81906257e, type: 3}
-  - terrainType: 1
-    sprites:
-    - {fileID: 21300000, guid: ad270aa87ae261f4f9f1e7b68b4a3f9e, type: 3}
-  - terrainType: 2
-    sprites:
-    - {fileID: 21300000, guid: 8ad8c370e8fbe7f4a863e489270bd697, type: 3}
-  - terrainType: 3
-    sprites:
-    - {fileID: 21300000, guid: fda9c68a074bdcf4fb44dede03e1f47b, type: 3}
-  - terrainType: 4
-    sprites:
-    - {fileID: 21300000, guid: 28773f41398b9054bb1d15b86fbb695f, type: 3}
-  - terrainType: 5
-    sprites:
-    - {fileID: 21300000, guid: 78ca9ebfd89296c4a96987df674a6e41, type: 3}
-  - terrainType: 6
-    sprites:
-    - {fileID: 21300000, guid: 97b70e209e008e04ca59d5208d8f2b44, type: 3}
-  - terrainType: 7
-    sprites:
-    - {fileID: 21300000, guid: 356f33e0ed8e824498cfce7c76955144, type: 3}
-  - terrainType: 8
-    sprites:
-    - {fileID: 21300000, guid: 1df8e6c2300bfe148959707e3b855f3a, type: 3}
-  - terrainType: 9
-    sprites:
-    - {fileID: 21300000, guid: f47094b05923d654295e177770755ba3, type: 3}
-  - terrainType: 10
-    sprites:
-    - {fileID: 21300000, guid: b56b9c9485098a54ca4a300f5f0c3447, type: 3}
-  - terrainType: 11
-    sprites:
-    - {fileID: 21300000, guid: 6337e3ffa982ba14284d9eed2a65d75b, type: 3}
-  - terrainType: 12
-    sprites:
-    - {fileID: 21300000, guid: 205cd6fbcef10dc42aca808a9bb97a17, type: 3}
-  - terrainType: 15
-    sprites:
-    - {fileID: 21300000, guid: f8ce94294d6def947a70c98b144fc71c, type: 3}
+    tiles:
+    - {fileID: 11400000, guid: 863b4b688e6a41e458b8a232173ad16e, type: 2}
