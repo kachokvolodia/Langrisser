@@ -18,7 +18,15 @@ public class Cell : MonoBehaviour
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        originalColor = spriteRenderer.color;
+        if (spriteRenderer.sprite == null)
+        {
+            var tex = new Texture2D(1, 1);
+            tex.SetPixel(0, 0, Color.white);
+            tex.Apply();
+            spriteRenderer.sprite = Sprite.Create(tex, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1f);
+        }
+        originalColor = new Color(1f, 1f, 1f, 0f);
+        spriteRenderer.color = originalColor;
     }
     void OnMouseEnter()
     {
@@ -97,13 +105,13 @@ public class Cell : MonoBehaviour
 
     public void Unhighlight()
     {
-        spriteRenderer.color = Color.white;
+        spriteRenderer.color = originalColor;
         isMoveHighlight = false;
     }
 
     public void HighlightAura(Color color)
     {
-        GetComponent<SpriteRenderer>().color = color;
+        spriteRenderer.color = color;
     }
 
     public void UnhighlightAura()
@@ -111,9 +119,9 @@ public class Cell : MonoBehaviour
         // Если клетка уже подсвечена как зона движения, оставляем cyan,
         // иначе возвращаем исходный цвет
         if (isMoveHighlight)
-            GetComponent<SpriteRenderer>().color = Color.cyan;
+            spriteRenderer.color = Color.cyan;
         else
-            GetComponent<SpriteRenderer>().color = originalColor;
+            spriteRenderer.color = originalColor;
     }
 
     public bool IsPassable(Unit unit)

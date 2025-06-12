@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using Priority_Queue;
 
 public class GridManager : MonoBehaviour
@@ -9,13 +10,18 @@ public class GridManager : MonoBehaviour
     public int width = 10;
     public int height = 10;
     public float cellSize = 1f;
-    public Sprite[] tileSprites;
     public Biome biome;
-    public Material cellMaterial;
+
+    [Header("Tilemaps")]
+    public Tilemap groundTilemap;
+    public Tilemap terrainTilemap;
+    public Tilemap objectTilemap;
+    public TileBase groundTile;
 
     [Header("Noise Settings")]
-    public bool usePerlinNoise = false;
-    public float noiseScale = 0.1f;
+    public bool usePerlinNoise = true;
+    public float terrainNoiseScale = 0.1f;
+    public float objectNoiseScale = 0.2f;
 
     // Seed for deterministic generation
     public int seed = 0;
@@ -63,15 +69,13 @@ public class GridManager : MonoBehaviour
     void Start()
     {
     }
-    Sprite GetSpriteForType(TerrainType type)
+    TileBase GetTileForType(TerrainType type)
     {
         if (biome != null)
         {
-            Sprite s = biome.GetSprite(type);
-            if (s != null) return s;
+            TileBase t = biome.GetTile(type);
+            if (t != null) return t;
         }
-        if (tileSprites != null && tileSprites.Length > 0)
-            return tileSprites[rng.Next(tileSprites.Length)];
         return null;
     }
 
@@ -111,12 +115,15 @@ public class GridManager : MonoBehaviour
         Cell cell = cells[x, y];
         cell.terrainType = tType;
         cell.moveCost = GetMoveCostForType(tType);
-        cell.GetComponent<SpriteRenderer>().sprite = GetSpriteForType(tType);
+
+        TileBase tile = GetTileForType(tType);
+        if (tile != null)
+            terrainTilemap.SetTile(new Vector3Int(x, y, 0), tile);
     }
 
     TerrainType ChooseTerrainType(int x, int y)
     {
-        float noise = Mathf.PerlinNoise((x + seed) * noiseScale, (y + seed) * noiseScale);
+        float noise = Mathf.PerlinNoise((x + seed) * terrainNoiseScale, (y + seed) * terrainNoiseScale);
         if (noise < 0.2f) return TerrainType.Ocean;
         if (noise < 0.4f) return TerrainType.Forest;
         if (noise < 0.6f) return TerrainType.Grass;
@@ -126,10 +133,10 @@ public class GridManager : MonoBehaviour
 
     TerrainType ChooseTerrainType()
     {
-        if (biome != null && biome.terrainSprites != null && biome.terrainSprites.Length > 0)
+        if (biome != null && biome.terrainTiles != null && biome.terrainTiles.Length > 0)
         {
             List<TerrainType> allowed = new List<TerrainType>();
-            foreach (var set in biome.terrainSprites)
+            foreach (var set in biome.terrainTiles)
             {
                 switch (set.terrainType)
                 {
@@ -227,6 +234,10 @@ public class GridManager : MonoBehaviour
         float xOffset = -((width - 1) * cellSize) / 2f;
         float yOffset = -((height - 1) * cellSize) / 2f;
 
+        groundTilemap.ClearAllTiles();
+        terrainTilemap.ClearAllTiles();
+        objectTilemap.ClearAllTiles();
+
         cells = new Cell[width, height];
 
         for (int x = 0; x < width; x++)
@@ -238,9 +249,7 @@ public class GridManager : MonoBehaviour
                 cell.transform.parent = transform;
 
                 var spriteRenderer = cell.AddComponent<SpriteRenderer>();
-                spriteRenderer.color = Color.white;
-                if (cellMaterial != null)
-                    spriteRenderer.material = cellMaterial;
+                spriteRenderer.color = new Color(1f,1f,1f,0f);
 
                 cell.transform.localScale = Vector3.one;
 
@@ -249,16 +258,33 @@ public class GridManager : MonoBehaviour
                 Cell cellScript = cell.AddComponent<Cell>();
                 cells[x, y] = cellScript;
 
+                if (groundTile != null)
+                    groundTilemap.SetTile(new Vector3Int(x, y, 0), groundTile);
+
                 TerrainType t;
                 if (usePerlinNoise)
                     t = ChooseTerrainType(x, y);
                 else
                     t = ChooseTerrainType();
                 SetCellTerrain(x, y, t);
+
+                if (usePerlinNoise)
+                {
+                    float objNoise = Mathf.PerlinNoise((x + seed + 1000) * objectNoiseScale, (y + seed + 1000) * objectNoiseScale);
+                    if (objNoise > 0.7f && t == TerrainType.Grass)
+                    {
+                        TileBase objTile = GetTileForType(TerrainType.Forest);
+                        if (objTile != null)
+                            objectTilemap.SetTile(new Vector3Int(x, y, 0), objTile);
+                    }
+                }
             }
         }
 
         GenerateFeatures();
+
+        terrainTilemap.RefreshAllTiles();
+        objectTilemap.RefreshAllTiles();
     }
 
     void GenerateFeatures()
