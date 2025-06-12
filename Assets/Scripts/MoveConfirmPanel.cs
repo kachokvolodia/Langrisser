@@ -27,7 +27,7 @@ public class MoveConfirmPanel : MonoBehaviour
         targetCell = cell;
         if (panel == null) return;
         panel.SetActive(true);
-        panel.transform.position = Camera.main.WorldToScreenPoint(cell.transform.position);
+        panel.transform.position = Camera.main.WorldToScreenPoint(cell.worldPos);
     }
 
     public void Hide()

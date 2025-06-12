@@ -342,7 +342,7 @@ public class UnitManager : MonoBehaviour
         for (int i = 1; i < path.Count && i <= unit.unitData.moveRange; i++)
         {
             var cell = path[i];
-            yield return StartCoroutine(unit.MoveRoutinePublic(cell.transform.position));
+            yield return StartCoroutine(unit.MoveRoutinePublic(cell.worldPos));
         }
 
         var finalCell = GetCellOfUnit(unit);
@@ -406,7 +406,7 @@ public class UnitManager : MonoBehaviour
     // Поиск юнита, стоящего на заданной клетке
     public Unit FindUnitAtCell(Cell cell)
     {
-        Vector2Int cellPos = GridManager.Instance.WorldToGrid(cell.transform.position);
+        Vector2Int cellPos = cell.gridPos;
         foreach (var unit in AllUnits)
         {
             Vector2Int unitPos = GridManager.Instance.WorldToGrid(unit.transform.position);
@@ -616,10 +616,10 @@ public class UnitManager : MonoBehaviour
 
         pathRenderer.positionCount = path.Count;
         for (int i = 0; i < path.Count; i++)
-            pathRenderer.SetPosition(i, path[i].transform.position + Vector3.forward * -0.1f);
+            pathRenderer.SetPosition(i, path[i].worldPos + Vector3.forward * -0.1f);
 
         ghostObject.GetComponent<SpriteRenderer>().sprite = selectedUnit.GetComponent<SpriteRenderer>().sprite;
-        ghostObject.transform.position = cell.transform.position;
+        ghostObject.transform.position = cell.worldPos;
         ghostObject.SetActive(true);
         previewCell = cell;
     }
@@ -639,7 +639,7 @@ public class UnitManager : MonoBehaviour
 
     public void ConfirmMove(Cell cell)
     {
-        MoveSelectedUnit(cell.transform.position);
+        MoveSelectedUnit(cell.worldPos);
         pendingMoveCell = null;
         moveMode = false;
         HideMovePreview();

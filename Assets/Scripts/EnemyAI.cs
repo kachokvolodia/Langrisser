@@ -114,7 +114,7 @@ public class EnemyAI : MonoBehaviour
                             var oldCell = UnitManager.Instance.GetCellOfUnit(me);
                             if (oldCell != null) oldCell.occupyingUnit = null;
 
-                            me.MoveTo(cell.transform.position);
+                            me.MoveTo(cell.worldPos);
                             cell.occupyingUnit = me;
                             Debug.Log($"{me.unitData.unitName} идёт к командиру для хила!");
                             return;
@@ -276,7 +276,7 @@ public class EnemyAI : MonoBehaviour
                         if (oldCell != null)
                             oldCell.occupyingUnit = null;
 
-                        me.MoveTo(cell.transform.position);
+                        me.MoveTo(cell.worldPos);
                         cell.occupyingUnit = me;
                     }
                     else break;
@@ -301,7 +301,7 @@ public class EnemyAI : MonoBehaviour
                         if (oldCell != null)
                             oldCell.occupyingUnit = null;
 
-                        me.MoveTo(cell.transform.position);
+                        me.MoveTo(cell.worldPos);
                         cell.occupyingUnit = me;
                     }
                     else break;
