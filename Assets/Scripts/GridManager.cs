@@ -60,11 +60,10 @@ public class GridManager : MonoBehaviour
     void ClearGrid()
     {
         if (cells == null) return;
-        foreach (var c in cells)
-        {
-            if (c != null)
-                Destroy(c.gameObject);
-        }
+        groundTilemap.ClearAllTiles();
+        terrainTilemap.ClearAllTiles();
+        objectTilemap.ClearAllTiles();
+        cells = null;
     }
     void Start()
     {
@@ -244,44 +243,17 @@ public class GridManager : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                GameObject cell = new GameObject($"Cell_{x}_{y}");
-                cell.transform.position = new Vector3(x * cellSize + xOffset, y * cellSize + yOffset, 0);
-                cell.transform.parent = transform;
-
-                var spriteRenderer = cell.AddComponent<SpriteRenderer>();
-                spriteRenderer.color = new Color(1f,1f,1f,0f);
-
-                cell.transform.localScale = Vector3.one;
-
-                cell.AddComponent<BoxCollider2D>().size = new Vector2(cellSize, cellSize);
-
-                Cell cellScript = cell.AddComponent<Cell>();
-                cells[x, y] = cellScript;
+                Cell cell = new Cell();
+                cell.gridPos = new Vector2Int(x, y);
+                cell.worldPos = new Vector3(x * cellSize + xOffset, y * cellSize + yOffset, 0);
+                cells[x, y] = cell;
 
                 if (groundTile != null)
                     groundTilemap.SetTile(new Vector3Int(x, y, 0), groundTile);
 
-                TerrainType t;
-                if (usePerlinNoise)
-                    t = ChooseTerrainType(x, y);
-                else
-                    t = ChooseTerrainType();
-                SetCellTerrain(x, y, t);
-
-                if (usePerlinNoise)
-                {
-                    float objNoise = Mathf.PerlinNoise((x + seed + 1000) * objectNoiseScale, (y + seed + 1000) * objectNoiseScale);
-                    if (objNoise > 0.7f && t == TerrainType.Grass)
-                    {
-                        TileBase objTile = GetTileForType(TerrainType.Forest);
-                        if (objTile != null)
-                            objectTilemap.SetTile(new Vector3Int(x, y, 0), objTile);
-                    }
-                }
+                SetCellTerrain(x, y, TerrainType.Grass);
             }
         }
-
-        GenerateFeatures();
 
         terrainTilemap.RefreshAllTiles();
         objectTilemap.RefreshAllTiles();
@@ -445,6 +417,13 @@ public class GridManager : MonoBehaviour
         float xOffset = -((width - 1) * cellSize) / 2f;
         float yOffset = -((height - 1) * cellSize) / 2f;
         return new Vector3(x * cellSize + xOffset, y * cellSize + yOffset, 0);
+    }
+
+    public void SetTileColor(Vector2Int pos, Color color)
+    {
+        Vector3Int p = new Vector3Int(pos.x, pos.y, 0);
+        terrainTilemap.SetTileFlags(p, TileFlags.None);
+        terrainTilemap.SetColor(p, color);
     }
     public List<Cell> GetCellsInRange(Vector2Int center, int range)
     {
@@ -627,8 +606,7 @@ public class GridManager : MonoBehaviour
 
     public bool IsExitCell(Cell cell)
     {
-        Vector2Int pos = WorldToGrid(cell.transform.position);
-        return pos == exitPoint;
+        return cell.gridPos == exitPoint;
     }
 
     public bool IsExitUnlocked => exitUnlocked;

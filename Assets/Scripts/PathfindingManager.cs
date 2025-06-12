@@ -59,8 +59,7 @@ public class PathfindingManager : MonoBehaviour
     int HeuristicCostEstimate(Cell a, Cell b)
     {
         // Манхэттенское расстояние (или диагональное, если хочешь)
-        return Mathf.Abs(GridManager.Instance.WorldToGrid(a.transform.position).x - GridManager.Instance.WorldToGrid(b.transform.position).x)
-             + Mathf.Abs(GridManager.Instance.WorldToGrid(a.transform.position).y - GridManager.Instance.WorldToGrid(b.transform.position).y);
+        return Mathf.Abs(a.gridPos.x - b.gridPos.x) + Mathf.Abs(a.gridPos.y - b.gridPos.y);
     }
 
     List<Cell> ReconstructPath(Dictionary<Cell, Cell> cameFrom, Cell current)
@@ -101,7 +100,7 @@ public class PathfindingManager : MonoBehaviour
             new Vector2Int(0,1), new Vector2Int(1,0),
             new Vector2Int(0,-1), new Vector2Int(-1,0)
         };
-        Vector2Int pos = GridManager.Instance.WorldToGrid(cell.transform.position);
+        Vector2Int pos = cell.gridPos;
         foreach (var delta in deltas)
         {
             Vector2Int np = pos + delta;
