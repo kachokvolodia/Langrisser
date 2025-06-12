@@ -1,26 +1,25 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 [System.Serializable]
-public class TerrainSpriteSet
+public class TerrainTileSet
 {
     public TerrainType terrainType;
-    public Sprite[] sprites;
+    public TileBase[] tiles;
 }
 
 [CreateAssetMenu(menuName = "Terrain/Biome")]
 public class Biome : ScriptableObject
 {
     public string biomeName;
-    public TerrainSpriteSet[] terrainSprites;
+    public TerrainTileSet[] terrainTiles;
 
-    public Sprite GetSprite(TerrainType type)
+    public TileBase GetTile(TerrainType type)
     {
-        foreach (var set in terrainSprites)
+        foreach (var set in terrainTiles)
         {
-            if (set.terrainType == type && set.sprites != null && set.sprites.Length > 0)
-            {
-                return set.sprites[Random.Range(0, set.sprites.Length)];
-            }
+            if (set.terrainType == type && set.tiles != null && set.tiles.Length > 0)
+                return set.tiles[Random.Range(0, set.tiles.Length)];
         }
         return null;
     }
