@@ -23,6 +23,9 @@ public class GridManager : MonoBehaviour
     public float terrainNoiseScale = 0.1f;
     public float objectNoiseScale = 0.2f;
 
+    [Header("Generation Options")]
+    public bool generateFeatures = false;
+
     // Seed for deterministic generation
     public int seed = 0;
     public bool randomSeed = true;
@@ -268,20 +271,21 @@ public class GridManager : MonoBehaviour
                     t = ChooseTerrainType();
                 SetCellTerrain(x, y, t);
 
-                if (usePerlinNoise)
+                if (usePerlinNoise && objectTilemap != null)
                 {
-                    float objNoise = Mathf.PerlinNoise((x + seed + 1000) * objectNoiseScale, (y + seed + 1000) * objectNoiseScale);
-                    if (objNoise > 0.7f && t == TerrainType.Grass)
+                    TileBase objTile = GetTileForType(TerrainType.Forest);
+                    if (objTile != null)
                     {
-                        TileBase objTile = GetTileForType(TerrainType.Forest);
-                        if (objTile != null)
+                        float objNoise = Mathf.PerlinNoise((x + seed + 1000) * objectNoiseScale, (y + seed + 1000) * objectNoiseScale);
+                        if (objNoise > 0.7f && t == TerrainType.Grass)
                             objectTilemap.SetTile(new Vector3Int(x, y, 0), objTile);
                     }
                 }
             }
         }
 
-        GenerateFeatures();
+        if (generateFeatures)
+            GenerateFeatures();
 
         terrainTilemap.RefreshAllTiles();
         objectTilemap.RefreshAllTiles();
