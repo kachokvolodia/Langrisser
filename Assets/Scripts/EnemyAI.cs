@@ -236,7 +236,7 @@ public class EnemyAI : MonoBehaviour
         float minDist = float.MaxValue;
         foreach (var c in candidates)
         {
-            float dist = Vector2.Distance(me.transform.position, c.transform.position);
+            float dist = Vector2.Distance(me.transform.position, c.worldPos);
             if (dist < minDist)
             {
                 minDist = dist;
