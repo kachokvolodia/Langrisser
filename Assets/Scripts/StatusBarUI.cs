@@ -24,7 +24,8 @@ public class StatusBarUI : MonoBehaviour
     public void ShowCellInfo(Cell cell)
     {
         // --- Клетка ---
-        cellIcon.sprite = cell.GetComponent<SpriteRenderer>().sprite;
+        Vector2Int gridPos = GridManager.Instance.WorldToGrid(cell.transform.position);
+        cellIcon.sprite = GridManager.Instance.terrainTilemap.GetSprite((Vector3Int)gridPos);
         cellIcon.enabled = true;
         cellInfoText.text = $"Местность: {cell.terrainType}\n" +
                             $"Сложн. хода: {cell.moveCost}";
