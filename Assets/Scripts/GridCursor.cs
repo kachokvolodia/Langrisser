@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GridCursor : MonoBehaviour
 {
@@ -28,6 +29,9 @@ public class GridCursor : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
+
             if (UnitManager.Instance != null)
             {
                 if (cell != null && UnitManager.Instance.HasSelectedUnit() && UnitManager.Instance.CanMoveToCell(cell))
