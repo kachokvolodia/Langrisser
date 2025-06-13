@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
-using static Unit;
 
 public class UnitManager : MonoBehaviour
 {
@@ -44,6 +43,11 @@ public class UnitManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         pathRenderer = new GameObject("PathPreview").AddComponent<LineRenderer>();
         pathRenderer.positionCount = 0;
@@ -72,15 +76,15 @@ public class UnitManager : MonoBehaviour
         Vector2Int playerPos = GridManager.Instance.entryPoint;
         Vector2Int evilPos = GridManager.Instance.exitPoint;
 
-        SpawnSquad(auroraEmpireCommanderPrefabs, auroraEmpireSoldierPrefabs, playerPos, 2, Unit.Faction.AuroraEmpire);
-        SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilPos, 2, Unit.Faction.EvilNeutral);
+        SpawnSquad(auroraEmpireCommanderPrefabs, auroraEmpireSoldierPrefabs, playerPos, 2, Faction.AuroraEmpire);
+        SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilPos, 2, Faction.EvilNeutral);
 
         // Проверим, остались ли противники. Если никого нет, открываем выход
         TurnManager.Instance?.CheckVictory();
     }
 
     // Спавнит командира и n солдат вокруг него по ближайшим свободным клеткам
-    public void SpawnSquad(GameObject[] commanderPrefabs, GameObject[] soldierPrefabs, Vector2Int commanderGridPos, int soldierCount, Unit.Faction faction)
+    public void SpawnSquad(GameObject[] commanderPrefabs, GameObject[] soldierPrefabs, Vector2Int commanderGridPos, int soldierCount, Faction faction)
     {
         // 1. Выбираем случайный префаб командира
         GameObject commanderPrefab = commanderPrefabs[Random.Range(0, commanderPrefabs.Length)];
@@ -112,8 +116,8 @@ public class UnitManager : MonoBehaviour
     private List<Vector2Int> GetNearbyCells(Vector2Int center, int count)
     {
         List<Vector2Int> result = new List<Vector2Int>();
-        int w = GridManager.Instance.width;
-        int h = GridManager.Instance.height;
+        int w = GridManager.Instance.Width;
+        int h = GridManager.Instance.Height;
 
         // Крест вокруг центра (верх, низ, лево, право)
         Vector2Int[] deltas = new Vector2Int[]
@@ -243,7 +247,8 @@ public class UnitManager : MonoBehaviour
             if (u == null || u == unit) continue;
             if (u.faction == unit.faction)
                 u.ModifyMorale(-10);
-            else if (FactionManager.Instance.GetRelation(u.faction, unit.faction) == FactionManager.RelationType.Enemy)
+            else if (FactionManager.Instance != null &&
+                     FactionManager.Instance.GetRelation(u.faction, unit.faction) == FactionManager.RelationType.Enemy)
                 u.ModifyMorale(5);
         }
         UnregisterUnit(unit);
@@ -393,6 +398,7 @@ public class UnitManager : MonoBehaviour
         {
             Unit u = FindUnitAtCell(cell);
             if (u != null &&
+                FactionManager.Instance != null &&
                 FactionManager.Instance.GetRelation(unit.faction, u.faction) ==
                     FactionManager.RelationType.Enemy)
             {
@@ -426,7 +432,8 @@ public class UnitManager : MonoBehaviour
     {
         Unit target = FindUnitAtCell(cell);
         if (selectedUnit != null && target != null
-            && FactionManager.Instance.GetRelation(selectedUnit.faction, target.faction) == FactionManager.RelationType.Enemy)
+            && FactionManager.Instance != null &&
+               FactionManager.Instance.GetRelation(selectedUnit.faction, target.faction) == FactionManager.RelationType.Enemy)
         {
             ResolveCombat(selectedUnit, target);
 
@@ -514,11 +521,11 @@ public class UnitManager : MonoBehaviour
             selectedUnit = null;
         }
     }
-    public void ApplyWaitHealing(params Unit.Faction[] factions)
+    public void ApplyWaitHealing(params Faction[] factions)
     {
-        HashSet<Unit.Faction> allowed;
+        HashSet<Faction> allowed;
         if (factions != null && factions.Length > 0)
-            allowed = new HashSet<Unit.Faction>(factions);
+            allowed = new HashSet<Faction>(factions);
         else
             allowed = null; // null значит все фракции
 
@@ -559,11 +566,11 @@ public class UnitManager : MonoBehaviour
         }
     }
 
-    public void ResetUnitsForNextTurn(params Unit.Faction[] factions)
+    public void ResetUnitsForNextTurn(params Faction[] factions)
     {
-        HashSet<Unit.Faction> allowed;
+        HashSet<Faction> allowed;
         if (factions != null && factions.Length > 0)
-            allowed = new HashSet<Unit.Faction>(factions);
+            allowed = new HashSet<Faction>(factions);
         else
             allowed = null; // null означает все фракции
 
@@ -587,9 +594,9 @@ public class UnitManager : MonoBehaviour
         if (commander == null) return;
         int aura = commander.commanderRadius;
         Vector2Int center = GridManager.Instance.WorldToGrid(commander.transform.position);
-        for (int x = 0; x < GridManager.Instance.width; x++)
+        for (int x = 0; x < GridManager.Instance.Width; x++)
         {
-            for (int y = 0; y < GridManager.Instance.height; y++)
+            for (int y = 0; y < GridManager.Instance.Height; y++)
             {
                 int dist = Mathf.Abs(center.x - x) + Mathf.Abs(center.y - y);
                 if (dist <= aura)

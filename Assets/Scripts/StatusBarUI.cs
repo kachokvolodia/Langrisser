@@ -23,16 +23,23 @@ public class StatusBarUI : MonoBehaviour
 
     public void ShowCellInfo(Cell cell)
     {
-        // --- Клетка ---
+        ShowTerrainInfo(cell);
+        ShowUnitInfo(cell.occupyingUnit);
+    }
+
+    void ShowTerrainInfo(Cell cell)
+    {
         Vector2Int gridPos = cell.gridPos;
         cellIcon.sprite = GridManager.Instance.terrainTilemap.GetSprite((Vector3Int)gridPos);
         cellIcon.enabled = true;
         cellInfoText.text = $"Местность: {cell.terrainType}\n" +
                             $"Сложн. хода: {cell.moveCost}";
-        // --- Юнит ---
-        if (cell.occupyingUnit != null)
+    }
+
+    void ShowUnitInfo(Unit unit)
+    {
+        if (unit != null)
         {
-            var unit = cell.occupyingUnit;
             unitIcon.sprite = unit.GetComponent<SpriteRenderer>().sprite;
             unitIcon.enabled = true;
             unitInfoText.text = $"{unit.unitData.unitName}\n" +
@@ -55,9 +62,11 @@ public class StatusBarUI : MonoBehaviour
         unitInfoText.text = "";
     }
 
-    string FactionToSide(Unit.Faction faction)
+    string FactionToSide(Faction faction)
     {
-        var rel = FactionManager.Instance.GetRelation(FactionManager.PlayerFaction, faction);
+        var rel = FactionManager.Instance != null
+            ? FactionManager.Instance.GetRelation(FactionManager.PlayerFaction, faction)
+            : FactionManager.RelationType.Neutral;
         switch (rel)
         {
             case FactionManager.RelationType.Ally: return "Союзник";
@@ -79,7 +88,7 @@ public class StatusBarUI : MonoBehaviour
         // Тут потом вызовем показ меню-настроек
     }
 
-    public void SetTurnInfo(Unit.Faction faction)
+    public void SetTurnInfo(Faction faction)
     {
         if (turnInfoText != null)
             turnInfoText.text = $"Ход: {faction}";

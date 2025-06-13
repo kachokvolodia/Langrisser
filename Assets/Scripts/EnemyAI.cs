@@ -170,7 +170,9 @@ public class EnemyAI : MonoBehaviour
         {
             if (u == null || u == me || u.currentHP <= 0) continue;
 
-            var rel = FactionManager.Instance.GetRelation(me.faction, u.faction);
+            var rel = FactionManager.Instance != null
+                ? FactionManager.Instance.GetRelation(me.faction, u.faction)
+                : FactionManager.RelationType.Neutral;
             if (rel != FactionManager.RelationType.Enemy) continue;
 
             float dist = Vector2.Distance(me.transform.position, u.transform.position);

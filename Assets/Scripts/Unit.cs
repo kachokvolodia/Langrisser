@@ -26,14 +26,6 @@ public class Unit : MonoBehaviour
         return dist <= commander.commanderRadius;
     }
 
-    public enum Faction
-    {
-        AuroraEmpire,
-        MoonArchonDominion,
-        GoldenHand,
-        Neutral,        // нейтралы
-        EvilNeutral
-    }
 
     public UnitData unitData;
     public int currentHP;

@@ -21,6 +21,11 @@ public class UnitInfoPanel : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         panel.SetActive(false);
     }

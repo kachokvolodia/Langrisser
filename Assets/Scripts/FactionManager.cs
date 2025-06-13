@@ -4,19 +4,24 @@ using UnityEngine;
 public class FactionManager : MonoBehaviour
 {
     public static FactionManager Instance;
-    public static Unit.Faction PlayerFaction = Unit.Faction.AuroraEmpire;
+    public static Faction PlayerFaction = Faction.AuroraEmpire;
 
     public FactionData[] factionDatas;
-    private Dictionary<Unit.Faction, FactionData> factionDataDict = new Dictionary<Unit.Faction, FactionData>();
+    private Dictionary<Faction, FactionData> factionDataDict = new Dictionary<Faction, FactionData>();
 
     public enum RelationType { Ally, Enemy, Neutral }
 
     // Таблица отношений: кто как относится к кому
-    private Dictionary<Unit.Faction, Dictionary<Unit.Faction, RelationType>> relations =
-        new Dictionary<Unit.Faction, Dictionary<Unit.Faction, RelationType>>();
+    private Dictionary<Faction, Dictionary<Faction, RelationType>> relations =
+        new Dictionary<Faction, Dictionary<Faction, RelationType>>();
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         BuildFactionDictionary();
         InitializeRelations();
@@ -35,7 +40,7 @@ public class FactionManager : MonoBehaviour
         }
     }
 
-    public FactionData GetFactionData(Unit.Faction faction)
+    public FactionData GetFactionData(Faction faction)
     {
         factionDataDict.TryGetValue(faction, out var data);
         return data;
@@ -44,51 +49,51 @@ public class FactionManager : MonoBehaviour
     private void InitializeRelations()
     {
         // Aurora Empire relations
-        AddRelation(Unit.Faction.AuroraEmpire, Unit.Faction.AuroraEmpire, RelationType.Ally);
-        AddRelation(Unit.Faction.AuroraEmpire, Unit.Faction.MoonArchonDominion, RelationType.Enemy);
-        AddRelation(Unit.Faction.AuroraEmpire, Unit.Faction.GoldenHand, RelationType.Enemy);
-        AddRelation(Unit.Faction.AuroraEmpire, Unit.Faction.Neutral, RelationType.Neutral);
-        AddRelation(Unit.Faction.AuroraEmpire, Unit.Faction.EvilNeutral, RelationType.Enemy);
+        AddRelation(Faction.AuroraEmpire, Faction.AuroraEmpire, RelationType.Ally);
+        AddRelation(Faction.AuroraEmpire, Faction.MoonArchonDominion, RelationType.Enemy);
+        AddRelation(Faction.AuroraEmpire, Faction.GoldenHand, RelationType.Enemy);
+        AddRelation(Faction.AuroraEmpire, Faction.Neutral, RelationType.Neutral);
+        AddRelation(Faction.AuroraEmpire, Faction.EvilNeutral, RelationType.Enemy);
 
         // Moon Archon Dominion relations
-        AddRelation(Unit.Faction.MoonArchonDominion, Unit.Faction.AuroraEmpire, RelationType.Enemy);
-        AddRelation(Unit.Faction.MoonArchonDominion, Unit.Faction.MoonArchonDominion, RelationType.Ally);
-        AddRelation(Unit.Faction.MoonArchonDominion, Unit.Faction.GoldenHand, RelationType.Enemy);
-        AddRelation(Unit.Faction.MoonArchonDominion, Unit.Faction.Neutral, RelationType.Neutral);
-        AddRelation(Unit.Faction.MoonArchonDominion, Unit.Faction.EvilNeutral, RelationType.Enemy);
+        AddRelation(Faction.MoonArchonDominion, Faction.AuroraEmpire, RelationType.Enemy);
+        AddRelation(Faction.MoonArchonDominion, Faction.MoonArchonDominion, RelationType.Ally);
+        AddRelation(Faction.MoonArchonDominion, Faction.GoldenHand, RelationType.Enemy);
+        AddRelation(Faction.MoonArchonDominion, Faction.Neutral, RelationType.Neutral);
+        AddRelation(Faction.MoonArchonDominion, Faction.EvilNeutral, RelationType.Enemy);
 
         // Golden Hand relations
-        AddRelation(Unit.Faction.GoldenHand, Unit.Faction.AuroraEmpire, RelationType.Enemy);
-        AddRelation(Unit.Faction.GoldenHand, Unit.Faction.MoonArchonDominion, RelationType.Enemy);
-        AddRelation(Unit.Faction.GoldenHand, Unit.Faction.GoldenHand, RelationType.Ally);
-        AddRelation(Unit.Faction.GoldenHand, Unit.Faction.Neutral, RelationType.Neutral);
-        AddRelation(Unit.Faction.GoldenHand, Unit.Faction.EvilNeutral, RelationType.Enemy);
+        AddRelation(Faction.GoldenHand, Faction.AuroraEmpire, RelationType.Enemy);
+        AddRelation(Faction.GoldenHand, Faction.MoonArchonDominion, RelationType.Enemy);
+        AddRelation(Faction.GoldenHand, Faction.GoldenHand, RelationType.Ally);
+        AddRelation(Faction.GoldenHand, Faction.Neutral, RelationType.Neutral);
+        AddRelation(Faction.GoldenHand, Faction.EvilNeutral, RelationType.Enemy);
 
         // Neutral relations
-        AddRelation(Unit.Faction.Neutral, Unit.Faction.AuroraEmpire, RelationType.Neutral);
-        AddRelation(Unit.Faction.Neutral, Unit.Faction.MoonArchonDominion, RelationType.Neutral);
-        AddRelation(Unit.Faction.Neutral, Unit.Faction.GoldenHand, RelationType.Neutral);
-        AddRelation(Unit.Faction.Neutral, Unit.Faction.Neutral, RelationType.Ally);
-        AddRelation(Unit.Faction.Neutral, Unit.Faction.EvilNeutral, RelationType.Enemy);
+        AddRelation(Faction.Neutral, Faction.AuroraEmpire, RelationType.Neutral);
+        AddRelation(Faction.Neutral, Faction.MoonArchonDominion, RelationType.Neutral);
+        AddRelation(Faction.Neutral, Faction.GoldenHand, RelationType.Neutral);
+        AddRelation(Faction.Neutral, Faction.Neutral, RelationType.Ally);
+        AddRelation(Faction.Neutral, Faction.EvilNeutral, RelationType.Enemy);
 
         // EvilNeutral relations
-        AddRelation(Unit.Faction.EvilNeutral, Unit.Faction.AuroraEmpire, RelationType.Enemy);
-        AddRelation(Unit.Faction.EvilNeutral, Unit.Faction.MoonArchonDominion, RelationType.Enemy);
-        AddRelation(Unit.Faction.EvilNeutral, Unit.Faction.GoldenHand, RelationType.Enemy);
-        AddRelation(Unit.Faction.EvilNeutral, Unit.Faction.Neutral, RelationType.Enemy);
-        AddRelation(Unit.Faction.EvilNeutral, Unit.Faction.EvilNeutral, RelationType.Enemy);
+        AddRelation(Faction.EvilNeutral, Faction.AuroraEmpire, RelationType.Enemy);
+        AddRelation(Faction.EvilNeutral, Faction.MoonArchonDominion, RelationType.Enemy);
+        AddRelation(Faction.EvilNeutral, Faction.GoldenHand, RelationType.Enemy);
+        AddRelation(Faction.EvilNeutral, Faction.Neutral, RelationType.Enemy);
+        AddRelation(Faction.EvilNeutral, Faction.EvilNeutral, RelationType.Enemy);
 
     }
 
-    private void AddRelation(Unit.Faction a, Unit.Faction b, RelationType rel)
+    private void AddRelation(Faction a, Faction b, RelationType rel)
     {
         if (!relations.ContainsKey(a))
-            relations[a] = new Dictionary<Unit.Faction, RelationType>();
+            relations[a] = new Dictionary<Faction, RelationType>();
         relations[a][b] = rel;
     }
 
     // Метод для проверки отношений
-    public RelationType GetRelation(Unit.Faction a, Unit.Faction b)
+    public RelationType GetRelation(Faction a, Faction b)
     {
         if (relations.ContainsKey(a) && relations[a].ContainsKey(b))
             return relations[a][b];

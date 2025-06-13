@@ -8,6 +8,11 @@ public class PathfindingManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 
@@ -104,7 +109,7 @@ public class PathfindingManager : MonoBehaviour
         foreach (var delta in deltas)
         {
             Vector2Int np = pos + delta;
-            if (np.x < 0 || np.x >= GridManager.Instance.width || np.y < 0 || np.y >= GridManager.Instance.height)
+            if (np.x < 0 || np.x >= GridManager.Instance.Width || np.y < 0 || np.y >= GridManager.Instance.Height)
                 continue;
 
             var nCell = GridManager.Instance.cells[np.x, np.y];

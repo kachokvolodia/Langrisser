@@ -27,7 +27,7 @@ public class UnitData : ScriptableObject
     [System.Serializable]
     public class FactionVariant
     {
-        public Unit.Faction faction;
+        public Faction faction;
         public string unitName;
         public Sprite sprite;
     }
