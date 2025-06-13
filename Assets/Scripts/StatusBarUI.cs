@@ -30,9 +30,11 @@ public class StatusBarUI : MonoBehaviour
     void ShowTerrainInfo(Cell cell)
     {
         Vector2Int gridPos = cell.gridPos;
+        var tile = GridManager.Instance.terrainTilemap.GetTile((Vector3Int)gridPos);
         cellIcon.sprite = GridManager.Instance.terrainTilemap.GetSprite((Vector3Int)gridPos);
         cellIcon.enabled = true;
-        cellInfoText.text = $"Местность: {cell.terrainType}\n" +
+        string tileName = tile != null ? tile.name : "None";
+        cellInfoText.text = $"Местность: {tileName}\n" +
                             $"Сложн. хода: {cell.moveCost}";
     }
 
