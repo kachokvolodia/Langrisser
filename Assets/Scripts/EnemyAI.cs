@@ -17,7 +17,7 @@ public class EnemyAI : MonoBehaviour
         foreach (var delta in deltas)
         {
             Vector2Int pos = cmdPos + delta;
-            if (pos.x >= 0 && pos.x < grid.width && pos.y >= 0 && pos.y < grid.height)
+            if (pos.x >= 0 && pos.x < grid.Width && pos.y >= 0 && pos.y < grid.Height)
             {
                 var cell = grid.cells[pos.x, pos.y];
                 if (cell.occupyingUnit == null)
@@ -225,7 +225,7 @@ public class EnemyAI : MonoBehaviour
         foreach (var delta in deltas)
         {
             Vector2Int pos = targetPos + delta;
-            if (pos.x >= 0 && pos.x < grid.width && pos.y >= 0 && pos.y < grid.height)
+            if (pos.x >= 0 && pos.x < grid.Width && pos.y >= 0 && pos.y < grid.Height)
             {
                 var cell = grid.cells[pos.x, pos.y];
                 if (cell.occupyingUnit == null)
