@@ -1,9 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// AI для "злых" нейтралов. Пока повторяет EnemyAI, но выделен для будущих дополнений.
+/// AI РґР»СЏ РІСЂР°Р¶РґРµР±РЅС‹С… РЅРµР№С‚СЂР°Р»РѕРІ. РќР°СЃР»РµРґСѓРµС‚ EnemyAI.
 /// </summary>
 public class EvilNeutralAI : EnemyAI
 {
-    // Здесь можно прописать особое поведение злых нейтралов
+    /// <summary>
+    /// Р—Р°РіР»СѓС€РєР° РґР»СЏ Р±СѓРґСѓС‰РёС… РѕСЃРѕР±РµРЅРЅРѕСЃС‚РµР№ РїРѕРІРµРґРµРЅРёСЏ
+    /// </summary>
+    public void ExecuteFactionStrategy()
+    {
+        Debug.Log("Evil Neutral AI strategy placeholder");
+    }
 }
