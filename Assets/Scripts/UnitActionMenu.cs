@@ -23,6 +23,16 @@ public class UnitActionMenu : MonoBehaviour
         }
         Instance = this;
         menuPanel.SetActive(false);
+
+        // Ensure buttons trigger actions even if not wired in the inspector
+        if (moveButton != null)
+            moveButton.onClick.AddListener(OnMoveButtonPressed);
+        if (attackButton != null)
+            attackButton.onClick.AddListener(OnAttackButtonPressed);
+        if (endTurnButton != null)
+            endTurnButton.onClick.AddListener(OnEndTurnButtonPressed);
+        if (closeButton != null)
+            closeButton.onClick.AddListener(HideMenu);
     }
 
     public void OnMoveButtonPressed()
