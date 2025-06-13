@@ -61,6 +61,12 @@ public class UnitManager : MonoBehaviour
 
     void Start()
     {
+        // Отложим спавн юнитов до момента, когда грид будет полностью инициализирован
+    }
+
+    // Вызывается после генерации уровня для размещения начальных отрядов
+    public void SpawnInitialUnits()
+    {
         AllUnits.Clear();
 
         Vector2Int playerPos = GridManager.Instance.entryPoint;
