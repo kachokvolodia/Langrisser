@@ -15,7 +15,18 @@ public class GridCursor : MonoBehaviour
         {
             if (lastCell != null)
             {
+                bool restoreMove = UnitManager.Instance != null && UnitManager.Instance.IsMoveHighlightedCell(lastCell);
+                bool restoreAttack = UnitManager.Instance != null && UnitManager.Instance.IsAttackHighlightedCell(lastCell);
+                bool restoreAura = UnitManager.Instance != null && UnitManager.Instance.IsAuraHighlightedCell(lastCell);
+
                 lastCell.Unhighlight();
+                if (restoreMove && !restoreAura)
+                    lastCell.Highlight(Color.cyan);
+                if (restoreAttack && !restoreAura && !restoreMove)
+                    lastCell.Highlight(Color.red);
+                if (restoreAura)
+                    lastCell.HighlightAura(new Color(1f, 0.92f, 0.25f, 0.55f));
+
                 StatusBarUI.Instance?.HideCellInfo();
             }
             if (cell != null)

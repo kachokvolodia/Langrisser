@@ -620,6 +620,16 @@ public class UnitManager : MonoBehaviour
         auraHighlightedCells.Clear();
     }
 
+    public bool IsMoveHighlightedCell(Cell cell)
+    {
+        return highlightedCells.Contains(cell);
+    }
+
+    public bool IsAuraHighlightedCell(Cell cell)
+    {
+        return auraHighlightedCells.Contains(cell);
+    }
+
     // ======== Move preview helpers ========
     public void PreviewPath(Cell cell)
     {
