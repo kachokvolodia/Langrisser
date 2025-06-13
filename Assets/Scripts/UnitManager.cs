@@ -296,6 +296,8 @@ public class UnitManager : MonoBehaviour
         {
             HighlightMovableCells(selectedUnit);
             moveMode = true;
+            // На всякий случай скрываем клетки атаки
+            ClearAttackHighlightedCells();
         }
         else
         {
@@ -318,6 +320,8 @@ public class UnitManager : MonoBehaviour
             selectedUnit.SetSelected(false);
             UnitActionMenu.Instance.HideMenu();
             DeselectUnit();
+            ClearHighlightedCells();
+            ClearAttackHighlightedCells();
         }
     }
 
