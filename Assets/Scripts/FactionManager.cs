@@ -81,7 +81,8 @@ public class FactionManager : MonoBehaviour
         AddRelation(Faction.EvilNeutral, Faction.MoonArchonDominion, RelationType.Enemy);
         AddRelation(Faction.EvilNeutral, Faction.GoldenHand, RelationType.Enemy);
         AddRelation(Faction.EvilNeutral, Faction.Neutral, RelationType.Enemy);
-        AddRelation(Faction.EvilNeutral, Faction.EvilNeutral, RelationType.Enemy);
+        // EvilNeutral должны дружить между собой
+        AddRelation(Faction.EvilNeutral, Faction.EvilNeutral, RelationType.Ally);
 
     }
 
