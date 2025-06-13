@@ -23,7 +23,7 @@ public class UnitManager : MonoBehaviour
     public Vector3 healthBarScale = new Vector3(0.8f, 0.1f, 1f);
 
 
-    public GridManager gridManager;
+    // Ссылка на GridManager берём через синглтон
     private Unit selectedUnit;
     private List<Cell> highlightedCells = new List<Cell>();
 
@@ -61,6 +61,12 @@ public class UnitManager : MonoBehaviour
 
     void Start()
     {
+        // Отложим спавн юнитов до момента, когда грид будет полностью инициализирован
+    }
+
+    // Вызывается после генерации уровня для размещения начальных отрядов
+    public void SpawnInitialUnits()
+    {
         AllUnits.Clear();
 
         Vector2Int playerPos = GridManager.Instance.entryPoint;
@@ -78,7 +84,7 @@ public class UnitManager : MonoBehaviour
     {
         // 1. Выбираем случайный префаб командира
         GameObject commanderPrefab = commanderPrefabs[Random.Range(0, commanderPrefabs.Length)];
-        Vector3 commanderWorldPos = gridManager.GetCellCenterPosition(commanderGridPos.x, commanderGridPos.y);
+        Vector3 commanderWorldPos = GridManager.Instance.GetCellCenterPosition(commanderGridPos.x, commanderGridPos.y);
 
         // 2. Спавним командира
         Unit commander = SpawnUnit(commanderPrefab, commanderWorldPos, faction);
@@ -93,7 +99,7 @@ public class UnitManager : MonoBehaviour
         for (int i = 0; i < soldierCount; i++)
         {
             Vector2Int cellPos = nearbyCells[i];
-            Vector3 worldPos = gridManager.GetCellCenterPosition(cellPos.x, cellPos.y);
+            Vector3 worldPos = GridManager.Instance.GetCellCenterPosition(cellPos.x, cellPos.y);
 
             GameObject randomSoldierPrefab = soldierPrefabs[Random.Range(0, soldierPrefabs.Length)];
             Unit soldier = SpawnUnit(randomSoldierPrefab, worldPos, faction);
@@ -106,8 +112,8 @@ public class UnitManager : MonoBehaviour
     private List<Vector2Int> GetNearbyCells(Vector2Int center, int count)
     {
         List<Vector2Int> result = new List<Vector2Int>();
-        int w = gridManager.width;
-        int h = gridManager.height;
+        int w = GridManager.Instance.width;
+        int h = GridManager.Instance.height;
 
         // Крест вокруг центра (верх, низ, лево, право)
         Vector2Int[] deltas = new Vector2Int[]
@@ -165,7 +171,7 @@ public class UnitManager : MonoBehaviour
     // Проверка: клетка свободна?
     private bool IsCellFree(Vector2Int gridPos)
     {
-        var cell = gridManager.cells[gridPos.x, gridPos.y];
+        var cell = GridManager.Instance.cells[gridPos.x, gridPos.y];
         return cell.occupyingUnit == null;
     }
 

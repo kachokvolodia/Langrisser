@@ -55,6 +55,7 @@ public class GridManager : MonoBehaviour
 
         ClearGrid();
         GenerateGrid();
+        GenerateFeatures();
     }
 
     void ClearGrid()
@@ -230,9 +231,6 @@ public class GridManager : MonoBehaviour
     {
         rng = new System.Random(seed);
 
-        float xOffset = -((width - 1) * cellSize) / 2f;
-        float yOffset = -((height - 1) * cellSize) / 2f;
-
         groundTilemap.ClearAllTiles();
         terrainTilemap.ClearAllTiles();
         objectTilemap.ClearAllTiles();
@@ -245,7 +243,7 @@ public class GridManager : MonoBehaviour
             {
                 Cell cell = new Cell();
                 cell.gridPos = new Vector2Int(x, y);
-                cell.worldPos = new Vector3(x * cellSize + xOffset, y * cellSize + yOffset, 0);
+                cell.worldPos = GetCellCenterPosition(x, y);
                 cells[x, y] = cell;
 
                 if (groundTile != null)
@@ -414,9 +412,8 @@ public class GridManager : MonoBehaviour
 
     public Vector3 GetCellCenterPosition(int x, int y)
     {
-        float xOffset = -((width - 1) * cellSize) / 2f;
-        float yOffset = -((height - 1) * cellSize) / 2f;
-        return new Vector3(x * cellSize + xOffset, y * cellSize + yOffset, 0);
+        Vector3Int cell = new Vector3Int(x, y, 0);
+        return groundTilemap.GetCellCenterWorld(cell);
     }
 
     public void SetTileColor(Vector2Int pos, Color color)
@@ -443,9 +440,8 @@ public class GridManager : MonoBehaviour
     // Переводим worldPosition -> координаты клетки
     public Vector2Int WorldToGrid(Vector3 worldPos)
     {
-        int x = Mathf.RoundToInt(worldPos.x + width / 2f - 0.5f);
-        int y = Mathf.RoundToInt(worldPos.y + height / 2f - 0.5f);
-        return new Vector2Int(x, y);
+        Vector3Int cell = groundTilemap.WorldToCell(worldPos);
+        return new Vector2Int(cell.x, cell.y);
     }
 
     public Cell GetCellFromWorld(Vector3 worldPos)
