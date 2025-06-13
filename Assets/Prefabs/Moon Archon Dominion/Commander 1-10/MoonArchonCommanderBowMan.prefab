@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7247737578727331079}
   - component: {fileID: 5901132350974582478}
   - component: {fileID: 4166465635370145690}
+  - component: {fileID: 8771809208392349831}
   m_Layer: 0
   m_Name: MoonArchonCommanderBowMan
   m_TagString: Untagged
@@ -137,3 +138,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65bded6cd6c3fee438fbda93a52c8164, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!61 &8771809208392349831
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8785832555143759317}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Density: 0
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_AutoTiling: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
