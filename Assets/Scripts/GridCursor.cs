@@ -21,8 +21,29 @@ public class GridCursor : MonoBehaviour
             {
                 cell.Highlight(hoverColor);
                 StatusBarUI.Instance?.ShowCellInfo(cell);
+                UnitManager.Instance?.PreviewPath(cell);
             }
             lastCell = cell;
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (UnitManager.Instance != null)
+            {
+                if (cell != null && UnitManager.Instance.HasSelectedUnit() && UnitManager.Instance.CanMoveToCell(cell))
+                {
+                    UnitManager.Instance.RequestMoveConfirmation(cell);
+                }
+                else if (cell != null && cell.occupyingUnit != null)
+                {
+                    UnitManager.Instance.SelectUnit(cell.occupyingUnit);
+                }
+                else
+                {
+                    UnitManager.Instance.DeselectUnit();
+                    UnitActionMenu.Instance?.HideMenu();
+                }
+            }
         }
     }
 }
