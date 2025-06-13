@@ -85,7 +85,8 @@ public class UnitInfoPanel : MonoBehaviour
             }
         }
         statsText.text = stats;
-        descriptionText.text = unit.unitData.description;
+        if (descriptionText != null)
+            descriptionText.text = unit.unitData.description;
     }
 
     public void HidePanel()
