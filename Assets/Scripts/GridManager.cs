@@ -55,6 +55,7 @@ public class GridManager : MonoBehaviour
 
         ClearGrid();
         GenerateGrid();
+        GenerateFeatures();
     }
 
     void ClearGrid()
