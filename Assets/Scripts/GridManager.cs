@@ -7,9 +7,9 @@ public class GridManager : MonoBehaviour
 {
     public static GridManager Instance { get; private set; }
 
-    public int width = 10;
-    public int height = 10;
-    public float cellSize = 1f;
+    [SerializeField] private int width = 10;
+    [SerializeField] private int height = 10;
+    [SerializeField] private float cellSize = 1f;
     public Biome biome;
 
     [Header("Tilemaps")]
@@ -19,27 +19,43 @@ public class GridManager : MonoBehaviour
     public TileBase groundTile;
 
     [Header("Noise Settings")]
-    public bool usePerlinNoise = true;
-    public float terrainNoiseScale = 0.1f;
-    public float objectNoiseScale = 0.2f;
+    [SerializeField] private bool usePerlinNoise = true;
+    [SerializeField] private float terrainNoiseScale = 0.1f;
+    [SerializeField] private float objectNoiseScale = 0.2f;
 
     // Seed for deterministic generation
-    public int seed = 0;
-    public bool randomSeed = true;
+    [SerializeField] private int seed = 0;
+    [SerializeField] private bool randomSeed = true;
 
     public Cell[,] cells;
 
     private System.Random rng;
 
-    public Color entryHighlight = new Color(0.8f, 1f, 0.6f);
-    public Color exitHighlight = new Color(1f, 0.6f, 0.6f);
+    [SerializeField] private Color entryHighlight = new Color(0.8f, 1f, 0.6f);
+    [SerializeField] private Color exitHighlight = new Color(1f, 0.6f, 0.6f);
 
     public Vector2Int entryPoint;
     public Vector2Int exitPoint;
     private bool exitUnlocked = false;
 
+    public int Width => width;
+    public int Height => height;
+    public float CellSize => cellSize;
+    public bool UsePerlinNoise => usePerlinNoise;
+    public float TerrainNoiseScale => terrainNoiseScale;
+    public float ObjectNoiseScale => objectNoiseScale;
+    public int Seed => seed;
+    public bool RandomSeed => randomSeed;
+    public Color EntryHighlight => entryHighlight;
+    public Color ExitHighlight => exitHighlight;
+
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         if (randomSeed)
             seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);

@@ -8,15 +8,20 @@ public class EnemyManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 
-    public void DoFactionTurn(Unit.Faction faction, System.Action onFinished)
+    public void DoFactionTurn(Faction faction, System.Action onFinished)
     {
         StartCoroutine(FactionTurnRoutine(faction, onFinished));
     }
 
-    IEnumerator FactionTurnRoutine(Unit.Faction faction, System.Action onFinished)
+    IEnumerator FactionTurnRoutine(Faction faction, System.Action onFinished)
     {
         UnitManager.Instance.ApplyWaitHealing(faction);
         UnitManager.Instance.ResetUnitsForNextTurn(faction);

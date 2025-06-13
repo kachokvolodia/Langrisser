@@ -11,8 +11,13 @@ public class CameraController : MonoBehaviour
 
     private Transform followTarget;
 
-    void Awake()         // <-- и вот это добавь!
+    void Awake()         // <--    !
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 

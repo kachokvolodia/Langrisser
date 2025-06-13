@@ -5,21 +5,26 @@ public class TurnManager : MonoBehaviour
 {
     public static TurnManager Instance;
 
-    public List<Unit.Faction> turnOrder = new List<Unit.Faction>
+    public List<Faction> turnOrder = new List<Faction>
     {
-        Unit.Faction.AuroraEmpire,
-        Unit.Faction.MoonArchonDominion,
-        Unit.Faction.GoldenHand,
-        Unit.Faction.Neutral,
-        Unit.Faction.EvilNeutral
+        Faction.AuroraEmpire,
+        Faction.MoonArchonDominion,
+        Faction.GoldenHand,
+        Faction.Neutral,
+        Faction.EvilNeutral
     };
 
     private int currentIndex = 0;
 
-    public Unit.Faction CurrentFaction => turnOrder[currentIndex];
+    public Faction CurrentFaction => turnOrder[currentIndex];
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 
@@ -28,7 +33,7 @@ public class TurnManager : MonoBehaviour
         StartTurn(CurrentFaction);
     }
 
-    void StartTurn(Unit.Faction faction)
+    void StartTurn(Faction faction)
     {
         StatusBarUI.Instance?.SetTurnInfo(faction);
         StatusBarUI.Instance?.SetEndTurnButtonInteractable(faction == FactionManager.PlayerFaction);
@@ -72,9 +77,9 @@ public class TurnManager : MonoBehaviour
         bool playerAlive = UnitManager.Instance.AllUnits.Exists(u => u.faction == FactionManager.PlayerFaction && u.currentHP > 0);
         bool enemyAlive = UnitManager.Instance.AllUnits.Exists(u =>
             u.currentHP > 0 &&
-            (u.faction == Unit.Faction.AuroraEmpire ||
-             u.faction == Unit.Faction.MoonArchonDominion ||
-             u.faction == Unit.Faction.GoldenHand) &&
+            (u.faction == Faction.AuroraEmpire ||
+             u.faction == Faction.MoonArchonDominion ||
+             u.faction == Faction.GoldenHand) &&
             u.faction != FactionManager.PlayerFaction);
 
         if (!playerAlive)
