@@ -1,9 +1,16 @@
 using UnityEngine;
 
 /// <summary>
-/// Простое AI для нейтральных юнитов. Основано на EnemyAI.
+/// AI РґР»СЏ РЅРµР№С‚СЂР°Р»СЊРЅС‹С… СЃСѓС‰РµСЃС‚РІ. РќР°СЃР»РµРґСѓРµС‚ EnemyAI Рё
+/// РјРѕР¶РµС‚ Р±С‹С‚СЊ СЂР°СЃС€РёСЂРµРЅ РѕСЃРѕР±С‹Рј РїРѕРІРµРґРµРЅРёРµРј РІ Р±СѓРґСѓС‰РµРј.
 /// </summary>
 public class NeutralAI : EnemyAI
 {
-    // Можно добавить своё уникальное поведение нейтралов
+    /// <summary>
+    /// Р—Р°РіР»СѓС€РєР° РґР»СЏ Р»РѕРіРёРєРё РЅРµР№С‚СЂР°Р»РѕРІ
+    /// </summary>
+    public void ExecuteFactionStrategy()
+    {
+        Debug.Log("Neutral AI strategy placeholder");
+    }
 }
