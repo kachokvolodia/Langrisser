@@ -58,7 +58,7 @@ public class GridManager : MonoBehaviour
         }
         Instance = this;
         if (randomSeed)
-            seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            seed = UnityEngine.Random.Range(0, 100000);
     }
 
     public void Initialize(int w, int h, int newSeed, Biome newBiome = null)
