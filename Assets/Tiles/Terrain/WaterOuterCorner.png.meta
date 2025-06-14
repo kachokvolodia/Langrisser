@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 100c6d51ffde17f458ee63df96830392
+guid: 51c455ca4b5eac14e8197830c53d3e57
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6049605792901559095
-    second: Water_0
+      213: 1276603725139666077
+    second: WaterOuterCorner_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Water_0
+      name: WaterOuterCorner_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1024
-        height: 1024
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 733fa0d9a6484f350800000000000000
-      internalID: 6049605792901559095
+      spriteID: d94e3e3035867b110800000000000000
+      internalID: 1276603725139666077
       vertices: []
       indices: 
       edges: []
@@ -139,7 +139,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Water_0: 6049605792901559095
+      WaterOuterCorner_0: 1276603725139666077
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
