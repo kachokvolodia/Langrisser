@@ -311,8 +311,9 @@ public class GoldenHandAI : MonoBehaviour
             }
         }
     }
-} 
-
+    /// <summary>
+    /// Заглушка для логики фракции Золотой Руки
+    /// </summary>
     public void ExecuteFactionStrategy()
     {
         Debug.Log("Golden Hand AI strategy placeholder");
