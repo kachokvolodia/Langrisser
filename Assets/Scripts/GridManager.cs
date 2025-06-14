@@ -141,12 +141,9 @@ public class GridManager : MonoBehaviour
 
     TerrainType ChooseTerrainType(int x, int y)
     {
-        float noise = Mathf.PerlinNoise((x + seed) * terrainNoiseScale, (y + seed) * terrainNoiseScale);
-        if (noise < 0.2f) return TerrainType.Ocean;
-        if (noise < 0.4f) return TerrainType.Forest;
-        if (noise < 0.6f) return TerrainType.Grass;
-        if (noise < 0.8f) return TerrainType.Hill;
-        return TerrainType.Mountain;
+        float noise = Mathf.PerlinNoise((x + seed) * terrainNoiseScale,
+                                        (y + seed) * terrainNoiseScale);
+        return noise < 0.3f ? TerrainType.Ocean : TerrainType.Grass;
     }
 
     TerrainType ChooseTerrainType()
@@ -267,7 +264,10 @@ public class GridManager : MonoBehaviour
                 if (groundTile != null)
                     groundTilemap.SetTile(new Vector3Int(x, y, 0), groundTile);
 
-                SetCellTerrain(x, y, TerrainType.Grass);
+                TerrainType type = TerrainType.Grass;
+                if (usePerlinNoise)
+                    type = ChooseTerrainType(x, y);
+                SetCellTerrain(x, y, type);
             }
         }
 
