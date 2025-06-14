@@ -86,7 +86,7 @@ public class DungeonProgressionManager : MonoBehaviour
     LevelInfo GenerateLevelInfo(int levelIndex)
     {
         var info = new LevelInfo();
-        info.seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        info.seed = UnityEngine.Random.Range(0, 100000);
         int variation = Random.Range(-sizeVariation, sizeVariation + 1);
         bool boss = levelIndex % 10 == 0;
         info.isBoss = boss;
