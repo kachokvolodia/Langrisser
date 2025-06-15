@@ -4396,7 +4396,7 @@ MonoBehaviour:
   groundTile: {fileID: 11400000, guid: 0b35c2871ad8d7946ac3ad7fc99af5a6, type: 2}
   usePerlinNoise: 1
   terrainNoiseScale: 0.1
-  objectNoiseScale: 0.2
+  objectNoiseScale: 0.5
   seed: 0
   randomSeed: 1
   entryHighlight: {r: 0.8, g: 1, b: 0.6, a: 1}
