@@ -58,6 +58,7 @@ public class DungeonProgressionManager : MonoBehaviour
         }
         var info = levels[level - 1];
         GridManager.Instance.Initialize(info.width, info.height, info.seed, info.biome);
+        GridManager.Instance.GenerateRiverNetwork();
 
         // choose entry/exit positions on opposite sides
         bool horizontal = Random.value > 0.5f;
@@ -78,6 +79,7 @@ public class DungeonProgressionManager : MonoBehaviour
             exit = new Vector2Int(xExit, info.height - 1);
         }
         GridManager.Instance.PlaceEntryExit(entry, exit, level == 1);
+        GridManager.Instance.GenerateRoadPath();
 
         // После размещения входа и выхода генерируем начальные отряды
         UnitManager.Instance?.SpawnInitialUnits();
