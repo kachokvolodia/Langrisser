@@ -282,23 +282,6 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        // Overlay roads and rivers using Perlin noise on the object tilemap
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (cells[x, y].terrainType != TerrainType.Grass)
-                    continue;
-
-                float noise = Mathf.PerlinNoise((x + seed + 1000) * objectNoiseScale,
-                                                (y + seed + 1000) * objectNoiseScale);
-                if (noise < 0.15f)
-                    SetObjectTerrain(x, y, TerrainType.River);
-                else if (noise > 0.85f)
-                    SetObjectTerrain(x, y, TerrainType.Road);
-            }
-        }
-
         terrainTilemap.RefreshAllTiles();
         objectTilemap.RefreshAllTiles();
     }
@@ -409,6 +392,122 @@ public class GridManager : MonoBehaviour
         // Стены входа временно не строим
     }
 
+    bool IsRiverTraversable(Vector2Int pos)
+    {
+        TerrainType t = cells[pos.x, pos.y].terrainType;
+        if (t == TerrainType.Wall || t == TerrainType.Mountain || t == TerrainType.Cliff)
+            return false;
+        return true;
+    }
+
+    List<Vector2Int> GetRiverNeighbors(Vector2Int pos)
+    {
+        List<Vector2Int> list = new List<Vector2Int>();
+        Vector2Int[] deltas = { new Vector2Int(0,1), new Vector2Int(1,0), new Vector2Int(0,-1), new Vector2Int(-1,0) };
+        foreach (var d in deltas)
+        {
+            Vector2Int n = pos + d;
+            if (n.x < 0 || n.x >= width || n.y < 0 || n.y >= height)
+                continue;
+            if (IsRiverTraversable(n))
+                list.Add(n);
+        }
+        return list;
+    }
+
+    List<Vector2Int> FindRiverPath(Vector2Int start, Vector2Int goal)
+    {
+        var open = new SimplePriorityQueue<Vector2Int, int>();
+        var cameFrom = new Dictionary<Vector2Int, Vector2Int>();
+        var gScore = new Dictionary<Vector2Int, int>();
+        var fScore = new Dictionary<Vector2Int, int>();
+
+        open.Enqueue(start, 0);
+        gScore[start] = 0;
+        fScore[start] = Heuristic(start, goal);
+
+        while (open.Count > 0)
+        {
+            Vector2Int current = open.Dequeue();
+            if (current == goal)
+                return Reconstruct(current, cameFrom);
+
+            foreach (var n in GetRiverNeighbors(current))
+            {
+                int tentative = gScore[current] + 1 + rng.Next(0, 3);
+                if (!gScore.ContainsKey(n) || tentative < gScore[n])
+                {
+                    cameFrom[n] = current;
+                    gScore[n] = tentative;
+                    int pri = tentative + Heuristic(n, goal);
+                    fScore[n] = pri;
+                    if (!open.Contains(n))
+                        open.Enqueue(n, pri);
+                    else
+                        open.UpdatePriority(n, pri);
+                }
+            }
+        }
+        return null;
+    }
+
+    Vector2Int GetRandomEdgeCell()
+    {
+        int side = rng.Next(4);
+        switch (side)
+        {
+            case 0: return new Vector2Int(0, rng.Next(height));
+            case 1: return new Vector2Int(width - 1, rng.Next(height));
+            case 2: return new Vector2Int(rng.Next(width), 0);
+            default: return new Vector2Int(rng.Next(width), height - 1);
+        }
+    }
+
+    Vector2Int GetRandomOceanCell()
+    {
+        List<Vector2Int> oceans = new List<Vector2Int>();
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+                if (cells[x, y].terrainType == TerrainType.Ocean)
+                    oceans.Add(new Vector2Int(x, y));
+        if (oceans.Count > 0)
+            return oceans[rng.Next(oceans.Count)];
+        return GetRandomEdgeCell();
+    }
+
+    void GenerateRiverPath(Vector2Int start, Vector2Int end)
+    {
+        var path = FindRiverPath(start, end);
+        if (path == null) return;
+        foreach (var p in path)
+        {
+            SetObjectTerrain(p.x, p.y, TerrainType.River);
+        }
+    }
+
+    public void GenerateRiverNetwork()
+    {
+        int riverCount = rng.Next(1, 3);
+        for (int i = 0; i < riverCount; i++)
+        {
+            Vector2Int start = GetRandomEdgeCell();
+            Vector2Int end = GetRandomOceanCell();
+            GenerateRiverPath(start, end);
+
+            if (rng.NextDouble() < 0.3)
+            {
+                var mainPath = FindRiverPath(start, end);
+                if (mainPath != null && mainPath.Count > 6)
+                {
+                    int idx = rng.Next(3, mainPath.Count - 3);
+                    Vector2Int branchStart = mainPath[idx];
+                    Vector2Int branchEnd = rng.NextDouble() < 0.5 ? GetRandomOceanCell() : GetRandomEdgeCell();
+                    GenerateRiverPath(branchStart, branchEnd);
+                }
+            }
+        }
+    }
+
     bool IsRoadTraversable(Vector2Int pos)
     {
         TerrainType t = cells[pos.x, pos.y].terrainType;
@@ -484,7 +583,7 @@ public class GridManager : MonoBehaviour
         return null;
     }
 
-    void GenerateRoadPath()
+    public void GenerateRoadPath()
     {
         var path = FindRoadPath(entryPoint, exitPoint);
         if (path == null) return;
