@@ -139,6 +139,17 @@ public class GridManager : MonoBehaviour
             terrainTilemap.SetTile(new Vector3Int(x, y, 0), tile);
     }
 
+    void SetObjectTerrain(int x, int y, TerrainType tType)
+    {
+        Cell cell = cells[x, y];
+        cell.terrainType = tType;
+        cell.moveCost = GetMoveCostForType(tType);
+
+        TileBase tile = GetTileForType(tType);
+        if (tile != null)
+            objectTilemap.SetTile(new Vector3Int(x, y, 0), tile);
+    }
+
     TerrainType ChooseTerrainType(int x, int y)
     {
         float noise = Mathf.PerlinNoise((x + seed) * terrainNoiseScale,
@@ -213,32 +224,32 @@ public class GridManager : MonoBehaviour
     void GenerateRiver(Vector2Int start, Vector2Int end)
     {
         Vector2Int cur = start;
-        SetCellTerrain(cur.x, cur.y, TerrainType.River);
+        SetObjectTerrain(cur.x, cur.y, TerrainType.River);
         while (cur != end)
         {
             if (cur.x < end.x) cur.x++; else if (cur.x > end.x) cur.x--;
             else if (cur.y < end.y) cur.y++; else if (cur.y > end.y) cur.y--;
 
             if (cells[cur.x, cur.y].terrainType == TerrainType.Road)
-                SetCellTerrain(cur.x, cur.y, TerrainType.Bridge);
+                SetObjectTerrain(cur.x, cur.y, TerrainType.Bridge);
             else
-                SetCellTerrain(cur.x, cur.y, TerrainType.River);
+                SetObjectTerrain(cur.x, cur.y, TerrainType.River);
         }
     }
 
     void GenerateRoad(Vector2Int start, Vector2Int end)
     {
         Vector2Int cur = start;
-        SetCellTerrain(cur.x, cur.y, TerrainType.Road);
+        SetObjectTerrain(cur.x, cur.y, TerrainType.Road);
         while (cur != end)
         {
             if (cur.x < end.x) cur.x++; else if (cur.x > end.x) cur.x--;
             else if (cur.y < end.y) cur.y++; else if (cur.y > end.y) cur.y--;
 
             if (cells[cur.x, cur.y].terrainType == TerrainType.River)
-                SetCellTerrain(cur.x, cur.y, TerrainType.Bridge);
+                SetObjectTerrain(cur.x, cur.y, TerrainType.Bridge);
             else
-                SetCellTerrain(cur.x, cur.y, TerrainType.Road);
+                SetObjectTerrain(cur.x, cur.y, TerrainType.Road);
         }
     }
 
@@ -268,6 +279,23 @@ public class GridManager : MonoBehaviour
                 if (usePerlinNoise)
                     type = ChooseTerrainType(x, y);
                 SetCellTerrain(x, y, type);
+            }
+        }
+
+        // Overlay roads and rivers using Perlin noise on the object tilemap
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (cells[x, y].terrainType != TerrainType.Grass)
+                    continue;
+
+                float noise = Mathf.PerlinNoise((x + seed + 1000) * objectNoiseScale,
+                                                (y + seed + 1000) * objectNoiseScale);
+                if (noise < 0.15f)
+                    SetObjectTerrain(x, y, TerrainType.River);
+                else if (noise > 0.85f)
+                    SetObjectTerrain(x, y, TerrainType.Road);
             }
         }
 
@@ -464,9 +492,9 @@ public class GridManager : MonoBehaviour
         {
             if (p == entryPoint || p == exitPoint) continue;
             if (cells[p.x, p.y].terrainType == TerrainType.River)
-                SetCellTerrain(p.x, p.y, TerrainType.Bridge);
+                SetObjectTerrain(p.x, p.y, TerrainType.Bridge);
             else
-                SetCellTerrain(p.x, p.y, TerrainType.Road);
+                SetObjectTerrain(p.x, p.y, TerrainType.Road);
         }
     }
 
