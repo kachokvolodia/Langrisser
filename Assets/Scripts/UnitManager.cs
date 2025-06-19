@@ -32,6 +32,7 @@ public class UnitManager : MonoBehaviour
     private Cell previewCell;
     private Cell pendingMoveCell;
     private bool moveMode = false;
+    private bool attackMode = false;
 
     // ---- НОВОЕ: AllUnits список ----
     public List<Unit> AllUnits = new List<Unit>();
@@ -308,7 +309,10 @@ public class UnitManager : MonoBehaviour
     public void OnAttackPressed()
     {
         if (UnitManager.Instance != null && UnitManager.Instance.HasSelectedUnit())
+        {
             UnitManager.Instance.HighlightAttackableCells(UnitManager.Instance.selectedUnit);
+            attackMode = true;
+        }
 
         UnitActionMenu.Instance.HideMenu();
     }
@@ -417,6 +421,7 @@ public class UnitManager : MonoBehaviour
         foreach (var cell in attackHighlightedCells)
             cell.Unhighlight();
         attackHighlightedCells.Clear();
+        attackMode = false;
     }
 
     // Поиск юнита, стоящего на заданной клетке
@@ -439,15 +444,16 @@ public class UnitManager : MonoBehaviour
             && FactionManager.Instance != null &&
                FactionManager.Instance.GetRelation(selectedUnit.faction, target.faction) == FactionManager.RelationType.Enemy)
         {
-            ResolveCombat(selectedUnit, target);
+            StartCoroutine(ResolveCombat(selectedUnit, target));
 
             selectedUnit.SetSelected(false);
             selectedUnit = null;
             ClearHighlightedCells();
+            ClearAttackHighlightedCells();
         }
     }
 
-    public void ResolveCombat(Unit attacker, Unit defender)
+    public IEnumerator ResolveCombat(Unit attacker, Unit defender)
     {
         // 1. Считаем урон для обоих, HP до боя!
         int dmgToDefender = attacker.CalculateDamage(defender);
@@ -469,6 +475,9 @@ public class UnitManager : MonoBehaviour
 
         int defenderHPAfter = defender.currentHP - dmgToDefender;
         int attackerHPAfter = attacker.currentHP - dmgToAttacker;
+
+        if (CombatDisplay.Instance != null)
+            yield return StartCoroutine(CombatDisplay.Instance.PlayBattle(attacker, defender, dmgToDefender, dmgToAttacker));
 
         if (defenderHPAfter <= 0)
         {
@@ -523,6 +532,7 @@ public class UnitManager : MonoBehaviour
         {
             selectedUnit.SetSelected(false);
             selectedUnit = null;
+            ClearAttackHighlightedCells();
         }
     }
     public void ApplyWaitHealing(params Faction[] factions)

@@ -49,6 +49,10 @@ public class GridCursor : MonoBehaviour
                 {
                     UnitManager.Instance.RequestMoveConfirmation(cell);
                 }
+                else if (cell != null && UnitManager.Instance.IsAttackHighlightedCell(cell))
+                {
+                    UnitManager.Instance.AttackUnitAtCell(cell);
+                }
                 else if (cell != null && cell.occupyingUnit != null)
                 {
                     UnitManager.Instance.SelectUnit(cell.occupyingUnit);
@@ -57,6 +61,7 @@ public class GridCursor : MonoBehaviour
                 {
                     UnitManager.Instance.DeselectUnit();
                     UnitActionMenu.Instance?.HideMenu();
+                    UnitManager.Instance.ClearAttackHighlightedCells();
                 }
             }
         }

@@ -18,7 +18,7 @@ public class MoonArchonDominionAI : BaseFactionAI
         if (target != null && InAttackRange(me, target))
         {
             // Атакуем даже если можем погибнуть
-            UnitManager.Instance.ResolveCombat(me, target);
+            StartCoroutine(UnitManager.Instance.ResolveCombat(me, target));
             return;
         }
         if (target != null)
