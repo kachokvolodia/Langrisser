@@ -372,14 +372,28 @@ public class GridManager : MonoBehaviour
         entryPoint = entry;
         exitPoint = exit;
         exitUnlocked = false;
-        // Используем базовые тайлы без изменения типа местности
+        // Очищаем клетки от горного хребта и размечаем вход и выход
+        SetCellTerrain(entryPoint.x, entryPoint.y, TerrainType.Road);
+        SetCellTerrain(exitPoint.x, exitPoint.y, TerrainType.Road);
         cells[entryPoint.x, entryPoint.y].SetBaseColor(entryHighlight);
         cells[exitPoint.x, exitPoint.y].SetBaseColor(exitHighlight);
     }
 
-    void AddBlockingRidge()
+    public void AddBlockingRidge()
     {
-        // В упрощённой версии поля гребень не создаём
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                bool border = x == 0 || y == 0 || x == width - 1 || y == height - 1;
+                if (border)
+                {
+                    if ((entryPoint == new Vector2Int(x, y)) || (exitPoint == new Vector2Int(x, y)))
+                        continue;
+                    SetCellTerrain(x, y, TerrainType.Mountain);
+                }
+            }
+        }
     }
 
     public void UnlockExit()
@@ -456,18 +470,18 @@ public class GridManager : MonoBehaviour
         int side = rng.Next(4);
         switch (side)
         {
-            case 0: return new Vector2Int(0, rng.Next(height));
-            case 1: return new Vector2Int(width - 1, rng.Next(height));
-            case 2: return new Vector2Int(rng.Next(width), 0);
-            default: return new Vector2Int(rng.Next(width), height - 1);
+            case 0: return new Vector2Int(1, rng.Next(1, height - 1));
+            case 1: return new Vector2Int(width - 2, rng.Next(1, height - 1));
+            case 2: return new Vector2Int(rng.Next(1, width - 1), 1);
+            default: return new Vector2Int(rng.Next(1, width - 1), height - 2);
         }
     }
 
     Vector2Int GetRandomOceanCell()
     {
         List<Vector2Int> oceans = new List<Vector2Int>();
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
+        for (int x = 1; x < width - 1; x++)
+            for (int y = 1; y < height - 1; y++)
                 if (cells[x, y].terrainType == TerrainType.Ocean)
                     oceans.Add(new Vector2Int(x, y));
         if (oceans.Count > 0)
@@ -481,6 +495,8 @@ public class GridManager : MonoBehaviour
         if (path == null) return;
         foreach (var p in path)
         {
+            if (cells[p.x, p.y].terrainType == TerrainType.Ocean)
+                break;
             SetObjectTerrain(p.x, p.y, TerrainType.River);
         }
     }
@@ -525,6 +541,9 @@ public class GridManager : MonoBehaviour
             Vector2Int n = pos + d;
             if (n.x < 0 || n.x >= width || n.y < 0 || n.y >= height)
                 continue;
+            bool border = n.x == 0 || n.x == width - 1 || n.y == 0 || n.y == height - 1;
+            if (border && n != entryPoint && n != exitPoint)
+                continue;
             if (IsRoadTraversable(n))
                 list.Add(n);
         }
@@ -566,7 +585,10 @@ public class GridManager : MonoBehaviour
 
             foreach (var n in GetRoadNeighbors(current))
             {
-                int tentative = gScore[current] + 1;
+                int cost = 1;
+                if (cells[n.x, n.y].terrainType == TerrainType.River)
+                    cost += 5;
+                int tentative = gScore[current] + cost;
                 if (!gScore.ContainsKey(n) || tentative < gScore[n])
                 {
                     cameFrom[n] = current;

@@ -79,6 +79,7 @@ public class DungeonProgressionManager : MonoBehaviour
             exit = new Vector2Int(xExit, info.height - 1);
         }
         GridManager.Instance.PlaceEntryExit(entry, exit, level == 1);
+        GridManager.Instance.AddBlockingRidge();
         GridManager.Instance.GenerateRoadPath();
 
         // После размещения входа и выхода генерируем начальные отряды
