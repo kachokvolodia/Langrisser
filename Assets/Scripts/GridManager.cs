@@ -22,6 +22,8 @@ public class GridManager : MonoBehaviour
     [SerializeField] private bool usePerlinNoise = true;
     [SerializeField] private float terrainNoiseScale = 0.1f;
     [SerializeField] private float objectNoiseScale = 0.2f;
+    [SerializeField] private float mountainNoiseScale = 0.05f;
+    [SerializeField] private float mountainThreshold = 0.65f;
 
     // Seed for deterministic generation
     [SerializeField] private int seed = 0;
@@ -44,6 +46,8 @@ public class GridManager : MonoBehaviour
     public bool UsePerlinNoise => usePerlinNoise;
     public float TerrainNoiseScale => terrainNoiseScale;
     public float ObjectNoiseScale => objectNoiseScale;
+    public float MountainNoiseScale => mountainNoiseScale;
+    public float MountainThreshold => mountainThreshold;
     public int Seed => seed;
     public bool RandomSeed => randomSeed;
     public Color EntryHighlight => entryHighlight;
@@ -156,7 +160,15 @@ public class GridManager : MonoBehaviour
     {
         float noise = Mathf.PerlinNoise((x + seed) * terrainNoiseScale,
                                         (y + seed) * terrainNoiseScale);
-        return noise < 0.3f ? TerrainType.Ocean : TerrainType.Grass;
+        if (noise < 0.3f)
+            return TerrainType.Ocean;
+
+        float mNoise = Mathf.PerlinNoise((x + seed + 1000) * mountainNoiseScale,
+                                         (y + seed + 1000) * mountainNoiseScale);
+        if (mNoise > mountainThreshold)
+            return TerrainType.Mountain;
+
+        return TerrainType.Grass;
     }
 
     TerrainType ChooseTerrainType()
