@@ -372,6 +372,23 @@ public class GridManager : MonoBehaviour
         return cells[grid.x, grid.y];
     }
 
+    void EnsureClearAround(Vector2Int pos)
+    {
+        Vector2Int[] deltas =
+        {
+            new Vector2Int(0, 1), new Vector2Int(1, 0),
+            new Vector2Int(0, -1), new Vector2Int(-1, 0)
+        };
+        foreach (var d in deltas)
+        {
+            Vector2Int n = pos + d;
+            if (n.x < 0 || n.x >= width || n.y < 0 || n.y >= height)
+                continue;
+            if (!IsRoadTraversable(n))
+                SetCellTerrain(n.x, n.y, TerrainType.Grass);
+        }
+    }
+
     public void PlaceEntryExit(Vector2Int entry, Vector2Int exit, bool firstLevel)
     {
         entryPoint = entry;
@@ -380,6 +397,8 @@ public class GridManager : MonoBehaviour
         // Очищаем клетки от горного хребта и размечаем вход и выход
         SetCellTerrain(entryPoint.x, entryPoint.y, TerrainType.Road);
         SetCellTerrain(exitPoint.x, exitPoint.y, TerrainType.Road);
+        EnsureClearAround(entryPoint);
+        EnsureClearAround(exitPoint);
         cells[entryPoint.x, entryPoint.y].SetBaseColor(entryHighlight);
         cells[exitPoint.x, exitPoint.y].SetBaseColor(exitHighlight);
     }
@@ -626,7 +645,11 @@ public class GridManager : MonoBehaviour
     public void GenerateRoadPath()
     {
         var path = FindRoadPath(entryPoint, exitPoint);
-        if (path == null) return;
+        if (path == null || path.Count == 0)
+        {
+            GenerateRoad(entryPoint, exitPoint);
+            return;
+        }
         foreach (var p in path)
         {
             if (p == entryPoint || p == exitPoint) continue;
