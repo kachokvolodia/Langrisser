@@ -382,6 +382,8 @@ public class GridManager : MonoBehaviour
         SetCellTerrain(exitPoint.x, exitPoint.y, TerrainType.Road);
         cells[entryPoint.x, entryPoint.y].SetBaseColor(entryHighlight);
         cells[exitPoint.x, exitPoint.y].SetBaseColor(exitHighlight);
+        ClearAround(entryPoint);
+        ClearAround(exitPoint);
     }
 
     public void AddBlockingRidge()
@@ -409,6 +411,28 @@ public class GridManager : MonoBehaviour
     void BuildEntryWalls()
     {
         // Стены входа временно не строим
+    }
+
+    void ClearAround(Vector2Int pos)
+    {
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                Vector2Int p = pos + new Vector2Int(dx, dy);
+                if (p.x < 0 || p.x >= width || p.y < 0 || p.y >= height)
+                    continue;
+                if (p == entryPoint || p == exitPoint)
+                    continue;
+                TerrainType t = cells[p.x, p.y].terrainType;
+                if (t == TerrainType.Ocean || t == TerrainType.Mountain ||
+                    t == TerrainType.Wall || t == TerrainType.Cliff ||
+                    t == TerrainType.River)
+                {
+                    SetCellTerrain(p.x, p.y, TerrainType.Grass);
+                }
+            }
+        }
     }
 
     bool IsRiverTraversable(Vector2Int pos)
@@ -542,14 +566,6 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    bool IsRoadTraversable(Vector2Int pos)
-    {
-        TerrainType t = cells[pos.x, pos.y].terrainType;
-        if (t == TerrainType.Wall || t == TerrainType.Mountain || t == TerrainType.Cliff || t == TerrainType.Ocean)
-            return false;
-        return true;
-    }
-
     List<Vector2Int> GetRoadNeighbors(Vector2Int pos)
     {
         List<Vector2Int> list = new List<Vector2Int>();
@@ -562,8 +578,7 @@ public class GridManager : MonoBehaviour
             bool border = n.x == 0 || n.x == width - 1 || n.y == 0 || n.y == height - 1;
             if (border && n != entryPoint && n != exitPoint)
                 continue;
-            if (IsRoadTraversable(n))
-                list.Add(n);
+            list.Add(n);
         }
         return list;
     }
@@ -604,8 +619,11 @@ public class GridManager : MonoBehaviour
             foreach (var n in GetRoadNeighbors(current))
             {
                 int cost = 1;
-                if (cells[n.x, n.y].terrainType == TerrainType.River)
+                TerrainType t = cells[n.x, n.y].terrainType;
+                if (t == TerrainType.River)
                     cost += 5;
+                else if (t == TerrainType.Mountain || t == TerrainType.Wall || t == TerrainType.Cliff || t == TerrainType.Ocean)
+                    cost += 20;
                 int tentative = gScore[current] + cost;
                 if (!gScore.ContainsKey(n) || tentative < gScore[n])
                 {
@@ -631,9 +649,14 @@ public class GridManager : MonoBehaviour
         {
             if (p == entryPoint || p == exitPoint) continue;
             if (cells[p.x, p.y].terrainType == TerrainType.River)
+            {
                 SetObjectTerrain(p.x, p.y, GetBridgeTypeForRiver(p));
+            }
             else
+            {
+                SetCellTerrain(p.x, p.y, TerrainType.Grass);
                 SetObjectTerrain(p.x, p.y, TerrainType.Road);
+            }
         }
     }
 
