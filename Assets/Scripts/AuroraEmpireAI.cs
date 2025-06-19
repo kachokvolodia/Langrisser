@@ -43,7 +43,7 @@ public class AuroraEmpireAI : BaseFactionAI
                     MoveTowardsTarget(me, me.commander);
                 return;
             }
-            UnitManager.Instance.ResolveCombat(me, target);
+            StartCoroutine(UnitManager.Instance.ResolveCombat(me, target));
             return;
         }
         base.DoSoldierLogic(me);
