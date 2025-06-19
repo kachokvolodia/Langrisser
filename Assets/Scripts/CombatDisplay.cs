@@ -16,6 +16,8 @@ public class CombatDisplay : MonoBehaviour
     public float approachDistance = 200f;
     public float moveDuration = 0.5f;
     public float pauseBeforeRetreat = 0.5f;
+    public float spacingX = 32f;
+    public float spacingY = 32f;
 
     void Awake()
     {
@@ -99,11 +101,9 @@ public class CombatDisplay : MonoBehaviour
             {
                 var obj = CreateSprite(soldierSpritePrefab, parent, unit.GetComponent<SpriteRenderer>().sprite);
                 var rt = obj.GetComponent<RectTransform>();
-                float w = rt.sizeDelta.x;
-                float h = rt.sizeDelta.y;
                 int row = i / 5;
                 int col = i % 5;
-                rt.anchoredPosition = new Vector2(col * w, -row * h);
+                rt.anchoredPosition = new Vector2(col * spacingX, -row * spacingY);
             }
         }
     }
