@@ -15,5 +15,7 @@ public enum TerrainType
     Swamp,
     River,
     Bridge,
-    Town
+    Town,
+    BridgeHorizontal,
+    BridgeVertical
 }

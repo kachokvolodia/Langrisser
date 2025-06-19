@@ -65,6 +65,8 @@ public class Cell
             case TerrainType.Swamp:
                 return unit != null && unit.unitData.movementType == MovementType.Cavalry ? 4 : 3;
             case TerrainType.Bridge:
+            case TerrainType.BridgeHorizontal:
+            case TerrainType.BridgeVertical:
                 return 1;
             case TerrainType.Town:
                 return 1;

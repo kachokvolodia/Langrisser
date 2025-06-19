@@ -26,3 +26,9 @@ MonoBehaviour:
   - terrainType: 13
     tiles:
     - {fileID: 11400000, guid: bdc21fea2f9e8674592458f3d089d439, type: 2}
+  - terrainType: 16
+    tiles:
+    - {fileID: 11400000, guid: c99b8dae8027d924dbacb866427a4adb, type: 2}
+  - terrainType: 17
+    tiles:
+    - {fileID: 11400000, guid: d3e2ccc91bafc0a4aad783b2785545a7, type: 2}

@@ -347,7 +347,9 @@ public class Unit : MonoBehaviour
             return 1;
         if (unitData.unitClass == UnitClass.Cavalry && cell.terrainType == TerrainType.Forest)
             return -1;
-        if (unitData.unitClass == UnitClass.Cavalry && cell.terrainType == TerrainType.Bridge)
+        if (unitData.unitClass == UnitClass.Cavalry && (cell.terrainType == TerrainType.Bridge ||
+                                                         cell.terrainType == TerrainType.BridgeHorizontal ||
+                                                         cell.terrainType == TerrainType.BridgeVertical))
             return 1;
         if (unitData.unitClass == UnitClass.Cavalry && (cell.terrainType == TerrainType.Desert || cell.terrainType == TerrainType.Snow))
             return -1;
