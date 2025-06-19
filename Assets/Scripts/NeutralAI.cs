@@ -1,16 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// AI для нейтральных существ. Наследует EnemyAI и
-/// может быть расширен особым поведением в будущем.
+/// Простой AI для нейтральных существ.
 /// </summary>
-public class NeutralAI : EnemyAI
+public class NeutralAI : BaseFactionAI
 {
-    /// <summary>
-    /// Заглушка для логики нейтралов
-    /// </summary>
-    public void ExecuteFactionStrategy()
-    {
-        Debug.Log("Neutral AI strategy placeholder");
-    }
+    // оставляем стандартное поведение базового класса
 }

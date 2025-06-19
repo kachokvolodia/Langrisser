@@ -1,16 +1,30 @@
 using UnityEngine;
 
 /// <summary>
-/// AI фракции Moon Archon Dominion. Наследует EnemyAI.
-/// Здесь позже появится уникальное поведение.
+/// AI фракции Moon Archon Dominion. Эльфы действуют из личной выгоды и готовы
+/// жертвовать союзниками ради убийства врага.
 /// </summary>
-public class MoonArchonDominionAI : EnemyAI
+public class MoonArchonDominionAI : BaseFactionAI
 {
-    /// <summary>
-    /// Заглушка для логики фракции
-    /// </summary>
-    public void ExecuteFactionStrategy()
+    protected override void DoCommanderLogic(Unit me)
     {
-        Debug.Log("Moon Archon Dominion AI strategy placeholder");
+        // Командир всегда атакует ближайшую цель, игнорируя опасность
+        base.DoCommanderLogic(me);
+    }
+
+    protected override void DoSoldierLogic(Unit me)
+    {
+        Unit target = FindBestEnemyTarget(me);
+        if (target != null && InAttackRange(me, target))
+        {
+            // Атакуем даже если можем погибнуть
+            UnitManager.Instance.ResolveCombat(me, target);
+            return;
+        }
+        if (target != null)
+        {
+            MoveTowardsTarget(me, target);
+            return;
+        }
     }
 }

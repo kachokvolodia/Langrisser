@@ -37,7 +37,7 @@ public class EnemyManager : MonoBehaviour
             if (unit == null)
                 continue;
 
-            var ai = unit.GetComponent<EnemyAI>();
+            var ai = unit.GetComponent<IUnitAI>();
             if (ai != null)
                 ai.DoEnemyTurn();
         }
