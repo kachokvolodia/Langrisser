@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7247737578727331079}
   - component: {fileID: 5901132350974582478}
   - component: {fileID: 4943519687375453160}
-  - component: {fileID: 9948621684008702816}
+  - component: {fileID: 8948621684008702816}
   m_Layer: 0
   m_Name: GoldenHandSpearMan
   m_TagString: Untagged
@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b9e5f62c48a4c02a7791eba754654a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!61 &9948621684008702816
+  --- !u!61 &8948621684008702816
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
