@@ -56,8 +56,6 @@ public class UnitActionMenu : MonoBehaviour
         Debug.Log($"[DEBUG] ShowMenu вызван для: {(unit != null ? unit.name : "NULL")}");
         currentUnitForMenu = unit;
         menuPanel.SetActive(true);
-
-        menuPanel.SetActive(true);
         Canvas.ForceUpdateCanvases();
 
         bool isPlayer = (unit.faction == FactionManager.PlayerFaction);
