@@ -42,6 +42,10 @@ public class CombatDisplay : MonoBehaviour
         PopulateGroup(leftGroup, attacker);
         PopulateGroup(rightGroup, defender);
 
+        // Flip the defender group horizontally before animation starts
+        if (rightGroup != null)
+            rightGroup.localScale = new Vector3(-1, 1, 1);
+
         Vector3 leftStart = leftGroup.localPosition;
         Vector3 rightStart = rightGroup.localPosition;
         Vector3 leftTarget = leftStart + Vector3.right * approachDistance;
