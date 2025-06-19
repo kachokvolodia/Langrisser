@@ -114,6 +114,8 @@ public class GridManager : MonoBehaviour
             case TerrainType.Ocean:
             case TerrainType.Road:
             case TerrainType.Bridge:
+            case TerrainType.BridgeHorizontal:
+            case TerrainType.BridgeVertical:
             case TerrainType.Town:
                 return 1;
             case TerrainType.River:
@@ -224,14 +226,17 @@ public class GridManager : MonoBehaviour
     void GenerateRiver(Vector2Int start, Vector2Int end)
     {
         Vector2Int cur = start;
+        Vector2Int prev = cur;
         SetObjectTerrain(cur.x, cur.y, TerrainType.River);
         while (cur != end)
         {
+            prev = cur;
             if (cur.x < end.x) cur.x++; else if (cur.x > end.x) cur.x--;
             else if (cur.y < end.y) cur.y++; else if (cur.y > end.y) cur.y--;
 
+            bool verticalStep = cur.y != prev.y;
             if (cells[cur.x, cur.y].terrainType == TerrainType.Road)
-                SetObjectTerrain(cur.x, cur.y, TerrainType.Bridge);
+                SetObjectTerrain(cur.x, cur.y, verticalStep ? TerrainType.BridgeVertical : TerrainType.BridgeHorizontal);
             else
                 SetObjectTerrain(cur.x, cur.y, TerrainType.River);
         }
@@ -247,7 +252,7 @@ public class GridManager : MonoBehaviour
             else if (cur.y < end.y) cur.y++; else if (cur.y > end.y) cur.y--;
 
             if (cells[cur.x, cur.y].terrainType == TerrainType.River)
-                SetObjectTerrain(cur.x, cur.y, TerrainType.Bridge);
+                SetObjectTerrain(cur.x, cur.y, GetBridgeTypeForRiver(new Vector2Int(cur.x, cur.y)));
             else
                 SetObjectTerrain(cur.x, cur.y, TerrainType.Road);
         }
@@ -427,6 +432,19 @@ public class GridManager : MonoBehaviour
                 list.Add(n);
         }
         return list;
+    }
+
+    TerrainType GetBridgeTypeForRiver(Vector2Int pos)
+    {
+        bool up = pos.y + 1 < height && cells[pos.x, pos.y + 1].terrainType == TerrainType.River;
+        bool down = pos.y - 1 >= 0 && cells[pos.x, pos.y - 1].terrainType == TerrainType.River;
+        bool left = pos.x - 1 >= 0 && cells[pos.x - 1, pos.y].terrainType == TerrainType.River;
+        bool right = pos.x + 1 < width && cells[pos.x + 1, pos.y].terrainType == TerrainType.River;
+
+        int verticalCount = (up ? 1 : 0) + (down ? 1 : 0);
+        int horizontalCount = (left ? 1 : 0) + (right ? 1 : 0);
+
+        return verticalCount >= horizontalCount ? TerrainType.BridgeVertical : TerrainType.BridgeHorizontal;
     }
 
     List<Vector2Int> FindRiverPath(Vector2Int start, Vector2Int goal)
@@ -613,7 +631,7 @@ public class GridManager : MonoBehaviour
         {
             if (p == entryPoint || p == exitPoint) continue;
             if (cells[p.x, p.y].terrainType == TerrainType.River)
-                SetObjectTerrain(p.x, p.y, TerrainType.Bridge);
+                SetObjectTerrain(p.x, p.y, GetBridgeTypeForRiver(p));
             else
                 SetObjectTerrain(p.x, p.y, TerrainType.Road);
         }
