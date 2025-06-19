@@ -11,7 +11,7 @@ public class EvilNeutralAI : BaseFactionAI
         Unit target = FindBestEnemyTarget(me);
         if (target != null && InAttackRange(me, target))
         {
-            UnitManager.Instance.ResolveCombat(me, target);
+            StartCoroutine(UnitManager.Instance.ResolveCombat(me, target));
             return;
         }
         if (target != null)
