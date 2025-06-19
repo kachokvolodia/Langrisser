@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2714230756658664581}
   - component: {fileID: 5977739592599296200}
   - component: {fileID: 3576511541518882285}
-  - component: {fileID: 6680103677961749123}
   m_Layer: 0
   m_Name: NeutralCommander
   m_TagString: Untagged
@@ -114,6 +113,7 @@ MonoBehaviour:
   currentMP: 0
   level: 1
   experience: 0
+  morale: 50
   faction: 3
   bonusAttack: 0
   bonusDefense: 0
@@ -137,21 +137,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ae4823bab7320741bc7b766db1c69f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!61 &6680103677961749123
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4128895056449229038}
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Density: 0
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_AutoTiling: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0

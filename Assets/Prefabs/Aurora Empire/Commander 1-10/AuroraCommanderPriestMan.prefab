@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4957316242098383928}
   - component: {fileID: 7247737578727331079}
   - component: {fileID: 5901132350974582478}
-  - component: {fileID: 7178808389685490189}
   m_Layer: 0
   m_Name: AuroraCommanderPriestMan
   m_TagString: Untagged
@@ -125,21 +124,3 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   isSelected: 0
   moveSpeed: 2
---- !u!61 &7178808389685490189
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8785832555143759317}
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Density: 0
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_AutoTiling: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
