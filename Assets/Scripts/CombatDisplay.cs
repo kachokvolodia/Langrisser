@@ -102,11 +102,17 @@ public class CombatDisplay : MonoBehaviour
     {
         GameObject go;
         if (prefab != null)
+        {
             go = Instantiate(prefab, parent);
+        }
         else
+        {
             go = new GameObject("Sprite", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            go.transform.SetParent(parent, false);
+        }
         var img = go.GetComponent<Image>();
         img.sprite = sprite;
+        img.SetNativeSize();
     }
 
     void ApplyDamage(Transform group, Unit unit, int dmg)
