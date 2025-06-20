@@ -37,10 +37,10 @@ public class Cell
 
     public bool IsPassable(Unit unit)
     {
-        if (terrainType == TerrainType.Ocean || terrainType == TerrainType.Wall || terrainType == TerrainType.River || terrainType == TerrainType.Cliff)
-            return unit != null && unit.unitData.movementType == MovementType.Flyer;
+        if (terrainType == TerrainType.Ocean || terrainType == TerrainType.River || terrainType == TerrainType.Mountain)
+            return false;
 
-        if (terrainType == TerrainType.Mountain)
+        if (terrainType == TerrainType.Wall || terrainType == TerrainType.Cliff)
             return unit != null && unit.unitData.movementType == MovementType.Flyer;
 
         return true;
@@ -55,7 +55,7 @@ public class Cell
             case TerrainType.Forest:
                 return unit != null && unit.unitData.movementType == MovementType.Cavalry ? 3 : 2;
             case TerrainType.Mountain:
-                return unit != null && unit.unitData.movementType == MovementType.Cavalry ? 4 : 3;
+                return 99;
             case TerrainType.Road:
                 return 1;
             case TerrainType.Desert:
