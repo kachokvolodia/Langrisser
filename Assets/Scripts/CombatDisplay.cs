@@ -18,6 +18,7 @@ public class CombatDisplay : MonoBehaviour
     public float pauseBeforeRetreat = 0.5f;
     public float spacingX = 32f;
     public float spacingY = 32f;
+    public float fadeDuration = 0.25f;
 
     void Awake()
     {
@@ -127,6 +128,7 @@ public class CombatDisplay : MonoBehaviour
         var img = go.GetComponent<Image>();
         img.sprite = sprite;
         img.SetNativeSize();
+        StartCoroutine(FadeInRoutine(go, fadeDuration));
         return go;
     }
 
@@ -139,7 +141,55 @@ public class CombatDisplay : MonoBehaviour
         for (int i = 0; i < toHide && group.childCount > 0; i++)
         {
             Transform child = group.GetChild(group.childCount - 1 - i);
-            child.gameObject.SetActive(false);
+            StartCoroutine(FadeOutRoutine(child.gameObject, fadeDuration));
         }
+    }
+
+    IEnumerator FadeInRoutine(GameObject obj, float duration)
+    {
+        if (obj == null) yield break;
+        var cg = obj.GetComponent<CanvasGroup>();
+        if (cg == null)
+            cg = obj.AddComponent<CanvasGroup>();
+
+        cg.alpha = 0f;
+        Vector3 startScale = Vector3.one * 0.8f;
+        obj.transform.localScale = startScale;
+
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float pct = Mathf.Clamp01(t / duration);
+            cg.alpha = pct;
+            obj.transform.localScale = Vector3.Lerp(startScale, Vector3.one, pct);
+            yield return null;
+        }
+        cg.alpha = 1f;
+        obj.transform.localScale = Vector3.one;
+    }
+
+    IEnumerator FadeOutRoutine(GameObject obj, float duration)
+    {
+        if (obj == null) yield break;
+        var cg = obj.GetComponent<CanvasGroup>();
+        if (cg == null)
+            cg = obj.AddComponent<CanvasGroup>();
+
+        cg.alpha = 1f;
+        Vector3 startScale = obj.transform.localScale;
+        Vector3 endScale = startScale * 0.8f;
+
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float pct = Mathf.Clamp01(t / duration);
+            cg.alpha = 1f - pct;
+            obj.transform.localScale = Vector3.Lerp(startScale, endScale, pct);
+            yield return null;
+        }
+        cg.alpha = 0f;
+        obj.SetActive(false);
     }
 }
