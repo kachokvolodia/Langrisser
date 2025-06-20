@@ -111,11 +111,13 @@ public class GridManager : MonoBehaviour
             case TerrainType.Snow:
                 return 2;
             case TerrainType.Mountain:
+                return 99;
             case TerrainType.Swamp:
                 return 3;
             case TerrainType.Ladder:
                 return 2;
             case TerrainType.Ocean:
+                return 99;
             case TerrainType.Road:
             case TerrainType.Bridge:
             case TerrainType.BridgeHorizontal:
