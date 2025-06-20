@@ -73,8 +73,8 @@ public class UnitManager : MonoBehaviour
     {
         AllUnits.Clear();
 
-        Vector2Int playerPos = GridManager.Instance.entryPoint;
-        Vector2Int evilPos = GridManager.Instance.exitPoint;
+        Vector2Int playerPos = GetSpawnPointAwayFromBorder(GridManager.Instance.entryPoint);
+        Vector2Int evilPos = GetSpawnPointAwayFromBorder(GridManager.Instance.exitPoint);
 
         SpawnSquad(auroraEmpireCommanderPrefabs, auroraEmpireSoldierPrefabs, playerPos, 2, Faction.AuroraEmpire);
         SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilPos, 2, Faction.EvilNeutral);
@@ -176,7 +176,25 @@ public class UnitManager : MonoBehaviour
     private bool IsCellFree(Vector2Int gridPos)
     {
         var cell = GridManager.Instance.cells[gridPos.x, gridPos.y];
-        return cell.occupyingUnit == null;
+        if (cell.occupyingUnit != null)
+            return false;
+        if (!cell.IsPassable(null))
+            return false;
+        if (gridPos == GridManager.Instance.entryPoint || gridPos == GridManager.Instance.exitPoint)
+            return false;
+        return true;
+    }
+
+    private Vector2Int GetSpawnPointAwayFromBorder(Vector2Int borderCell)
+    {
+        int w = GridManager.Instance.Width;
+        int h = GridManager.Instance.Height;
+        Vector2Int result = borderCell;
+        if (borderCell.x == 0) result.x = 1;
+        else if (borderCell.x == w - 1) result.x = w - 2;
+        if (borderCell.y == 0) result.y = 1;
+        else if (borderCell.y == h - 1) result.y = h - 2;
+        return result;
     }
 
 

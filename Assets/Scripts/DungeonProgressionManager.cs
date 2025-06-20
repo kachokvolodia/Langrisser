@@ -66,15 +66,15 @@ public class DungeonProgressionManager : MonoBehaviour
         Vector2Int exit;
         if (horizontal)
         {
-            int yEntry = Random.Range(0, info.height);
-            int yExit = Random.Range(0, info.height);
+            int yEntry = Random.Range(1, info.height - 1);
+            int yExit = Random.Range(1, info.height - 1);
             entry = new Vector2Int(0, yEntry);
             exit = new Vector2Int(info.width - 1, yExit);
         }
         else
         {
-            int xEntry = Random.Range(0, info.width);
-            int xExit = Random.Range(0, info.width);
+            int xEntry = Random.Range(1, info.width - 1);
+            int xExit = Random.Range(1, info.width - 1);
             entry = new Vector2Int(xEntry, 0);
             exit = new Vector2Int(xExit, info.height - 1);
         }
