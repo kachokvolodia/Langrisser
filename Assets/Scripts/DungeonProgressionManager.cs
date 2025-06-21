@@ -41,16 +41,16 @@ public class DungeonProgressionManager : MonoBehaviour
     public void StartExpedition()
     {
         CurrentLevel = 1;
-        EnsureLevel(CurrentLevel);
+        EnsureLevel(CurrentLevel, true);
     }
 
     public void NextLevel()
     {
         CurrentLevel++;
-        EnsureLevel(CurrentLevel);
+        EnsureLevel(CurrentLevel, false);
     }
 
-    void EnsureLevel(int level)
+    void EnsureLevel(int level, bool spawnPlayerUnits)
     {
         while (levels.Count < level)
         {
@@ -82,8 +82,10 @@ public class DungeonProgressionManager : MonoBehaviour
         GridManager.Instance.AddBlockingRidge();
         GridManager.Instance.GenerateRoadPath();
 
-        // После размещения входа и выхода генерируем начальные отряды
-        UnitManager.Instance?.SpawnInitialUnits();
+        if (spawnPlayerUnits)
+            UnitManager.Instance?.SpawnInitialUnits();
+        else
+            UnitManager.Instance?.SpawnNextLevelUnits();
     }
 
     LevelInfo GenerateLevelInfo(int levelIndex)
