@@ -28,12 +28,21 @@ public class GridCursor : MonoBehaviour
                     lastCell.HighlightAura(new Color(1f, 0.92f, 0.25f, 0.55f));
 
                 StatusBarUI.Instance?.HideCellInfo();
+                UnitManager.Instance?.ClearAuraHighlights();
             }
             if (cell != null)
             {
                 cell.Highlight(hoverColor);
                 StatusBarUI.Instance?.ShowCellInfo(cell);
                 UnitManager.Instance?.PreviewPath(cell);
+                if (cell.occupyingUnit != null)
+                {
+                    var u = cell.occupyingUnit;
+                    if (u.isCommander)
+                        UnitManager.Instance?.HighlightCommanderAura(u);
+                    else if (u.commander != null)
+                        UnitManager.Instance?.HighlightCommanderAura(u.commander);
+                }
             }
             lastCell = cell;
         }
