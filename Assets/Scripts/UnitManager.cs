@@ -18,8 +18,11 @@ public class UnitManager : MonoBehaviour
     public GameObject[] evilNeutralSoldierPrefabs;
 
     public Sprite healthBarSprite;
+    public GameObject healthBarPrefab;
     public Vector3 healthBarOffset = new Vector3(0f, -0.4f, 0f);
     public Vector3 healthBarScale = new Vector3(0.8f, 0.1f, 1f);
+    public Vector3 healthTextOffset = new Vector3(-0.2f, -0.2f, 0f);
+    public float healthTextSize = 3f;
 
 
     // Ссылка на GridManager берём через синглтон
@@ -273,11 +276,23 @@ public class UnitManager : MonoBehaviour
 
         if (healthBarSprite != null)
         {
-            GameObject barGO = new GameObject("HealthBar");
-            barGO.transform.SetParent(unitGO.transform);
+            GameObject barGO;
+            if (healthBarPrefab != null)
+            {
+                barGO = Instantiate(healthBarPrefab, unitGO.transform);
+                barGO.name = "HealthBar";
+            }
+            else
+            {
+                barGO = new GameObject("HealthBar");
+                barGO.transform.SetParent(unitGO.transform);
+            }
+
             barGO.transform.localPosition = healthBarOffset;
-            var hb = barGO.AddComponent<HealthBar>();
-            hb.Initialize(unit, healthBarSprite, GetFactionColor(faction), healthBarScale);
+            var hb = barGO.GetComponent<HealthBar>();
+            if (hb == null)
+                hb = barGO.AddComponent<HealthBar>();
+            hb.Initialize(unit, healthBarSprite, GetFactionColor(faction), healthBarScale, healthTextSize, healthTextOffset);
             unit.healthBar = hb;
         }
 
