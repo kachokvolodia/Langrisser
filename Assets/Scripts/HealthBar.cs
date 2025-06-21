@@ -21,6 +21,7 @@ public class HealthBar : MonoBehaviour
         fullScale = scale;
         transform.localScale = fullScale;
 
+
         fontSize = hpFontSize;
         textOffset = hpOffset;
 

@@ -86,6 +86,18 @@ public class UnitManager : MonoBehaviour
         TurnManager.Instance?.CheckVictory();
     }
 
+    // Используется при переходе на следующий уровень: переносим отряд игрока и создаём новых врагов
+    public void SpawnNextLevelUnits()
+    {
+        ClearUnits(true); // убрать врагов, оставить игрока
+        MovePlayerUnitsToEntry();
+
+        Vector2Int evilPos = GetSpawnPointAwayFromBorder(GridManager.Instance.exitPoint);
+        SpawnSquad(evilNeutralCommanderPrefabs, evilNeutralSoldierPrefabs, evilPos, 2, Faction.EvilNeutral);
+
+        TurnManager.Instance?.CheckVictory();
+    }
+
     // Спавнит командира и n солдат вокруг него по ближайшим свободным клеткам
     public void SpawnSquad(GameObject[] commanderPrefabs, GameObject[] soldierPrefabs, Vector2Int commanderGridPos, int soldierCount, Faction faction)
     {
@@ -198,6 +210,60 @@ public class UnitManager : MonoBehaviour
         if (borderCell.y == 0) result.y = 1;
         else if (borderCell.y == h - 1) result.y = h - 2;
         return result;
+    }
+
+    // Удаляет все юниты. Если keepPlayerUnits=true, юниты игрока остаются
+    public void ClearUnits(bool keepPlayerUnits = false)
+    {
+        var snapshot = new List<Unit>(AllUnits);
+        foreach (var unit in snapshot)
+        {
+            if (unit == null) continue;
+            if (keepPlayerUnits && unit.faction == FactionManager.PlayerFaction)
+                continue;
+            Destroy(unit.gameObject);
+        }
+        if (!keepPlayerUnits)
+            AllUnits.Clear();
+        else
+            AllUnits.RemoveAll(u => u == null);
+    }
+
+    // Перемещает юниты игрока к входу нового уровня
+    public void MovePlayerUnitsToEntry()
+    {
+        var playerUnits = AllUnits.FindAll(u => u.faction == FactionManager.PlayerFaction);
+        if (playerUnits.Count == 0) return;
+
+        Unit commander = playerUnits.Find(u => u.isCommander);
+        if (commander == null)
+            commander = playerUnits[0];
+
+        Vector2Int commanderPos = GetSpawnPointAwayFromBorder(GridManager.Instance.entryPoint);
+        MoveUnitToGrid(commander, commanderPos);
+
+        var cells = GetNearbyCells(commanderPos, playerUnits.Count - 1);
+        int idx = 0;
+        foreach (var unit in playerUnits)
+        {
+            if (unit == commander) continue;
+            Vector2Int pos = cells[idx++];
+            MoveUnitToGrid(unit, pos);
+            unit.commander = commander;
+        }
+
+        if (commander.squad == null) commander.squad = new List<Unit>();
+        commander.squad.Clear();
+        foreach (var unit in playerUnits)
+            if (unit != commander) commander.squad.Add(unit);
+    }
+
+    private void MoveUnitToGrid(Unit unit, Vector2Int gridPos)
+    {
+        Vector3 worldPos = GridManager.Instance.GetCellCenterPosition(gridPos.x, gridPos.y);
+        unit.transform.position = worldPos;
+        var cell = GridManager.Instance.cells[gridPos.x, gridPos.y];
+        cell.occupyingUnit = unit;
     }
 
 
