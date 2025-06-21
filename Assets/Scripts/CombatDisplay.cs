@@ -52,34 +52,40 @@ public class CombatDisplay : MonoBehaviour
         Vector3 leftTarget = leftStart + Vector3.right * approachDistance;
         Vector3 rightTarget = rightStart + Vector3.left * approachDistance;
 
-        float t = 0f;
-        while (t < moveDuration)
+        try
         {
-            t += Time.deltaTime;
-            float pct = Mathf.Clamp01(t / moveDuration);
-            leftGroup.localPosition = Vector3.Lerp(leftStart, leftTarget, pct);
-            rightGroup.localPosition = Vector3.Lerp(rightStart, rightTarget, pct);
-            yield return null;
+            float t = 0f;
+            while (t < moveDuration)
+            {
+                t += Time.deltaTime;
+                float pct = Mathf.Clamp01(t / moveDuration);
+                leftGroup.localPosition = Vector3.Lerp(leftStart, leftTarget, pct);
+                rightGroup.localPosition = Vector3.Lerp(rightStart, rightTarget, pct);
+                yield return null;
+            }
+
+            ApplyDamage(rightGroup, defender, dmgToDefender);
+            if (dmgToAttacker > 0)
+                ApplyDamage(leftGroup, attacker, dmgToAttacker);
+
+            yield return new WaitForSeconds(pauseBeforeRetreat);
+
+            t = 0f;
+            while (t < moveDuration)
+            {
+                t += Time.deltaTime;
+                float pct = Mathf.Clamp01(t / moveDuration);
+                leftGroup.localPosition = Vector3.Lerp(leftTarget, leftStart, pct);
+                rightGroup.localPosition = Vector3.Lerp(rightTarget, rightStart, pct);
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.2f);
         }
-
-        ApplyDamage(rightGroup, defender, dmgToDefender);
-        if (dmgToAttacker > 0)
-            ApplyDamage(leftGroup, attacker, dmgToAttacker);
-
-        yield return new WaitForSeconds(pauseBeforeRetreat);
-
-        t = 0f;
-        while (t < moveDuration)
+        finally
         {
-            t += Time.deltaTime;
-            float pct = Mathf.Clamp01(t / moveDuration);
-            leftGroup.localPosition = Vector3.Lerp(leftTarget, leftStart, pct);
-            rightGroup.localPosition = Vector3.Lerp(rightTarget, rightStart, pct);
-            yield return null;
+            panel.SetActive(false);
         }
-
-        yield return new WaitForSeconds(0.2f);
-        panel.SetActive(false);
     }
 
     void ClearChildren(Transform t)
@@ -135,6 +141,16 @@ public class CombatDisplay : MonoBehaviour
     void ApplyDamage(Transform group, Unit unit, int dmg)
     {
         int newHP = Mathf.Max(0, unit.currentHP - dmg);
+        if (unit.isCommander)
+        {
+            if (newHP <= 0 && group.childCount > 0)
+            {
+                Transform child = group.GetChild(0);
+                StartCoroutine(FadeOutRoutine(child.gameObject, fadeDuration));
+            }
+            return;
+        }
+
         int before = Mathf.Clamp(Mathf.CeilToInt((float)unit.currentHP / unit.MaxHP * 10), 0, 10);
         int after = Mathf.Clamp(Mathf.CeilToInt((float)newHP / unit.MaxHP * 10), 0, 10);
         int toHide = before - after;
